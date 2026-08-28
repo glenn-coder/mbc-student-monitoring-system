@@ -46,6 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         Route::get('/admin/assignments', [\App\Http\Controllers\Admin\InstructorAssignmentController::class, 'index'])->name('admin.assignments.index');
         Route::post('/admin/assignments', [\App\Http\Controllers\Admin\InstructorAssignmentController::class, 'store'])->name('admin.assignments.store');
+        Route::put('/admin/assignments/{assignment}', [\App\Http\Controllers\Admin\InstructorAssignmentController::class, 'update'])->name('admin.assignments.update');
         Route::delete('/admin/assignments/{assignment}', [\App\Http\Controllers\Admin\InstructorAssignmentController::class, 'destroy'])->name('admin.assignments.destroy');
         
         Route::get('/admin/assignments/{assignment}/students', [\App\Http\Controllers\Admin\InstructorAssignmentController::class, 'classStudents'])->name('admin.assignments.students');

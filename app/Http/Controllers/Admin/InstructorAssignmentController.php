@@ -19,8 +19,7 @@ class InstructorAssignmentController extends Controller
         $assignments = InstructorAssignment::with(['instructor', 'subject', 'course'])
             ->when($search, function($query, $search) {
                 return $query->whereHas('instructor', function($q) use ($search) {
-                    $q->where('first_name', 'like', "%{$search}%")
-                      ->orWhere('last_name', 'like', "%{$search}%");
+                    $q->where('full_name', 'like', "%{$search}%");
                 })->orWhereHas('subject', function($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
                       ->orWhere('code', 'like', "%{$search}%");
@@ -52,6 +51,21 @@ class InstructorAssignmentController extends Controller
         InstructorAssignment::create($validated);
 
         return redirect()->route('admin.assignments.index')->with('success', 'Faculty assignment created successfully.');
+    }
+
+    public function update(Request $request, InstructorAssignment $assignment)
+    {
+        $validated = $request->validate([
+            'instructor_id' => 'required|exists:instructors,id',
+            'subject_id' => 'required|exists:subjects,id',
+            'course_id' => 'required|exists:courses,id',
+            'year' => 'required|string|max:255',
+            'semester' => 'required|string|max:255',
+        ]);
+
+        $assignment->update($validated);
+
+        return redirect()->route('admin.assignments.index')->with('success', 'Faculty assignment updated successfully.');
     }
 
     public function destroy(InstructorAssignment $assignment)

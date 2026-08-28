@@ -84,7 +84,7 @@
                     </div>
 
                     <div class="mt-6">
-                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                             Assign Faculty
                         </button>
                     </div>
@@ -138,7 +138,7 @@
                         @forelse($assignments as $assignment)
                             <tr class="bg-white border-b hover:bg-gray-50 {{ $loop->even ? 'bg-gray-50' : '' }}">
                                 <td class="px-6 py-4 font-medium text-gray-900">
-                                    {{ $assignment->instructor->first_name }} {{ $assignment->instructor->last_name }}
+                                    {{ $assignment->instructor->full_name }}
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="font-medium text-gray-900">{{ $assignment->subject->subject_code }}</div>
@@ -157,7 +157,13 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-2">
-                                        <a href="{{ route('admin.assignments.add-students', $assignment) }}" title="View Students" class="inline-flex items-center justify-center w-8 h-8 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                        <button x-data="" x-on:click.prevent="$dispatch('open-modal', 'edit-assignment-{{ $assignment->id }}')" type="button" title="Edit Assignment" class="inline-flex items-center justify-center w-8 h-8 text-white bg-amber-500 rounded hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        </button>
+                                        
+                                        <a href="{{ route('admin.assignments.add-students', $assignment) }}" title="Add Students" class="inline-flex items-center justify-center w-8 h-8 text-white bg-emerald-500 rounded hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                             </svg>
@@ -168,6 +174,80 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
                                         </button>
+
+                                        <x-modal name="edit-assignment-{{ $assignment->id }}" maxWidth="md" focusable>
+                                            <form method="POST" action="{{ route('admin.assignments.update', $assignment) }}" class="p-6 text-left whitespace-normal">
+                                                @csrf
+                                                @method('PUT')
+
+                                                <h2 class="text-lg font-bold text-gray-900 mb-6">
+                                                    Edit Faculty Assignment
+                                                </h2>
+
+                                                <div class="space-y-4">
+                                                    <div>
+                                                        <label for="instructor_id_{{ $assignment->id }}" class="block text-sm font-bold text-gray-800 mb-1">Select Instructor</label>
+                                                        <select name="instructor_id" id="instructor_id_{{ $assignment->id }}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
+                                                            @foreach($instructors as $instructor)
+                                                                <option value="{{ $instructor->id }}" {{ $assignment->instructor_id == $instructor->id ? 'selected' : '' }}>
+                                                                    {{ $instructor->full_name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+
+                                                    <div>
+                                                        <label for="course_id_{{ $assignment->id }}" class="block text-sm font-bold text-gray-800 mb-1">Course</label>
+                                                        <select name="course_id" id="course_id_{{ $assignment->id }}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
+                                                            @foreach($courses as $course)
+                                                                <option value="{{ $course->id }}" {{ $assignment->course_id == $course->id ? 'selected' : '' }}>
+                                                                    {{ $course->code }} - {{ $course->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+
+                                                    <div>
+                                                        <label for="subject_id_{{ $assignment->id }}" class="block text-sm font-bold text-gray-800 mb-1">Select Subject</label>
+                                                        <select name="subject_id" id="subject_id_{{ $assignment->id }}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
+                                                            @foreach($subjects as $subject)
+                                                                <option value="{{ $subject->id }}" {{ $assignment->subject_id == $subject->id ? 'selected' : '' }}>
+                                                                    {{ $subject->subject_name }} ({{ $subject->subject_code }})
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+
+                                                    <div>
+                                                        <label for="year_{{ $assignment->id }}" class="block text-sm font-bold text-gray-800 mb-1">Year</label>
+                                                        <select name="year" id="year_{{ $assignment->id }}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
+                                                            <option value="1st Year" {{ $assignment->year == '1st Year' ? 'selected' : '' }}>1st Year</option>
+                                                            <option value="2nd Year" {{ $assignment->year == '2nd Year' ? 'selected' : '' }}>2nd Year</option>
+                                                            <option value="3rd Year" {{ $assignment->year == '3rd Year' ? 'selected' : '' }}>3rd Year</option>
+                                                            <option value="4th Year" {{ $assignment->year == '4th Year' ? 'selected' : '' }}>4th Year</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div>
+                                                        <label for="semester_{{ $assignment->id }}" class="block text-sm font-bold text-gray-800 mb-1">Semester</label>
+                                                        <select name="semester" id="semester_{{ $assignment->id }}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
+                                                            <option value="First" {{ $assignment->semester == 'First' ? 'selected' : '' }}>First</option>
+                                                            <option value="Second" {{ $assignment->semester == 'Second' ? 'selected' : '' }}>Second</option>
+                                                            <option value="Third" {{ $assignment->semester == 'Third' ? 'selected' : '' }}>Third</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mt-6 flex justify-end gap-3">
+                                                    <button type="button" x-on:click="$dispatch('close')" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                                        Cancel
+                                                    </button>
+                                                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                                        Update Assignment
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </x-modal>
 
                                         <x-modal name="confirm-assignment-deletion-{{ $assignment->id }}" maxWidth="md" contentClasses="bg-red-950/70 backdrop-blur-xl border border-red-500/30" focusable>
                                             <div class="p-6 relative text-left whitespace-normal">
