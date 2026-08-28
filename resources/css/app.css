@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    /* Fix browser autocomplete background color */
+    input:not(.field-input):-webkit-autofill,
+    input:not(.field-input):-webkit-autofill:hover, 
+    input:not(.field-input):-webkit-autofill:focus, 
+    input:not(.field-input):-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px white inset !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+}

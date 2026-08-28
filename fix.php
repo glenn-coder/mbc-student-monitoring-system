@@ -1,0 +1,1 @@
+DB::statement(\"UPDATE users SET role = 'student' WHERE id IN (SELECT user_id FROM students)\"); DB::statement(\"UPDATE users SET role = 'instructor' WHERE id IN (SELECT user_id FROM instructors)\"); echo \"Updated DB roles.\";
