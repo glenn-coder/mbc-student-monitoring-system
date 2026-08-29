@@ -68,7 +68,7 @@ class InstructorController extends Controller
             ]);
         }
 
-        Instructor::create([
+        $instructor = Instructor::create([
             'user_id' => $user->id,
             'full_name' => $validated['full_name'],
             'instructor_number' => $validated['instructor_number'],
@@ -76,6 +76,8 @@ class InstructorController extends Controller
             'sex' => $validated['sex'],
             'course' => $validated['course'],
         ]);
+
+        \App\Models\AuditLog::logAction('created', "Created instructor {$instructor->full_name} ({$instructor->instructor_number})", 'success');
 
         return redirect()->route('admin.instructors.index')->with('success', 'Instructor added successfully.');
     }
@@ -122,6 +124,8 @@ class InstructorController extends Controller
             $instructor->user->update($userData);
         }
 
+        \App\Models\AuditLog::logAction('updated', "Updated instructor {$instructor->full_name} ({$instructor->instructor_number})", 'success');
+
         return redirect()->route('admin.instructors.index')->with('success', 'Instructor updated successfully.');
     }
 
@@ -130,6 +134,7 @@ class InstructorController extends Controller
         if ($instructor->user) {
             $instructor->user->delete();
         }
+        \App\Models\AuditLog::logAction('deleted', "Deleted instructor {$instructor->full_name} ({$instructor->instructor_number})", 'success');
         $instructor->delete();
 
         return redirect()->route('admin.instructors.index')->with('success', 'Instructor removed successfully.');

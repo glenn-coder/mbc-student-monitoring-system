@@ -38,11 +38,55 @@ class ReportController extends Controller
             $query->where('year', 'like', '%' . $request->year . '%');
         }
 
+        $metricsQuery = clone $query;
+        
+        $totalActive = $metricsQuery->count();
+        
+        // Group by course
+        $courseCounts = (clone $metricsQuery)->selectRaw('course_id, count(*) as total')
+                    ->groupBy('course_id')
+                    ->get();
+        $byCourse = [];
+        foreach ($courseCounts as $row) {
+            $course = \App\Models\Course::find($row->course_id);
+            if ($course) {
+                $byCourse[$course->code] = $row->total;
+            }
+        }
+        
+        // Group by year
+        $byYear = (clone $metricsQuery)->selectRaw('year, count(*) as total')
+                    ->groupBy('year')
+                    ->pluck('total', 'year')->toArray();
+                    
+        // Group by sex
+        $bySexRaw = (clone $metricsQuery)->selectRaw('sex, count(*) as total')
+                    ->groupBy('sex')
+                    ->pluck('total', 'sex')->toArray();
+                    
+        $bySex = [];
+        foreach ($bySexRaw as $key => $value) {
+            $label = $key;
+            if ($key === 'M') {
+                $label = 'Male';
+            } elseif ($key === 'F') {
+                $label = 'Female';
+            }
+            $bySex[$label] = ($bySex[$label] ?? 0) + $value;
+        }
+        
+        $metrics = [
+            'total_active' => $totalActive,
+            'by_course' => $byCourse,
+            'by_year' => $byYear,
+            'by_sex' => $bySex,
+        ];
+
         $students = $query->orderBy('last_name')->paginate($request->get('per_page', 5))->appends($request->except('page'));
-        return view('admin.reports.students', compact('students'));
+        return view('admin.reports.students', compact('students', 'metrics'));
     }
 
-    public function exportStudents(Request $request, $type)
+    public function exportStudents(Request $request, string $type)
     {
         $query = Student::whereHas('user', function($q) {
             $q->where('status', 'active');
@@ -94,11 +138,55 @@ class ReportController extends Controller
             $query->where('year', 'like', '%' . $request->year . '%');
         }
 
+        $metricsQuery = clone $query;
+        
+        $totalInactive = $metricsQuery->count();
+        
+        // Group by course
+        $courseCounts = (clone $metricsQuery)->selectRaw('course_id, count(*) as total')
+                    ->groupBy('course_id')
+                    ->get();
+        $byCourse = [];
+        foreach ($courseCounts as $row) {
+            $course = \App\Models\Course::find($row->course_id);
+            if ($course) {
+                $byCourse[$course->code] = $row->total;
+            }
+        }
+        
+        // Group by year
+        $byYear = (clone $metricsQuery)->selectRaw('year, count(*) as total')
+                    ->groupBy('year')
+                    ->pluck('total', 'year')->toArray();
+                    
+        // Group by sex
+        $bySexRaw = (clone $metricsQuery)->selectRaw('sex, count(*) as total')
+                    ->groupBy('sex')
+                    ->pluck('total', 'sex')->toArray();
+                    
+        $bySex = [];
+        foreach ($bySexRaw as $key => $value) {
+            $label = $key;
+            if ($key === 'M') {
+                $label = 'Male';
+            } elseif ($key === 'F') {
+                $label = 'Female';
+            }
+            $bySex[$label] = ($bySex[$label] ?? 0) + $value;
+        }
+        
+        $metrics = [
+            'total_inactive' => $totalInactive,
+            'by_course' => $byCourse,
+            'by_year' => $byYear,
+            'by_sex' => $bySex,
+        ];
+
         $students = $query->orderBy('last_name')->paginate($request->get('per_page', 5))->appends($request->except('page'));
-        return view('admin.reports.inactive_students', compact('students'));
+        return view('admin.reports.inactive_students', compact('students', 'metrics'));
     }
 
-    public function exportInactiveStudents(Request $request, $type)
+    public function exportInactiveStudents(Request $request, string $type)
     {
         $query = Student::whereHas('user', function($q) {
             $q->where('status', 'inactive');
@@ -153,7 +241,7 @@ class ReportController extends Controller
         return view('admin.reports.instructors', compact('instructors'));
     }
 
-    public function exportInstructors(Request $request, $type)
+    public function exportInstructors(Request $request, string $type)
     {
         $query = Instructor::whereHas('user', function($q) {
             $q->where('status', 'active');

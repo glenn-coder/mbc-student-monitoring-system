@@ -14,6 +14,9 @@ class InstructorAssignmentController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $instructorId = $request->input('instructor_id');
+        $subjectId = $request->input('subject_id');
+        $yearFilter = $request->input('year');
         $perPage = $request->input('per_page', 5);
 
         $assignments = InstructorAssignment::with(['instructor', 'subject', 'course'])
@@ -24,6 +27,15 @@ class InstructorAssignmentController extends Controller
                     $q->where('name', 'like', "%{$search}%")
                       ->orWhere('code', 'like', "%{$search}%");
                 });
+            })
+            ->when($instructorId, function($query, $instructorId) {
+                return $query->where('instructor_id', $instructorId);
+            })
+            ->when($subjectId, function($query, $subjectId) {
+                return $query->where('subject_id', $subjectId);
+            })
+            ->when($yearFilter, function($query, $year) {
+                return $query->where('year', $year);
             })
             ->latest()
             ->paginate($perPage)
@@ -48,7 +60,10 @@ class InstructorAssignmentController extends Controller
             'semester' => 'required|string|max:255',
         ]);
 
-        InstructorAssignment::create($validated);
+        $assignment = InstructorAssignment::create($validated);
+        $assignment->load(['instructor', 'subject', 'course']);
+
+        \App\Models\AuditLog::logAction('created', "Created assignment for instructor {$assignment->instructor->full_name} to subject {$assignment->subject->subject_code}", 'success');
 
         return redirect()->route('admin.assignments.index')->with('success', 'Faculty assignment created successfully.');
     }
@@ -64,12 +79,18 @@ class InstructorAssignmentController extends Controller
         ]);
 
         $assignment->update($validated);
+        $assignment->load(['instructor', 'subject', 'course']);
+
+        \App\Models\AuditLog::logAction('updated', "Updated assignment for instructor {$assignment->instructor->full_name} to subject {$assignment->subject->subject_code}", 'success');
 
         return redirect()->route('admin.assignments.index')->with('success', 'Faculty assignment updated successfully.');
     }
 
     public function destroy(InstructorAssignment $assignment)
     {
+        $assignment->load(['instructor', 'subject']);
+        \App\Models\AuditLog::logAction('deleted', "Deleted assignment for instructor {$assignment->instructor->full_name} to subject {$assignment->subject->subject_code}", 'success');
+
         $assignment->delete();
 
         return back()->with('success', 'Assignment deleted successfully.');
@@ -111,6 +132,9 @@ class InstructorAssignmentController extends Controller
 
         // Sync will remove any students not in the array and add any new ones
         $assignment->students()->sync($validated['student_ids'] ?? []);
+
+        $assignment->load(['instructor', 'subject']);
+        \App\Models\AuditLog::logAction('updated', "Updated students for assignment {$assignment->subject->subject_code} ({$assignment->instructor->full_name})", 'success');
 
         return redirect()->route('admin.assignments.index')->with('success', 'Students updated successfully.');
     }

@@ -13,14 +13,14 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
             <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-lg">
                 <form action="{{ route('admin.students.index') }}" method="GET" class="flex items-center gap-2" id="perPageForm">
-                    <span class="text-sm text-gray-700 font-bold">Show</span>
+                    <span class="text-sm text-gray-700">Showing</span>
                     <select name="per_page" onchange="document.getElementById('perPageForm').submit()" class="border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 py-1 pl-2 pr-6">
                         <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
                         <option value="10" {{ request('per_page', 5) == 10 ? 'selected' : '' }}>10</option>
                         <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
                         <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
                     </select>
-                    <span class="text-sm text-gray-700 font-bold">entries</span>
+                    <span class="text-sm text-gray-700">of {{ $students->total() }} results</span>
                     @if(request('search'))
                         <input type="hidden" name="search" value="{{ request('search') }}">
                     @endif
@@ -193,3 +193,4 @@
         </div>
     </div>
 </x-app-layout>
+

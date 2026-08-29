@@ -79,6 +79,11 @@
                     <span class="mx-4 font-medium whitespace-nowrap" x-show="sidebarExpanded">Admin Users</span>
                 </a>
 
+                <a class="flex items-center py-3 transition-colors rounded-xl {{ request()->routeIs('admin.audit-logs.*') ? 'text-white bg-[#0ea5e9]' : 'text-gray-400 hover:text-white hover:bg-white/10' }}" :class="sidebarExpanded ? 'px-4' : 'justify-center px-0'" href="{{ route('admin.audit-logs.index') }}">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span class="mx-4 font-medium whitespace-nowrap" x-show="sidebarExpanded">Audit Logs</span>
+                </a>
+
                 <div x-data="{ reportsOpen: {{ request()->routeIs('admin.reports.*') ? 'true' : 'false' }} }" class="space-y-1">
                     <button @click="reportsOpen = !reportsOpen" class="w-full flex items-center py-3 transition-colors rounded-xl {{ request()->routeIs('admin.reports.*') ? 'text-white bg-[#0ea5e9]' : 'text-gray-400 hover:text-white hover:bg-white/10' }}" :class="sidebarExpanded ? 'justify-between px-4' : 'justify-center px-0'">
                         <div class="flex items-center">

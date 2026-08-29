@@ -1,0 +1,139 @@
+<x-app-layout>
+    <div class="p-8 mx-auto max-w-7xl">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Audit Logs</h2>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-lg">
+                <div class="flex items-center gap-2">
+                    <form action="{{ route('admin.audit-logs.index') }}" method="GET" id="perPageForm" class="flex items-center gap-2">
+                        <span class="text-sm text-gray-700">Showing</span>
+                        <select name="per_page" onchange="document.getElementById('perPageForm').submit()" class="border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 py-1 pl-2 pr-6">
+                            <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
+                            <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
+                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                        </select>
+                        <span class="text-sm text-gray-700">of {{ $logs->total() }} results</span>
+                        @if(request('search'))<input type="hidden" name="search" value="{{ request('search') }}">@endif
+                        @if(request('action'))<input type="hidden" name="action" value="{{ request('action') }}">@endif
+                        @if(request('status'))<input type="hidden" name="status" value="{{ request('status') }}">@endif
+                    </form>
+                </div>
+                
+                <form action="{{ route('admin.audit-logs.index') }}" method="GET" class="flex items-center gap-3">
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" type="button" class="inline-flex items-center gap-1.5 px-2 py-1 bg-white rounded-md font-medium text-xs text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                            </svg>
+                            Filters
+                            <svg class="w-4 h-4 text-gray-500 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <div x-show="open" @click.away="open = false" style="display: none;" class="absolute z-50 mt-2 w-64 rounded-md shadow-lg bg-white border border-gray-200 left-0 origin-top-left">
+                            <div class="p-4 space-y-4">
+                                <div>
+                                    <label for="filter_action" class="block text-sm font-medium text-gray-700">Action</label>
+                                    <select name="action" id="filter_action" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                        <option value="">All Actions</option>
+                                        <option value="created" {{ request('action') == 'created' ? 'selected' : '' }}>Created</option>
+                                        <option value="updated" {{ request('action') == 'updated' ? 'selected' : '' }}>Updated</option>
+                                        <option value="deleted" {{ request('action') == 'deleted' ? 'selected' : '' }}>Deleted</option>
+                                        <option value="login" {{ request('action') == 'login' ? 'selected' : '' }}>Login</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="filter_status" class="block text-sm font-medium text-gray-700">Status</label>
+                                    <select name="status" id="filter_status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                        <option value="">All Statuses</option>
+                                        <option value="success" {{ request('status') == 'success' ? 'selected' : '' }}>Success</option>
+                                        <option value="failed" {{ request('status') == 'failed' ? 'selected' : '' }}>Failed</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                                    <a href="{{ route('admin.audit-logs.index') }}" class="text-sm text-gray-600 hover:text-gray-900 font-medium">Reset</a>
+                                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Filter</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 border-l pl-3 ml-1">
+                        <label for="search" class="text-sm text-gray-700 font-bold">Search:</label>
+                        <input type="text" name="search" id="search" value="{{ request('search') }}" class="border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 py-1.5 px-3 w-48 shadow-sm" placeholder="Action, desc, or user...">
+                    </div>
+                    @if(request('per_page'))<input type="hidden" name="per_page" value="{{ request('per_page') }}">@endif
+                </form>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-700">
+                    <thead class="text-xs text-gray-700 bg-gray-100 border-b border-gray-200">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 font-bold">Date / Time</th>
+                            <th scope="col" class="px-6 py-3 font-bold">User</th>
+                            <th scope="col" class="px-6 py-3 font-bold">Action</th>
+                            <th scope="col" class="px-6 py-3 font-bold">Description</th>
+                            <th scope="col" class="px-6 py-3 font-bold">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($logs as $log)
+                            <tr class="bg-white border-b hover:bg-gray-50 {{ $loop->even ? 'bg-gray-50' : '' }}">
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-500 text-xs">
+                                    {{ $log->created_at->format('M d, Y h:i A') }}
+                                </td>
+                                <td class="px-6 py-4 font-medium text-gray-900">
+                                    {{ $log->user ? $log->user->name : 'System/Guest' }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                        @if(in_array(strtolower($log->action), ['created', 'added'])) bg-emerald-100 text-emerald-800
+                                        @elseif(in_array(strtolower($log->action), ['updated', 'edited'])) bg-blue-100 text-blue-800
+                                        @elseif(in_array(strtolower($log->action), ['deleted', 'removed'])) bg-red-100 text-red-800
+                                        @else bg-gray-100 text-gray-800
+                                        @endif
+                                    ">
+                                        {{ ucfirst($log->action) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">{{ $log->description }}</td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                        @if(strtolower($log->status) === 'success') bg-green-100 text-green-800
+                                        @elseif(strtolower($log->status) === 'failed') bg-red-100 text-red-800
+                                        @else bg-gray-100 text-gray-800
+                                        @endif
+                                    ">
+                                        {{ ucfirst($log->status ?? 'N/A') }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <p class="text-base font-medium text-gray-900">No logs found</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if($logs->hasPages())
+                <div class="p-4 border-t border-gray-200">
+                    {{ $logs->links() }}
+                </div>
+            @endif
+        </div>
+    </div>
+</x-app-layout>

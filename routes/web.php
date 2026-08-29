@@ -30,6 +30,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('/admin/admins', \App\Http\Controllers\Admin\AdminUserController::class)
             ->names('admin.admins');
 
+        Route::get('/admin/audit-logs', [\App\Http\Controllers\Admin\AuditLogController::class, 'index'])
+            ->name('admin.audit-logs.index');
+
         Route::resource('/admin/students', \App\Http\Controllers\Admin\StudentController::class)
             ->names('admin.students');
 

@@ -34,7 +34,7 @@
 
                 <div>
                     <span class="block text-sm font-medium text-gray-500">Course</span>
-                    <span class="block mt-1 text-lg text-gray-900">{{ $student->course }}</span>
+                    <span class="block mt-1 text-lg text-gray-900">{{ $student->course ? $student->course->code . ' - ' . $student->course->name : 'N/A' }}</span>
                 </div>
 
                 <div>

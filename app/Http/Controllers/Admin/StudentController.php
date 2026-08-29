@@ -70,7 +70,7 @@ class StudentController extends Controller
             ]);
         }
 
-        Student::create([
+        $student = Student::create([
             'user_id' => $user->id,
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],
@@ -79,6 +79,8 @@ class StudentController extends Controller
             'course_id' => $validated['course_id'],
             'year' => $validated['year'],
         ]);
+
+        \App\Models\AuditLog::logAction('created', "Created student {$student->first_name} {$student->last_name} ({$student->student_number})", 'success');
 
         return redirect()->route('admin.students.index')->with('success', 'Student added successfully.');
     }
@@ -128,6 +130,8 @@ class StudentController extends Controller
             $student->user->update($userData);
         }
 
+        \App\Models\AuditLog::logAction('updated', "Updated student {$student->first_name} {$student->last_name} ({$student->student_number})", 'success');
+
         return redirect()->route('admin.students.index')->with('success', 'Student updated successfully.');
     }
 
@@ -136,6 +140,8 @@ class StudentController extends Controller
         if ($student->user) {
             $student->user->delete();
         }
+        \App\Models\AuditLog::logAction('deleted', "Deleted student {$student->first_name} {$student->last_name} ({$student->student_number})", 'success');
+
         $student->delete();
         return redirect()->route('admin.students.index')->with('success', 'Student removed successfully.');
     }

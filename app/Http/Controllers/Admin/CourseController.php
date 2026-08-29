@@ -37,7 +37,9 @@ class CourseController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        Course::create($request->all());
+        $course = Course::create($request->all());
+
+        \App\Models\AuditLog::logAction('created', "Created course {$course->name} ({$course->code})", 'success');
 
         return redirect()->route('admin.courses.index')->with('success', 'Course created successfully.');
     }
@@ -56,11 +58,14 @@ class CourseController extends Controller
 
         $course->update($request->all());
 
+        \App\Models\AuditLog::logAction('updated', "Updated course {$course->name} ({$course->code})", 'success');
+
         return redirect()->route('admin.courses.index')->with('success', 'Course updated successfully.');
     }
 
     public function destroy(Course $course)
     {
+        \App\Models\AuditLog::logAction('deleted', "Deleted course {$course->name} ({$course->code})", 'success');
         $course->delete();
 
         return redirect()->route('admin.courses.index')->with('success', 'Course deleted successfully.');

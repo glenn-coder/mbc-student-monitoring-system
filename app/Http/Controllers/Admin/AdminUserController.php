@@ -15,6 +15,7 @@ class AdminUserController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $statusFilter = $request->input('status');
         $perPage = (int) $request->input('per_page', 5);
 
         $admins = User::query()->where('role', 'admin')
@@ -25,10 +26,13 @@ class AdminUserController extends Controller
                       ->orWhere('email', 'like', "%{$search}%");
                 });
             })
+            ->when($statusFilter, function ($query, $status) {
+                return $query->where('status', $status);
+            })
             ->latest()
             ->paginate($perPage);
 
-        return view('admin.admins.index', compact('admins', 'search', 'perPage'));
+        return view('admin.admins.index', compact('admins', 'search', 'perPage', 'statusFilter'));
     }
 
     public function create()
@@ -46,7 +50,7 @@ class AdminUserController extends Controller
             'password' => ['required', 'string', Password::min(8)->mixedCase()->numbers()->symbols()],
         ]);
 
-        User::query()->create([
+        $admin = User::query()->create([
             'name' => $validated['name'],
             'username' => $validated['username'],
             'email' => $validated['email'] ?? null,
@@ -54,6 +58,8 @@ class AdminUserController extends Controller
             'role' => 'admin',
             'status' => $validated['status'],
         ]);
+
+        \App\Models\AuditLog::logAction('created', "Created admin user {$admin->name} ({$admin->username})", 'success');
 
         return redirect()->route('admin.admins.index')->with('success', 'Admin user created successfully.');
     }
@@ -92,6 +98,8 @@ class AdminUserController extends Controller
 
         $admin->save();
 
+        \App\Models\AuditLog::logAction('updated', "Updated admin user {$admin->name} ({$admin->username})", 'success');
+
         return redirect()->route('admin.admins.index')->with('success', 'Admin user updated successfully.');
     }
 
@@ -105,6 +113,7 @@ class AdminUserController extends Controller
             return redirect()->route('admin.admins.index')->with('error', 'You cannot delete your own account.');
         }
 
+        \App\Models\AuditLog::logAction('deleted', "Deleted admin user {$admin->name} ({$admin->username})", 'success');
         $admin->delete();
 
         return redirect()->route('admin.admins.index')->with('success', 'Admin user deleted successfully.');

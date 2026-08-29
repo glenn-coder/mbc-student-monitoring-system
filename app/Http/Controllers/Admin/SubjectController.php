@@ -11,6 +11,7 @@ class SubjectController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $statusFilter = $request->input('status');
         $perPage = $request->input('per_page', 5);
 
         $subjects = Subject::query()
@@ -21,10 +22,13 @@ class SubjectController extends Controller
                       ->orWhere('description', 'like', "%{$search}%");
                 });
             })
+            ->when($statusFilter, function ($query, $status) {
+                return $query->where('status', $status);
+            })
             ->latest()
             ->paginate($perPage);
 
-        return view('admin.subjects.index', compact('subjects', 'search', 'perPage'));
+        return view('admin.subjects.index', compact('subjects', 'search', 'perPage', 'statusFilter'));
     }
 
     public function create()
@@ -42,7 +46,9 @@ class SubjectController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
-        Subject::create($validated);
+        $subject = Subject::create($validated);
+
+        \App\Models\AuditLog::logAction('created', "Created subject {$subject->subject_name} ({$subject->subject_code})", 'success');
 
         return redirect()->route('admin.subjects.index')->with('success', 'Subject added successfully.');
     }
@@ -69,11 +75,14 @@ class SubjectController extends Controller
 
         $subject->update($validated);
 
+        \App\Models\AuditLog::logAction('updated', "Updated subject {$subject->subject_name} ({$subject->subject_code})", 'success');
+
         return redirect()->route('admin.subjects.index')->with('success', 'Subject updated successfully.');
     }
 
     public function destroy(Subject $subject)
     {
+        \App\Models\AuditLog::logAction('deleted', "Deleted subject {$subject->subject_name} ({$subject->subject_code})", 'success');
         $subject->delete();
         return redirect()->route('admin.subjects.index')->with('success', 'Subject removed successfully.');
     }

@@ -14,23 +14,23 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
             <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-lg">
                 <form action="{{ route('admin.courses.index') }}" method="GET" class="flex items-center gap-2" id="perPageForm">
-                    <span class="text-sm text-gray-700 font-bold">Show</span>
+                    <span class="text-sm text-gray-700">Showing</span>
                     <select name="per_page" onchange="document.getElementById('perPageForm').submit()" class="border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 py-1 pl-2 pr-6">
                         <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
                         <option value="10" {{ request('per_page', 5) == 10 ? 'selected' : '' }}>10</option>
                         <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
                         <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
                     </select>
-                    <span class="text-sm text-gray-700 font-bold">entries</span>
+                    <span class="text-sm text-gray-700">of {{ $courses->total() }} results</span>
                     @if(request('search'))
                         <input type="hidden" name="search" value="{{ request('search') }}">
                     @endif
                 </form>
 
                 <form action="{{ route('admin.courses.index') }}" method="GET" class="flex items-center gap-3">
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 border-l pl-3 ml-1">
                         <label for="search" class="text-sm text-gray-700 font-bold">Search:</label>
-                        <input type="text" name="search" id="search" value="{{ request('search') }}" class="border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-3 w-48">
+                        <input type="text" name="search" id="search" value="{{ request('search') }}" class="border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-3 w-48 shadow-sm">
                     </div>
                     @if(request('per_page'))
                         <input type="hidden" name="per_page" value="{{ request('per_page') }}">
@@ -91,3 +91,4 @@
         </div>
     </div>
 </x-app-layout>
+
