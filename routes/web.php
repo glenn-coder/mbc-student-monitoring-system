@@ -32,6 +32,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/admin/audit-logs', [\App\Http\Controllers\Admin\AuditLogController::class, 'index'])
             ->name('admin.audit-logs.index');
+        Route::get('/admin/audit-logs/export/{type}', [\App\Http\Controllers\Admin\AuditLogController::class, 'export'])
+            ->name('admin.audit-logs.export');
 
         Route::resource('/admin/students', \App\Http\Controllers\Admin\StudentController::class)
             ->names('admin.students');

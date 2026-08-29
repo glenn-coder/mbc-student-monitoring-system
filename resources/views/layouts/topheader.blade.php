@@ -2,19 +2,19 @@
     <!-- Left side / Date -->
     <div class="flex flex-col">
         @php
-            $now = \Carbon\Carbon::now('Asia/Manila');
-            $dateString = $now->format('l · F j, Y');
-            $hour = $now->hour;
-            if ($hour < 12) {
-                $greeting = 'Good morning';
+        $now = \Carbon\Carbon::now('Asia/Manila');
+        $dateString = $now->format('l · F j, Y');
+        $hour = $now->hour;
+        if ($hour < 12) {
+            $greeting='Good morning' ;
             } elseif ($hour < 18) {
-                $greeting = 'Good afternoon';
+            $greeting='Good afternoon' ;
             } else {
-                $greeting = 'Good evening';
+            $greeting='Good evening' ;
             }
-        @endphp
-        <span class="text-xs font-semibold tracking-wider text-gray-500 uppercase">{{ $dateString }}</span>
-        <h1 class="text-2xl font-bold text-gray-900">{{ $greeting }}, {{ Auth::user()->name }} 👋</h1>
+            @endphp
+            <span class="text-xs font-semibold tracking-wider text-gray-500 uppercase">{{ $dateString }}</span>
+            <h1 class="text-2xl font-bold text-gray-900">{{ $greeting }}, {{ Auth::user()->name }}</h1>
     </div>
 
     <!-- Right side -->
@@ -41,21 +41,23 @@
                     <span class="text-sm font-semibold text-gray-900">{{ Auth::user()->name }}</span>
                     <span class="text-xs text-gray-500">{{ Auth::user()->role ?? 'Admin' }}</span>
                 </div>
-                <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
             </button>
 
             <!-- Dropdown Menu -->
-            <div x-show="dropdownOpen" 
-                 x-transition:enter="transition ease-out duration-100"
-                 x-transition:enter-start="transform opacity-0 scale-95"
-                 x-transition:enter-end="transform opacity-100 scale-100"
-                 x-transition:leave="transition ease-in duration-75"
-                 x-transition:leave-start="transform opacity-100 scale-100"
-                 x-transition:leave-end="transform opacity-0 scale-95"
-                 class="absolute right-0 w-48 mt-2 origin-top-right bg-white border border-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" style="display: none;">
+            <div x-show="dropdownOpen"
+                x-transition:enter="transition ease-out duration-100"
+                x-transition:enter-start="transform opacity-0 scale-95"
+                x-transition:enter-end="transform opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-75"
+                x-transition:leave-start="transform opacity-100 scale-100"
+                x-transition:leave-end="transform opacity-0 scale-95"
+                class="absolute right-0 w-48 mt-2 origin-top-right bg-white border border-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" style="display: none;">
                 <div class="py-1">
                     <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-                    
+
                     <!-- Authentication -->
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf

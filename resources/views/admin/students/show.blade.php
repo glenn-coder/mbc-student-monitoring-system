@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="p-8 mx-auto max-w-3xl">
+    <div class="p-8 mx-auto max-w-5xl">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-900">Student Details</h2>
             <a href="{{ route('admin.students.index') }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 flex items-center gap-2">
@@ -11,10 +11,16 @@
         </div>
 
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {{-- Row 1: First Name | Middle Name | Last Name --}}
                 <div>
                     <span class="block text-sm font-medium text-gray-500">First Name</span>
                     <span class="block mt-1 text-lg text-gray-900">{{ $student->first_name }}</span>
+                </div>
+
+                <div>
+                    <span class="block text-sm font-medium text-gray-500">Middle Name</span>
+                    <span class="block mt-1 text-lg text-gray-900">{{ $student->middle_name ?: '—' }}</span>
                 </div>
 
                 <div>
@@ -22,14 +28,10 @@
                     <span class="block mt-1 text-lg text-gray-900">{{ $student->last_name }}</span>
                 </div>
 
+                {{-- Row 2: Student Number | Course | Email --}}
                 <div>
                     <span class="block text-sm font-medium text-gray-500">Student Number</span>
                     <span class="block mt-1 text-lg text-gray-900">{{ $student->student_number }}</span>
-                </div>
-
-                <div>
-                    <span class="block text-sm font-medium text-gray-500">Sex</span>
-                    <span class="block mt-1 text-lg text-gray-900">{{ $student->sex == 'M' ? 'Male' : 'Female' }}</span>
                 </div>
 
                 <div>
@@ -38,12 +40,26 @@
                 </div>
 
                 <div>
+                    <span class="block text-sm font-medium text-gray-500">Email</span>
+                    <span class="block mt-1 text-lg text-gray-900">{{ $student->email ?: '—' }}</span>
+                </div>
+
+                {{-- Row 3: Sex | Year | Status --}}
+                <div>
+                    <span class="block text-sm font-medium text-gray-500">Sex</span>
+                    <span class="block mt-1 text-lg text-gray-900">{{ $student->sex == 'M' ? 'Male' : 'Female' }}</span>
+                </div>
+
+                <div>
                     <span class="block text-sm font-medium text-gray-500">Year</span>
                     <span class="block mt-1 text-lg text-gray-900">{{ $student->year }}</span>
                 </div>
+
+                <div>
+                    <span class="block text-sm font-medium text-gray-500">Status</span>
+                    <span class="block mt-1 text-lg text-gray-900">{{ ucfirst($student->user->status ?? 'N/A') }}</span>
+                </div>
             </div>
-
-
         </div>
     </div>
 </x-app-layout>

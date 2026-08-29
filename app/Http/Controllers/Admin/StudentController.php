@@ -49,35 +49,42 @@ class StudentController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'first_name'     => 'required|string|max:255',
+            'middle_name'    => 'nullable|string|max:255',
+            'last_name'      => 'required|string|max:255',
             'student_number' => 'required|string|max:255|unique:students,student_number',
-            'sex' => 'required|string|max:255',
-            'course_id' => 'required|exists:courses,id',
-            'year' => 'required|string|max:255',
-            'status' => 'required|in:active,inactive',
-            'password' => ['required', 'string', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()->symbols()],
+            'sex'            => 'required|string|max:255',
+            'course_id'      => 'required|exists:courses,id',
+            'email'          => 'nullable|email|max:255',
+            'year'           => 'required|string|max:255',
+            'status'         => 'required|in:active,inactive',
         ]);
+
+        // Auto-generate password: CourseCode-StudentNumber
+        $course = \App\Models\Course::findOrFail($validated['course_id']);
+        $autoPassword = $course->code . '-' . $validated['student_number'];
 
         $user = \App\Models\User::where('username', $validated['student_number'])->first();
         if (!$user) {
             $user = \App\Models\User::create([
                 'username' => $validated['student_number'],
-                'name' => $validated['first_name'] . ' ' . $validated['last_name'],
-                'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
-                'role' => 'student',
-                'status' => $validated['status'],
+                'name'     => $validated['first_name'] . ' ' . $validated['last_name'],
+                'password' => \Illuminate\Support\Facades\Hash::make($autoPassword),
+                'role'     => 'student',
+                'status'   => $validated['status'],
             ]);
         }
 
         $student = Student::create([
-            'user_id' => $user->id,
-            'first_name' => $validated['first_name'],
-            'last_name' => $validated['last_name'],
+            'user_id'        => $user->id,
+            'first_name'     => $validated['first_name'],
+            'middle_name'    => $validated['middle_name'] ?? null,
+            'last_name'      => $validated['last_name'],
             'student_number' => $validated['student_number'],
-            'sex' => $validated['sex'],
-            'course_id' => $validated['course_id'],
-            'year' => $validated['year'],
+            'sex'            => $validated['sex'],
+            'course_id'      => $validated['course_id'],
+            'email'          => $validated['email'] ?? null,
+            'year'           => $validated['year'],
         ]);
 
         \App\Models\AuditLog::logAction('created', "Created student {$student->first_name} {$student->last_name} ({$student->student_number})", 'success');
@@ -99,35 +106,34 @@ class StudentController extends Controller
     public function update(Request $request, Student $student)
     {
         $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'first_name'     => 'required|string|max:255',
+            'middle_name'    => 'nullable|string|max:255',
+            'last_name'      => 'required|string|max:255',
             'student_number' => 'required|string|max:255|unique:students,student_number,' . $student->id,
-            'sex' => 'required|string|max:255',
-            'course_id' => 'required|exists:courses,id',
-            'year' => 'required|string|max:255',
-            'status' => 'required|in:active,inactive',
-            'password' => ['nullable', 'string', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()->symbols()],
+            'sex'            => 'required|string|max:255',
+            'course_id'      => 'required|exists:courses,id',
+            'email'          => 'nullable|email|max:255',
+            'year'           => 'required|string|max:255',
+            'status'         => 'required|in:active,inactive',
         ]);
 
         $student->update([
-            'first_name' => $validated['first_name'],
-            'last_name' => $validated['last_name'],
+            'first_name'     => $validated['first_name'],
+            'middle_name'    => $validated['middle_name'] ?? null,
+            'last_name'      => $validated['last_name'],
             'student_number' => $validated['student_number'],
-            'sex' => $validated['sex'],
-            'course_id' => $validated['course_id'],
-            'year' => $validated['year'],
+            'sex'            => $validated['sex'],
+            'course_id'      => $validated['course_id'],
+            'email'          => $validated['email'] ?? null,
+            'year'           => $validated['year'],
         ]);
 
         if ($student->user) {
-            $userData = [
-                'name' => $validated['first_name'] . ' ' . $validated['last_name'],
+            $student->user->update([
+                'name'     => $validated['first_name'] . ' ' . $validated['last_name'],
                 'username' => $validated['student_number'],
-                'status' => $validated['status'],
-            ];
-            if (!empty($validated['password'])) {
-                $userData['password'] = \Illuminate\Support\Facades\Hash::make($validated['password']);
-            }
-            $student->user->update($userData);
+                'status'   => $validated['status'],
+            ]);
         }
 
         \App\Models\AuditLog::logAction('updated', "Updated student {$student->first_name} {$student->last_name} ({$student->student_number})", 'success');
