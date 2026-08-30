@@ -95,12 +95,12 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-2">
-                                        <a href="{{ route('admin.subjects.show', $subject) }}" title="View" class="inline-flex items-center justify-center w-8 h-8 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                        <button x-data="" x-on:click.prevent="$dispatch('open-modal', 'view-subject-{{ $subject->id }}')" title="View" class="inline-flex items-center justify-center w-8 h-8 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                             </svg>
-                                        </a>
+                                        </button>
                                         <a href="{{ route('admin.subjects.edit', $subject) }}" title="Edit" class="inline-flex items-center justify-center w-8 h-8 text-white bg-amber-500 rounded hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
                                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -151,6 +151,47 @@
                                                         </button>
                                                     </div>
                                                 </form>
+                                            </div>
+                                        </x-modal>
+
+                                        <x-modal name="view-subject-{{ $subject->id }}" maxWidth="2xl" focusable>
+                                            <div class="p-6 relative text-left">
+                                                <div class="mb-6">
+                                                    <h2 class="text-xl font-bold text-gray-900">Subject Details</h2>
+                                                </div>
+
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <div>
+                                                        <span class="block text-sm font-medium text-gray-500">Subject Code</span>
+                                                        <span class="block mt-1 text-base text-gray-900">{{ $subject->subject_code }}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="block text-sm font-medium text-gray-500">Subject Name</span>
+                                                        <span class="block mt-1 text-base text-gray-900">{{ $subject->subject_name }}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="block text-sm font-medium text-gray-500">Units</span>
+                                                        <span class="block mt-1 text-base text-gray-900">{{ $subject->units }}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="block text-sm font-medium text-gray-500">Status</span>
+                                                        <span class="block mt-1">
+                                                            <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $subject->status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800' }}">
+                                                                {{ ucfirst($subject->status) }}
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                    <div class="md:col-span-2">
+                                                        <span class="block text-sm font-medium text-gray-500">Description</span>
+                                                        <span class="block mt-1 text-base text-gray-900 whitespace-pre-wrap">{{ $subject->description ?: 'No description provided.' }}</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="mt-8 flex justify-end">
+                                                    <button type="button" x-on:click="$dispatch('close')" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                                                        Close
+                                                    </button>
+                                                </div>
                                             </div>
                                         </x-modal>
                                     </div>

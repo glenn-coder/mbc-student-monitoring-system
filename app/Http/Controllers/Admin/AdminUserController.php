@@ -84,7 +84,7 @@ class AdminUserController extends Controller
             'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($admin->id)],
             'email' => ['nullable', 'email', 'max:255', Rule::unique('users')->ignore($admin->id)],
             'status' => 'required|in:active,inactive',
-            'password' => ['nullable', 'string', Password::min(8)->mixedCase()->numbers()->symbols()],
+            'password' => ['nullable', 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
         ]);
 
         $admin->name = $validated['name'];

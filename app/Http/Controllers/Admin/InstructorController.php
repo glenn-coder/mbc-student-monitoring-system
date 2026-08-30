@@ -14,7 +14,7 @@ class InstructorController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $courseFilter = $request->input('course');
+        $emailFilter = $request->input('email');
         $specializationFilter = $request->input('specialization');
         $perPage = $request->input('per_page', 5);
 
@@ -24,11 +24,11 @@ class InstructorController extends Controller
                     $q->where('full_name', 'like', "%{$search}%")
                       ->orWhere('instructor_number', 'like', "%{$search}%")
                       ->orWhere('major_specialization', 'like', "%{$search}%")
-                      ->orWhere('course', 'like', "%{$search}%");
+                      ->orWhere('email', 'like', "%{$search}%");
                 });
             })
-            ->when($courseFilter, function ($query, $courseFilter) {
-                return $query->where('course', 'like', "%{$courseFilter}%");
+            ->when($emailFilter, function ($query, $emailFilter) {
+                return $query->where('email', 'like', "%{$emailFilter}%");
             })
             ->when($specializationFilter, function ($query, $specializationFilter) {
                 return $query->where('major_specialization', 'like', "%{$specializationFilter}%");
@@ -47,34 +47,36 @@ class InstructorController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'full_name' => 'required|string|max:255',
-            'instructor_number' => 'required|string|max:255|unique:instructors,instructor_number',
+            'full_name'            => 'required|string|max:255',
+            'instructor_number'    => 'required|string|max:255|unique:instructors,instructor_number',
             'major_specialization' => 'required|string|max:255',
-            'sex' => 'required|string',
-            'course' => 'required|string|max:255',
-            'status' => 'required|in:active,inactive',
-            'password' => ['required', 'string', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()->symbols()],
+            'sex'                  => 'required|string',
+            'email'                => 'required|email|max:255|unique:instructors,email',
+            'status'               => 'required|in:active,inactive',
         ]);
+
+        // Auto-generate password: INSTR-{instructor_number}
+        $autoPassword = 'INSTR-' . $validated['instructor_number'];
 
         // Check if user already exists
         $user = User::where('username', $validated['instructor_number'])->first();
         if (!$user) {
             $user = User::create([
                 'username' => $validated['instructor_number'],
-                'name' => $validated['full_name'],
-                'password' => Hash::make($validated['password']),
-                'role' => 'instructor',
-                'status' => $validated['status'],
+                'name'     => $validated['full_name'],
+                'password' => Hash::make($autoPassword),
+                'role'     => 'instructor',
+                'status'   => $validated['status'],
             ]);
         }
 
         $instructor = Instructor::create([
-            'user_id' => $user->id,
-            'full_name' => $validated['full_name'],
-            'instructor_number' => $validated['instructor_number'],
+            'user_id'              => $user->id,
+            'full_name'            => $validated['full_name'],
+            'instructor_number'    => $validated['instructor_number'],
             'major_specialization' => $validated['major_specialization'],
-            'sex' => $validated['sex'],
-            'course' => $validated['course'],
+            'sex'                  => $validated['sex'],
+            'email'                => $validated['email'],
         ]);
 
         \App\Models\AuditLog::logAction('created', "Created instructor {$instructor->full_name} ({$instructor->instructor_number})", 'success');
@@ -95,32 +97,36 @@ class InstructorController extends Controller
     public function update(Request $request, Instructor $instructor)
     {
         $validated = $request->validate([
-            'full_name' => 'required|string|max:255',
-            'instructor_number' => 'required|string|max:255|unique:instructors,instructor_number,' . $instructor->id,
+            'full_name'            => 'required|string|max:255',
+            'instructor_number'    => 'required|string|max:255|unique:instructors,instructor_number,' . $instructor->id,
             'major_specialization' => 'required|string|max:255',
-            'sex' => 'required|string',
-            'course' => 'required|string|max:255',
-            'status' => 'required|in:active,inactive',
-            'password' => ['nullable', 'string', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()->symbols()],
+            'sex'                  => 'required|string',
+            'email'                => 'required|email|max:255|unique:instructors,email,' . $instructor->id,
+            'status'               => 'required|in:active,inactive',
+            'password_action'      => 'nullable|in:none,reset',
         ]);
 
         $instructor->update([
-            'full_name' => $validated['full_name'],
-            'instructor_number' => $validated['instructor_number'],
+            'full_name'            => $validated['full_name'],
+            'instructor_number'    => $validated['instructor_number'],
             'major_specialization' => $validated['major_specialization'],
-            'sex' => $validated['sex'],
-            'course' => $validated['course'],
+            'sex'                  => $validated['sex'],
+            'email'                => $validated['email'],
         ]);
 
         if ($instructor->user) {
             $userData = [
-                'name' => $validated['full_name'],
+                'name'     => $validated['full_name'],
                 'username' => $validated['instructor_number'],
-                'status' => $validated['status'],
+                'status'   => $validated['status'],
             ];
-            if (!empty($validated['password'])) {
-                $userData['password'] = Hash::make($validated['password']);
+
+            if (($validated['password_action'] ?? 'none') === 'reset') {
+                // Reset to auto-generated: INSTR-{instructor_number}
+                $userData['password'] = Hash::make('INSTR-' . $validated['instructor_number']);
             }
+            // 'none' → do nothing with password
+
             $instructor->user->update($userData);
         }
 

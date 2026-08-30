@@ -12,7 +12,7 @@ class Instructor extends Model
         'instructor_number',
         'major_specialization',
         'sex',
-        'course',
+        'email',
     ];
 
     public function user()

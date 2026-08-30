@@ -55,7 +55,7 @@ class StudentController extends Controller
             'student_number' => 'required|string|max:255|unique:students,student_number',
             'sex'            => 'required|string|max:255',
             'course_id'      => 'required|exists:courses,id',
-            'email'          => 'nullable|email|max:255',
+            'email'          => 'required|email|max:255|unique:students,email',
             'year'           => 'required|string|max:255',
             'status'         => 'required|in:active,inactive',
         ]);
@@ -83,7 +83,7 @@ class StudentController extends Controller
             'student_number' => $validated['student_number'],
             'sex'            => $validated['sex'],
             'course_id'      => $validated['course_id'],
-            'email'          => $validated['email'] ?? null,
+            'email'          => $validated['email'],
             'year'           => $validated['year'],
         ]);
 
@@ -106,15 +106,16 @@ class StudentController extends Controller
     public function update(Request $request, Student $student)
     {
         $validated = $request->validate([
-            'first_name'     => 'required|string|max:255',
-            'middle_name'    => 'nullable|string|max:255',
-            'last_name'      => 'required|string|max:255',
-            'student_number' => 'required|string|max:255|unique:students,student_number,' . $student->id,
-            'sex'            => 'required|string|max:255',
-            'course_id'      => 'required|exists:courses,id',
-            'email'          => 'nullable|email|max:255',
-            'year'           => 'required|string|max:255',
-            'status'         => 'required|in:active,inactive',
+            'first_name'      => 'required|string|max:255',
+            'middle_name'     => 'nullable|string|max:255',
+            'last_name'       => 'required|string|max:255',
+            'student_number'  => 'required|string|max:255|unique:students,student_number,' . $student->id,
+            'sex'             => 'required|string|max:255',
+            'course_id'       => 'required|exists:courses,id',
+            'email'           => 'required|email|max:255|unique:students,email,' . $student->id,
+            'year'            => 'required|string|max:255',
+            'status'          => 'required|in:active,inactive',
+            'password_action' => 'nullable|in:none,reset',
         ]);
 
         $student->update([
@@ -124,16 +125,28 @@ class StudentController extends Controller
             'student_number' => $validated['student_number'],
             'sex'            => $validated['sex'],
             'course_id'      => $validated['course_id'],
-            'email'          => $validated['email'] ?? null,
+            'email'          => $validated['email'],
             'year'           => $validated['year'],
         ]);
 
         if ($student->user) {
-            $student->user->update([
+            $userData = [
                 'name'     => $validated['first_name'] . ' ' . $validated['last_name'],
                 'username' => $validated['student_number'],
                 'status'   => $validated['status'],
-            ]);
+            ];
+
+            $passwordAction = $validated['password_action'] ?? 'none';
+
+            if ($passwordAction === 'reset') {
+                // Reset to auto-generated: CourseCode-StudentNumber
+                $course = \App\Models\Course::find($validated['course_id']);
+                $defaultPassword = $course->code . '-' . $validated['student_number'];
+                $userData['password'] = \Illuminate\Support\Facades\Hash::make($defaultPassword);
+            }
+            // 'none' → do nothing with password
+
+            $student->user->update($userData);
         }
 
         \App\Models\AuditLog::logAction('updated', "Updated student {$student->first_name} {$student->last_name} ({$student->student_number})", 'success');

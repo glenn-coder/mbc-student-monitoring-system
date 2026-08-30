@@ -24,8 +24,8 @@
                     @if(request('search'))
                         <input type="hidden" name="search" value="{{ request('search') }}">
                     @endif
-                    @if(request('course'))
-                        <input type="hidden" name="course" value="{{ request('course') }}">
+                    @if(request('email'))
+                        <input type="hidden" name="email" value="{{ request('email') }}">
                     @endif
                     @if(request('specialization'))
                         <input type="hidden" name="specialization" value="{{ request('specialization') }}">
@@ -47,8 +47,8 @@
                         <div x-show="open" @click.away="open = false" style="display: none;" class="absolute z-50 mt-2 w-64 rounded-md shadow-lg bg-white border border-gray-200 left-0 origin-top-left">
                             <div class="p-4 space-y-4">
                                 <div>
-                                    <label for="course" class="block text-sm font-medium text-gray-700">Course</label>
-                                    <input type="text" name="course" id="course" value="{{ request('course') }}" placeholder="e.g. BSIT" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                                    <input type="text" name="email" id="email" value="{{ request('email') }}" placeholder="e.g. user@example.com" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                                 </div>
                                 <div>
                                     <label for="specialization" class="block text-sm font-medium text-gray-700">Specialization</label>
@@ -79,7 +79,7 @@
                             <th scope="col" class="px-6 py-3 font-bold">Name</th>
                             <th scope="col" class="px-6 py-3 font-bold">Instructor Number</th>
                             <th scope="col" class="px-6 py-3 font-bold">Specialization</th>
-                            <th scope="col" class="px-6 py-3 font-bold">Course</th>
+                            <th scope="col" class="px-6 py-3 font-bold">Email</th>
                             <th scope="col" class="px-6 py-3 font-bold">Status</th>
                             <th scope="col" class="px-6 py-3 font-bold">Action</th>
                         </tr>
@@ -92,7 +92,7 @@
                                 </td>
                                 <td class="px-6 py-4">{{ $instructor->instructor_number }}</td>
                                 <td class="px-6 py-4">{{ $instructor->major_specialization }}</td>
-                                <td class="px-6 py-4">{{ $instructor->course }}</td>
+                                <td class="px-6 py-4">{{ $instructor->email }}</td>
                                 <td class="px-6 py-4">
                                     @if($instructor->user && $instructor->user->status === 'active')
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
@@ -112,12 +112,12 @@
                                             </svg>
                                             Classes
                                         </a>
-                                        <a href="{{ route('admin.instructors.show', $instructor) }}" title="View" class="inline-flex items-center justify-center w-8 h-8 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                        <button x-data="" x-on:click.prevent="$dispatch('open-modal', 'view-instructor-{{ $instructor->id }}')" title="View" class="inline-flex items-center justify-center w-8 h-8 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                             </svg>
-                                        </a>
+                                        </button>
                                         <a href="{{ route('admin.instructors.edit', $instructor) }}" title="Edit" class="inline-flex items-center justify-center w-8 h-8 text-white bg-amber-500 rounded hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
                                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -168,6 +168,53 @@
                                                         </button>
                                                     </div>
                                                 </form>
+                                            </div>
+                                        </x-modal>
+
+                                        <x-modal name="view-instructor-{{ $instructor->id }}" maxWidth="2xl" focusable>
+                                            <div class="p-6 relative text-left">
+                                                <div class="mb-6">
+                                                    <h2 class="text-xl font-bold text-gray-900">Instructor Details</h2>
+                                                </div>
+
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <div>
+                                                        <span class="block text-sm font-medium text-gray-500">Full Name</span>
+                                                        <span class="block mt-1 text-base text-gray-900">{{ $instructor->full_name }}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="block text-sm font-medium text-gray-500">Instructor Number</span>
+                                                        <span class="block mt-1 text-base text-gray-900">{{ $instructor->instructor_number }}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="block text-sm font-medium text-gray-500">Major / Specialization</span>
+                                                        <span class="block mt-1 text-base text-gray-900">{{ $instructor->major_specialization }}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="block text-sm font-medium text-gray-500">Sex</span>
+                                                        <span class="block mt-1 text-base text-gray-900">{{ $instructor->sex }}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="block text-sm font-medium text-gray-500">Email</span>
+                                                        <span class="block mt-1 text-base text-gray-900">{{ $instructor->email }}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="block text-sm font-medium text-gray-500">Status</span>
+                                                        <span class="block mt-1 text-base text-gray-900">
+                                                            @if($instructor->user && $instructor->user->status === 'active')
+                                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                                                            @else
+                                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Inactive</span>
+                                                            @endif
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="mt-6 flex justify-end">
+                                                    <button type="button" x-on:click="$dispatch('close')" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition">
+                                                        Close
+                                                    </button>
+                                                </div>
                                             </div>
                                         </x-modal>
                                     </div>
