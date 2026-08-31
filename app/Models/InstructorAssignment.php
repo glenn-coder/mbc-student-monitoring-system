@@ -33,4 +33,9 @@ class InstructorAssignment extends Model
     {
         return $this->belongsToMany(Student::class, 'assignment_student');
     }
+
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class);
+    }
 }

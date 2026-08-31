@@ -57,6 +57,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/assignments/{assignment}/students', [\App\Http\Controllers\Admin\InstructorAssignmentController::class, 'classStudents'])->name('admin.assignments.students');
         Route::get('/admin/assignments/{assignment}/students/add', [\App\Http\Controllers\Admin\InstructorAssignmentController::class, 'addStudents'])->name('admin.assignments.add-students');
         Route::post('/admin/assignments/{assignment}/students', [\App\Http\Controllers\Admin\InstructorAssignmentController::class, 'storeStudents'])->name('admin.assignments.store-students');
+        Route::get('/admin/timetable', [\App\Http\Controllers\Admin\TimetableController::class, 'index'])->name('admin.timetable.index');
+        Route::post('/admin/timetable', [\App\Http\Controllers\Admin\TimetableController::class, 'store'])->name('admin.timetable.store');
+        Route::put('/admin/timetable/{timetable}', [\App\Http\Controllers\Admin\TimetableController::class, 'update'])->name('admin.timetable.update');
+        Route::delete('/admin/timetable/{timetable}', [\App\Http\Controllers\Admin\TimetableController::class, 'destroy'])->name('admin.timetable.destroy');
         
         // Reports
         Route::get('/admin/reports/students', [\App\Http\Controllers\Admin\ReportController::class, 'students'])->name('admin.reports.students');

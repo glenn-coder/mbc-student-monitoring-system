@@ -31,7 +31,7 @@ class AuditLog extends Model
     public static function logAction($action, $description = null, $status = 'success')
     {
         return self::create([
-            'user_id' => auth()->id(),
+            'user_id' => \Illuminate\Support\Facades\Auth::id(),
             'action' => $action,
             'description' => $description,
             'status' => $status,

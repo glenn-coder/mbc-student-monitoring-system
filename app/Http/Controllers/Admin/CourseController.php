@@ -35,6 +35,7 @@ class CourseController extends Controller
         $request->validate([
             'code' => 'required|string|max:50|unique:courses',
             'name' => 'required|string|max:255',
+            'status' => 'required|in:active,inactive',
         ]);
 
         $course = Course::create($request->all());
@@ -54,6 +55,7 @@ class CourseController extends Controller
         $request->validate([
             'code' => 'required|string|max:50|unique:courses,code,' . $course->id,
             'name' => 'required|string|max:255',
+            'status' => 'required|in:active,inactive',
         ]);
 
         $course->update($request->all());

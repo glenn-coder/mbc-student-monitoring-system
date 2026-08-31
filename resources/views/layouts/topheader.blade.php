@@ -1,4 +1,4 @@
-<header class="flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200">
+<header class="flex items-center justify-between px-8 py-4 bg-white border-b border-slate-200">
     <!-- Left side / Date -->
     <div class="flex flex-col">
         @php
@@ -13,8 +13,8 @@
             $greeting='Good evening' ;
             }
             @endphp
-            <span class="text-xs font-semibold tracking-wider text-gray-500 uppercase">{{ $dateString }}</span>
-            <h1 class="text-2xl font-bold text-gray-900">{{ $greeting }}, {{ Auth::user()->name }}</h1>
+            <span class="text-xs font-semibold tracking-wider text-slate-500 uppercase">{{ $dateString }}</span>
+            <h1 class="text-2xl font-bold text-slate-900">{{ $greeting }}, {{ Auth::user()->name }}</h1>
     </div>
 
     <!-- Right side -->
@@ -23,7 +23,7 @@
 
         <!-- Icons -->
         <div class="flex items-center space-x-4">
-            <button class="relative p-2 text-gray-400 transition-colors bg-gray-50 border border-gray-200 rounded-full hover:text-gray-600">
+            <button class="relative p-2 text-slate-400 transition-colors bg-slate-50 border border-slate-200 rounded-full hover:text-slate-600 hover:bg-slate-100">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
@@ -33,13 +33,13 @@
 
         <!-- Profile Dropdown -->
         <div x-data="{ dropdownOpen: false }" class="relative">
-            <button @click="dropdownOpen = !dropdownOpen" @click.outside="dropdownOpen = false" class="flex items-center space-x-3 focus:outline-none">
-                <div class="flex items-center justify-center w-10 h-10 text-white bg-blue-600 rounded-full font-bold uppercase">
+            <button @click="dropdownOpen = !dropdownOpen" @click.outside="dropdownOpen = false" class="flex items-center space-x-3 focus:outline-none rounded-full ring-offset-2 focus:ring-2 focus:ring-mbc-navy">
+                <div class="flex items-center justify-center w-10 h-10 text-white bg-mbc-navy rounded-full font-bold uppercase shadow-sm">
                     {{ substr(Auth::user()->name, 0, 1) }}
                 </div>
                 <div class="flex flex-col text-left">
-                    <span class="text-sm font-semibold text-gray-900">{{ Auth::user()->name }}</span>
-                    <span class="text-xs text-gray-500">{{ Auth::user()->role ?? 'Admin' }}</span>
+                    <span class="text-sm font-semibold text-slate-900">{{ Auth::user()->name }}</span>
+                    <span class="text-xs text-slate-500">{{ Auth::user()->role ?? 'Admin' }}</span>
                 </div>
                 <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>

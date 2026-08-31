@@ -16,7 +16,7 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
         $this->students = $students;
     }
 
-    public function collection()
+    public function collection(): Collection
     {
         return $this->students;
     }

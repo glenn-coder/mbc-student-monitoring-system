@@ -14,6 +14,21 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                'mbc-navy': {
+                    DEFAULT: '#0D1164',
+                    50: '#eaebf4',
+                    100: '#d5d7e8',
+                    200: '#abadce',
+                    300: '#8184b3',
+                    400: '#575b98',
+                    500: '#2d317d',
+                    600: '#0D1164',
+                    700: '#0a0d4b',
+                    800: '#070932',
+                    900: '#030419',
+                }
+            }
         },
     },
 

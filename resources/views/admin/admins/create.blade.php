@@ -11,7 +11,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="name" class="block text-sm font-bold text-gray-700">Name</label>
-                        <input type="text" name="name" id="name" value="{{ old('name') }}" autocomplete="off" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
+                        <input type="text" name="name" id="name" value="{{ old('name') }}" autocomplete="off" class="mt-1 block w-full rounded-md border-transparent bg-slate-50 focus:border-mbc-navy focus:bg-white focus:ring-2 focus:ring-mbc-navy/20 sm:text-sm transition-colors duration-200" required>
                         @error('name')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -19,7 +19,7 @@
 
                     <div>
                         <label for="username" class="block text-sm font-bold text-gray-700">Username</label>
-                        <input type="text" name="username" id="username" value="{{ old('username') }}" autocomplete="off" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
+                        <input type="text" name="username" id="username" value="{{ old('username') }}" autocomplete="off" class="mt-1 block w-full rounded-md border-transparent bg-slate-50 focus:border-mbc-navy focus:bg-white focus:ring-2 focus:ring-mbc-navy/20 sm:text-sm transition-colors duration-200" required>
                         @error('username')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -27,7 +27,7 @@
 
                     <div>
                         <label for="email" class="block text-sm font-bold text-gray-700">Email Address (Optional)</label>
-                        <input type="email" name="email" id="email" value="{{ old('email') }}" autocomplete="off" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        <input type="email" name="email" id="email" value="{{ old('email') }}" autocomplete="off" class="mt-1 block w-full rounded-md border-transparent bg-slate-50 focus:border-mbc-navy focus:bg-white focus:ring-2 focus:ring-mbc-navy/20 sm:text-sm transition-colors duration-200">
                         @error('email')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -35,7 +35,7 @@
 
                     <div>
                         <label for="status" class="block text-sm font-bold text-gray-700">Status</label>
-                        <select name="status" id="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
+                        <select name="status" id="status" class="mt-1 block w-full rounded-md border-transparent bg-slate-50 focus:border-mbc-navy focus:bg-white focus:ring-2 focus:ring-mbc-navy/20 sm:text-sm transition-colors duration-200" required>
                             <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Active</option>
                             <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
@@ -47,7 +47,7 @@
                     <div x-data="{ password: '', showPassword: false }" class="md:col-span-2">
                         <label for="password" class="block text-sm font-bold text-gray-700">Password</label>
                         <div class="relative mt-1">
-                            <input :type="showPassword ? 'text' : 'password'" name="password" id="password" x-model="password" autocomplete="new-password" class="block w-full rounded-md border-gray-300 pr-10 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required>
+                            <input :type="showPassword ? 'text' : 'password'" name="password" id="password" x-model="password" autocomplete="new-password" class="block w-full rounded-md border-transparent bg-slate-50 pr-10 focus:border-mbc-navy focus:bg-white focus:ring-2 focus:ring-mbc-navy/20 sm:text-sm transition-colors duration-200" required>
                             <button type="button" @click="showPassword = !showPassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
                                 <svg x-show="showPassword" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -88,10 +88,10 @@
                 </div>
 
                 <div class="mt-6 flex justify-end gap-3">
-                    <a href="{{ route('admin.admins.index') }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                    <a href="{{ route('admin.admins.index') }}" class="px-4 py-2 bg-slate-100 text-slate-700 font-medium rounded-md hover:bg-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
                         Cancel
                     </a>
-                    <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition">
+                    <button type="submit" class="px-4 py-2 bg-mbc-navy text-white font-medium rounded-md hover:bg-mbc-navy/90 focus:outline-none focus:ring-2 focus:ring-mbc-navy focus:ring-offset-2 transition-all active:scale-[0.98] shadow-sm hover:shadow-md">
                         Save Admin
                     </button>
                 </div>

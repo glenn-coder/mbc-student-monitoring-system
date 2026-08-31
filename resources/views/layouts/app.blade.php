@@ -15,8 +15,8 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased text-gray-900 bg-[#f4f7f6]">
-        <div x-data="{ sidebarExpanded: JSON.parse(localStorage.getItem('sidebarExpanded') ?? 'true') }" x-init="$watch('sidebarExpanded', value => localStorage.setItem('sidebarExpanded', JSON.stringify(value)))" class="flex h-screen overflow-hidden bg-[#f4f7f6]">
+    <body class="font-sans antialiased text-slate-900 bg-slate-50">
+        <div x-data="{ sidebarExpanded: JSON.parse(localStorage.getItem('sidebarExpanded') ?? 'true') }" x-init="$watch('sidebarExpanded', value => localStorage.setItem('sidebarExpanded', JSON.stringify(value)))" class="flex h-screen overflow-hidden bg-slate-50">
             @include('layouts.sidebar')
 
             <!-- Main Content -->

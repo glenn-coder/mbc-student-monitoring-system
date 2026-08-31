@@ -1,7 +1,10 @@
 <x-app-layout>
     <div class="p-8 mx-auto max-w-7xl">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-gray-900">Audit Logs</h2>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Audit Logs</h2>
+                <p class="mt-1 text-sm text-gray-500">View system activity logs</p>
+            </div>
         </div>
 
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
@@ -64,8 +67,14 @@
                     </div>
 
                     <div class="flex items-center gap-2 border-l pl-3 ml-1">
-                        <label for="search" class="text-sm text-gray-700 font-bold">Search:</label>
-                        <input type="text" name="search" id="search" value="{{ request('search') }}" class="border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 py-1.5 px-3 w-48 shadow-sm" placeholder="Action, desc, or user...">
+                        <div class="relative w-48">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Search..." class="block w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm shadow-sm">
+                        </div>
                     </div>
                     @if(request('per_page'))<input type="hidden" name="per_page" value="{{ request('per_page') }}">@endif
                     </form>
