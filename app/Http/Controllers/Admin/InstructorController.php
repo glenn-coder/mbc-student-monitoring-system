@@ -51,7 +51,7 @@ class InstructorController extends Controller
             'instructor_number'    => 'required|string|max:255|unique:instructors,instructor_number',
             'major_specialization' => 'required|string|max:255',
             'sex'                  => 'required|string',
-            'email'                => 'required|email|max:255|unique:instructors,email',
+            'email'                => 'nullable|email|max:255|unique:instructors,email',
             'status'               => 'required|in:active,inactive',
         ]);
 
@@ -101,7 +101,7 @@ class InstructorController extends Controller
             'instructor_number'    => 'required|string|max:255|unique:instructors,instructor_number,' . $instructor->id,
             'major_specialization' => 'required|string|max:255',
             'sex'                  => 'required|string',
-            'email'                => 'required|email|max:255|unique:instructors,email,' . $instructor->id,
+            'email'                => 'nullable|email|max:255|unique:instructors,email,' . $instructor->id,
             'status'               => 'required|in:active,inactive',
             'password_action'      => 'nullable|in:none,reset',
         ]);

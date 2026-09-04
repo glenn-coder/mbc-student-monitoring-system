@@ -17,7 +17,7 @@
                     <tbody>
                         @forelse($assignment->students as $student)
                             <tr class="bg-white border-b hover:bg-gray-50 {{ $loop->even ? 'bg-gray-50' : '' }}">
-                                <td class="px-6 py-4">{{ $student->last_name }}, {{ $student->first_name }}</td>
+                                <td class="px-6 py-4">{{ $student->last_name }}, {{ $student->first_name }} {{ $student->middle_name ?? '' }}</td>
                                 <td class="px-6 py-4">{{ $student->student_number }}</td>
                                 <td class="px-6 py-4">{{ $student->sex }}</td>
                                 <td class="px-6 py-4">{{ $student->course->code ?? 'N/A' }}</td>

@@ -2,46 +2,39 @@
 
 namespace App\Exports;
 
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
-use Illuminate\Support\Collection;
+use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class StudentsExport implements FromCollection, WithHeadings, WithMapping
+class StudentsExport implements FromView, ShouldAutoSize
 {
+    /** @var \Illuminate\Support\Collection|array */
     protected $students;
 
-    public function __construct(Collection $students)
+    /** @var array */
+    protected $metrics;
+
+    /** @var string */
+    protected $type;
+
+    /**
+     * @param \Illuminate\Support\Collection|array $students
+     * @param array $metrics
+     * @param string $type
+     */
+    public function __construct($students, $metrics = [], $type = 'active')
     {
         $this->students = $students;
+        $this->metrics = $metrics;
+        $this->type = $type;
     }
 
-    public function collection(): Collection
+    public function view(): View
     {
-        return $this->students;
-    }
-
-    public function headings(): array
-    {
-        return [
-            'Student Number',
-            'Last Name',
-            'First Name',
-            'Sex',
-            'Course',
-            'Year',
-        ];
-    }
-
-    public function map($student): array
-    {
-        return [
-            $student->student_number,
-            $student->last_name,
-            $student->first_name,
-            $student->sex,
-            $student->course,
-            $student->year,
-        ];
+        return view('exports.students', [
+            'students' => $this->students,
+            'metrics' => $this->metrics,
+            'type' => $this->type,
+        ]);
     }
 }

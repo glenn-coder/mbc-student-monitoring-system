@@ -31,6 +31,7 @@ class TimetableController extends Controller
             'days.*' => 'in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
             'start_time' => 'required',
             'end_time' => 'required|after:start_time',
+            'status' => 'required|in:active,inactive',
         ]);
 
         foreach ($request->days as $day) {
@@ -39,6 +40,7 @@ class TimetableController extends Controller
                 'day_of_week' => $day,
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
+                'status' => $request->status,
             ]);
         }
 
@@ -53,6 +55,7 @@ class TimetableController extends Controller
             'days.*' => 'in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
             'start_time' => 'required',
             'end_time' => 'required|after:start_time',
+            'status' => 'required|in:active,inactive',
         ]);
 
         $days = $request->days;
@@ -62,6 +65,7 @@ class TimetableController extends Controller
             'day_of_week' => array_shift($days),
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
+            'status' => $request->status,
         ]);
 
         foreach ($days as $day) {
@@ -70,6 +74,7 @@ class TimetableController extends Controller
                 'day_of_week' => $day,
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
+                'status' => $request->status,
             ]);
         }
 

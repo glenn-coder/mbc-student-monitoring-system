@@ -38,49 +38,7 @@ class ReportController extends Controller
             $query->where('year', 'like', '%' . $request->year . '%');
         }
 
-        $metricsQuery = clone $query;
-        
-        $totalActive = $metricsQuery->count();
-        
-        // Group by course
-        $courseCounts = (clone $metricsQuery)->selectRaw('course_id, count(*) as total')
-                    ->groupBy('course_id')
-                    ->get();
-        $byCourse = [];
-        foreach ($courseCounts as $row) {
-            $course = \App\Models\Course::find($row->course_id);
-            if ($course) {
-                $byCourse[$course->code] = $row->total;
-            }
-        }
-        
-        // Group by year
-        $byYear = (clone $metricsQuery)->selectRaw('year, count(*) as total')
-                    ->groupBy('year')
-                    ->pluck('total', 'year')->toArray();
-                    
-        // Group by sex
-        $bySexRaw = (clone $metricsQuery)->selectRaw('sex, count(*) as total')
-                    ->groupBy('sex')
-                    ->pluck('total', 'sex')->toArray();
-                    
-        $bySex = [];
-        foreach ($bySexRaw as $key => $value) {
-            $label = $key;
-            if ($key === 'M') {
-                $label = 'Male';
-            } elseif ($key === 'F') {
-                $label = 'Female';
-            }
-            $bySex[$label] = ($bySex[$label] ?? 0) + $value;
-        }
-        
-        $metrics = [
-            'total_active' => $totalActive,
-            'by_course' => $byCourse,
-            'by_year' => $byYear,
-            'by_sex' => $bySex,
-        ];
+        $metrics = $this->calculateStudentMetrics($query, 'active');
 
         $students = $query->orderBy('last_name')->paginate($request->get('per_page', 5))->appends($request->except('page'));
         return view('admin.reports.students', compact('students', 'metrics'));
@@ -93,21 +51,25 @@ class ReportController extends Controller
         });
         
         if ($request->filled('course')) {
-            $query->where('course', 'like', '%' . $request->course . '%');
+            $query->whereHas('course', function($q) use ($request) {
+                $q->where('code', 'like', '%' . $request->course . '%')
+                  ->orWhere('name', 'like', '%' . $request->course . '%');
+            });
         }
         if ($request->filled('year')) {
             $query->where('year', 'like', '%' . $request->year . '%');
         }
         
+        $metrics = $this->calculateStudentMetrics($query, 'active');
         $students = $query->orderBy('last_name')->get();
 
         if ($type === 'pdf') {
-            $pdf = Pdf::loadView('admin.reports.pdf.students', compact('students'));
+            $pdf = Pdf::loadView('admin.reports.pdf.students', compact('students', 'metrics'));
             return $pdf->download('student_master_list.pdf');
         } elseif ($type === 'excel') {
-            return Excel::download(new StudentsExport($students), 'student_master_list.xlsx');
+            return Excel::download(new StudentsExport($students, $metrics, 'active'), 'student_master_list.xlsx');
         } elseif ($type === 'csv') {
-            return Excel::download(new StudentsExport($students), 'student_master_list.csv', \Maatwebsite\Excel\Excel::CSV);
+            return Excel::download(new StudentsExport($students, $metrics, 'active'), 'student_master_list.csv', \Maatwebsite\Excel\Excel::CSV);
         }
 
         abort(404);
@@ -138,49 +100,7 @@ class ReportController extends Controller
             $query->where('year', 'like', '%' . $request->year . '%');
         }
 
-        $metricsQuery = clone $query;
-        
-        $totalInactive = $metricsQuery->count();
-        
-        // Group by course
-        $courseCounts = (clone $metricsQuery)->selectRaw('course_id, count(*) as total')
-                    ->groupBy('course_id')
-                    ->get();
-        $byCourse = [];
-        foreach ($courseCounts as $row) {
-            $course = \App\Models\Course::find($row->course_id);
-            if ($course) {
-                $byCourse[$course->code] = $row->total;
-            }
-        }
-        
-        // Group by year
-        $byYear = (clone $metricsQuery)->selectRaw('year, count(*) as total')
-                    ->groupBy('year')
-                    ->pluck('total', 'year')->toArray();
-                    
-        // Group by sex
-        $bySexRaw = (clone $metricsQuery)->selectRaw('sex, count(*) as total')
-                    ->groupBy('sex')
-                    ->pluck('total', 'sex')->toArray();
-                    
-        $bySex = [];
-        foreach ($bySexRaw as $key => $value) {
-            $label = $key;
-            if ($key === 'M') {
-                $label = 'Male';
-            } elseif ($key === 'F') {
-                $label = 'Female';
-            }
-            $bySex[$label] = ($bySex[$label] ?? 0) + $value;
-        }
-        
-        $metrics = [
-            'total_inactive' => $totalInactive,
-            'by_course' => $byCourse,
-            'by_year' => $byYear,
-            'by_sex' => $bySex,
-        ];
+        $metrics = $this->calculateStudentMetrics($query, 'inactive');
 
         $students = $query->orderBy('last_name')->paginate($request->get('per_page', 5))->appends($request->except('page'));
         return view('admin.reports.inactive_students', compact('students', 'metrics'));
@@ -193,7 +113,10 @@ class ReportController extends Controller
         });
         
         if ($request->filled('course')) {
-            $query->where('course', 'like', '%' . $request->course . '%');
+            $query->whereHas('course', function($q) use ($request) {
+                $q->where('code', 'like', '%' . $request->course . '%')
+                  ->orWhere('name', 'like', '%' . $request->course . '%');
+            });
         }
         if ($request->filled('year')) {
             $query->where('year', 'like', '%' . $request->year . '%');
@@ -237,8 +160,9 @@ class ReportController extends Controller
             $query->where('major_specialization', 'like', '%' . $request->specialization . '%');
         }
 
+        $metrics = $this->calculateInstructorMetrics($query);
         $instructors = $query->orderBy('full_name')->paginate($request->get('per_page', 5))->appends($request->except('page'));
-        return view('admin.reports.instructors', compact('instructors'));
+        return view('admin.reports.instructors', compact('instructors', 'metrics'));
     }
 
     public function exportInstructors(Request $request, string $type)
@@ -248,23 +172,79 @@ class ReportController extends Controller
         })->with('assignments.students');
 
         if ($request->filled('course')) {
-            $query->where('course', 'like', '%' . $request->course . '%');
+            $query->whereHas('assignments.course', function($q) use ($request) {
+                $q->where('code', 'like', '%' . $request->course . '%');
+            });
         }
         if ($request->filled('specialization')) {
             $query->where('major_specialization', 'like', '%' . $request->specialization . '%');
         }
 
+        $metrics = $this->calculateInstructorMetrics($query);
         $instructors = $query->orderBy('full_name')->get();
 
         if ($type === 'pdf') {
-            $pdf = Pdf::loadView('admin.reports.pdf.instructors', compact('instructors'));
+            $pdf = Pdf::loadView('admin.reports.pdf.instructors', compact('instructors', 'metrics'));
             return $pdf->download('instructor_workload.pdf');
         } elseif ($type === 'excel') {
-            return Excel::download(new InstructorsExport($instructors), 'instructor_workload.xlsx');
+            return Excel::download(new InstructorsExport($instructors, $metrics), 'instructor_workload.xlsx');
         } elseif ($type === 'csv') {
-            return Excel::download(new InstructorsExport($instructors), 'instructor_workload.csv', \Maatwebsite\Excel\Excel::CSV);
+            return Excel::download(new InstructorsExport($instructors, $metrics), 'instructor_workload.csv', \Maatwebsite\Excel\Excel::CSV);
         }
 
         abort(404);
+    }
+
+    private function calculateStudentMetrics($query, $type)
+    {
+        $metricsQuery = clone $query;
+        $total = $metricsQuery->count();
+        
+        $courseCounts = (clone $metricsQuery)->selectRaw('course_id, count(*) as total')
+                    ->groupBy('course_id')
+                    ->get();
+        $byCourse = [];
+        foreach ($courseCounts as $row) {
+            $course = \App\Models\Course::find($row->course_id);
+            if ($course) {
+                $byCourse[$course->code] = $row->total;
+            }
+        }
+        
+        $byYear = (clone $metricsQuery)->selectRaw('year, count(*) as total')
+                    ->groupBy('year')
+                    ->pluck('total', 'year')->toArray();
+                    
+        $bySexRaw = (clone $metricsQuery)->selectRaw('sex, count(*) as total')
+                    ->groupBy('sex')
+                    ->pluck('total', 'sex')->toArray();
+                    
+        $bySex = [];
+        foreach ($bySexRaw as $key => $value) {
+            $label = $key === 'M' ? 'Male' : ($key === 'F' ? 'Female' : $key);
+            $bySex[$label] = ($bySex[$label] ?? 0) + $value;
+        }
+        
+        return [
+            'total_' . $type => $total,
+            'by_course' => $byCourse,
+            'by_year' => $byYear,
+            'by_sex' => $bySex,
+        ];
+    }
+
+    private function calculateInstructorMetrics($query)
+    {
+        $metricsQuery = clone $query;
+        $total = $metricsQuery->count();
+        
+        $bySpecialization = (clone $metricsQuery)->selectRaw('major_specialization, count(*) as total')
+                    ->groupBy('major_specialization')
+                    ->pluck('total', 'major_specialization')->toArray();
+                    
+        return [
+            'total_instructors' => $total,
+            'by_specialization' => $bySpecialization,
+        ];
     }
 }

@@ -87,12 +87,12 @@
                     <div class="space-y-2">
                         @foreach($students as $student)
                             <div class="flex items-center" 
-                                 x-show="(!appliedCourse || '{{ strtolower($student->course->code ?? '') }}'.includes(appliedCourse.toLowerCase())) && (!appliedYear || '{{ strtolower($student->year) }}'.includes(appliedYear.toLowerCase())) && (!searchQuery || '{{ strtolower($student->last_name . ' ' . $student->first_name . ' ' . $student->student_number) }}'.includes(searchQuery.toLowerCase()))">
+                                 x-show="(!appliedCourse || '{{ strtolower($student->course->code ?? '') }}'.includes(appliedCourse.toLowerCase())) && (!appliedYear || '{{ strtolower($student->year) }}'.includes(appliedYear.toLowerCase())) && (!searchQuery || '{{ strtolower($student->last_name . ' ' . $student->first_name . ' ' . ($student->middle_name ?? '') . ' ' . $student->student_number) }}'.includes(searchQuery.toLowerCase()))">
                                 <input type="checkbox" id="student_{{ $student->id }}" name="student_ids[]" value="{{ $student->id }}" 
                                     class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                                     {{ in_array($student->id, $enrolledStudentIds) ? 'checked' : '' }}>
                                 <label for="student_{{ $student->id }}" class="ml-3 text-sm text-gray-700">
-                                    {{ $student->last_name }}, {{ $student->first_name }} ({{ $student->student_number }}) - <span class="text-gray-500">{{ $student->course->code ?? 'N/A' }} {{ $student->year }}</span>
+                                    {{ $student->last_name }}, {{ $student->first_name }} {{ $student->middle_name ?? '' }} ({{ $student->student_number }}) - <span class="text-gray-500">{{ $student->course->code ?? 'N/A' }} {{ $student->year }}</span>
                                 </label>
                             </div>
                         @endforeach

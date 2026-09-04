@@ -197,10 +197,11 @@
 
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-700">
-                    <thead class="text-xs text-gray-700 bg-gray-100 border-b border-gray-200">
+                    <thead class="text-xs text-white bg-blue-600 border-b border-blue-700">
                         <tr>
                             <th scope="col" class="px-6 py-3 font-bold">Student Number</th>
                             <th scope="col" class="px-6 py-3 font-bold">Name</th>
+                            <th scope="col" class="px-6 py-3 font-bold">Email</th>
                             <th scope="col" class="px-6 py-3 font-bold">Sex</th>
                             <th scope="col" class="px-6 py-3 font-bold">Course</th>
                             <th scope="col" class="px-6 py-3 font-bold">Year</th>
@@ -208,9 +209,10 @@
                     </thead>
                     <tbody>
                         @forelse($students as $student)
-                            <tr class="bg-white border-b hover:bg-gray-50 {{ $loop->even ? 'bg-gray-50' : '' }}">
+                            <tr class="bg-white border-b hover:bg-indigo-100 {{ $loop->even ? 'bg-indigo-50' : '' }} transition-colors">
                                 <td class="px-6 py-4 font-medium text-gray-900">{{ $student->student_number }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $student->last_name }}, {{ $student->first_name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $student->last_name }}, {{ $student->first_name }} {{ $student->middle_name ?? '' }}</td>
+                            <td class="px-6 py-4">{{ $student->email ?? 'N/A' }}</td>
                                 <td class="px-6 py-4">{{ $student->sex === 'M' ? 'Male' : ($student->sex === 'F' ? 'Female' : $student->sex) }}</td>
                                 <td class="px-6 py-4">{{ $student->course->code ?? 'N/A' }}</td>
                                 <td class="px-6 py-4">{{ $student->year }}</td>

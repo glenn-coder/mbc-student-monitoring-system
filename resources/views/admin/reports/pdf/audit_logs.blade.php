@@ -21,6 +21,11 @@
         table.data-table th, table.data-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         table.data-table th { background-color: #f4f4f4; }
         .footer { text-align: right; font-size: 10px; color: #777; margin-top: 30px; }
+        
+        /* Metrics Table Design */
+        table.metrics-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 10px; }
+        table.metrics-table th, table.metrics-table td { border: 1px solid #ddd; padding: 4px 8px; text-align: left; }
+        table.metrics-table th { background-color: #f4f4f4; }
     </style>
 </head>
 <body>
@@ -39,6 +44,35 @@
             </tr>
         </table>
     </div>
+
+    @if(isset($metrics))
+    <table class="metrics-table">
+        <thead>
+            <tr>
+                <th>Summary by Action</th>
+                <th>Summary by Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="vertical-align: top;">
+                    <ul style="margin: 0; padding-left: 15px;">
+                        @foreach($metrics['by_action'] ?? [] as $action => $count)
+                            <li>{{ ucfirst($action) }}: {{ $count }}</li>
+                        @endforeach
+                    </ul>
+                </td>
+                <td style="vertical-align: top;">
+                    <ul style="margin: 0; padding-left: 15px;">
+                        @foreach($metrics['by_status'] ?? [] as $status => $count)
+                            <li>{{ ucfirst($status) }}: {{ $count }}</li>
+                        @endforeach
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    @endif
 
     <table class="data-table">
         <thead>

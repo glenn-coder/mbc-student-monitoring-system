@@ -22,6 +22,11 @@
         table.data-table th { background-color: #f4f4f4; }
         .text-center { text-align: center; }
         .footer { text-align: right; font-size: 10px; color: #777; margin-top: 30px; }
+        
+        /* Metrics Table Design */
+        table.metrics-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 10px; }
+        table.metrics-table th, table.metrics-table td { border: 1px solid #ddd; padding: 4px 8px; text-align: left; }
+        table.metrics-table th { background-color: #f4f4f4; }
     </style>
 </head>
 <body>
@@ -35,11 +40,35 @@
                 </td>
                 <td style="width: 50%;">
                     <div class="date-text">Generated on: {{ now()->format('Y-m-d H:i') }}</div>
-                    <div class="count-text">Total Active Instructors: {{ $instructors->count() }}</div>
                 </td>
             </tr>
         </table>
     </div>
+
+    @if(isset($metrics))
+    <table class="metrics-table">
+        <thead>
+            <tr>
+                <th>Total Active Instructors</th>
+                <th>Summary by Specialization</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="vertical-align: middle; text-align: center; font-size: 18px; font-weight: bold;">
+                    {{ $instructors->count() }}
+                </td>
+                <td style="vertical-align: top;">
+                    <ul style="margin: 0; padding-left: 15px;">
+                        @foreach($metrics['by_specialization'] ?? [] as $spec => $count)
+                            <li>{{ $spec ?? 'N/A' }}: {{ $count }}</li>
+                        @endforeach
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    @endif
 
     <table class="data-table">
         <thead>
@@ -47,6 +76,7 @@
                 <th>Instructor Number</th>
                 <th>Name</th>
                 <th>Specialization</th>
+                <th>Email</th>
                 <th>Course</th>
                 <th class="text-center">Assigned Subjects</th>
                 <th class="text-center">Total Students</th>
@@ -58,6 +88,7 @@
                     <td>{{ $instructor->instructor_number }}</td>
                     <td>{{ $instructor->full_name }}</td>
                     <td>{{ $instructor->major_specialization }}</td>
+                    <td>{{ $instructor->email ?? 'N/A' }}</td>
                     <td>{{ $instructor->course }}</td>
                     <td class="text-center">{{ $instructor->assignments->count() }}</td>
                     <td class="text-center">{{ $instructor->assignments->sum(function($a) { return $a->students->count(); }) }}</td>

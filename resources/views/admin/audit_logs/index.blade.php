@@ -118,7 +118,7 @@
 
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-700">
-                    <thead class="text-xs text-gray-700 bg-gray-100 border-b border-gray-200">
+                    <thead class="text-xs text-white bg-blue-600 border-b border-blue-700">
                         <tr>
                             <th scope="col" class="px-6 py-3 font-bold">Date / Time</th>
                             <th scope="col" class="px-6 py-3 font-bold">User</th>
@@ -129,7 +129,7 @@
                     </thead>
                     <tbody>
                         @forelse($logs as $log)
-                            <tr class="bg-white border-b hover:bg-gray-50 {{ $loop->even ? 'bg-gray-50' : '' }}">
+                            <tr class="bg-white border-b hover:bg-indigo-100 {{ $loop->even ? 'bg-indigo-50' : '' }} transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-500 text-xs">
                                     {{ $log->created_at->format('M d, Y h:i A') }}
                                 </td>

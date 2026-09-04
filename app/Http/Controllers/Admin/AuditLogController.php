@@ -64,17 +64,38 @@ class AuditLogController extends Controller
             })
             ->latest();
 
+                $metrics = $this->calculateAuditMetrics($query);
         $logs = $query->get();
 
         if ($type === 'pdf') {
-            $pdf = Pdf::loadView('admin.reports.pdf.audit_logs', compact('logs'));
+            $pdf = Pdf::loadView('admin.reports.pdf.audit_logs', compact('logs', 'metrics'));
             return $pdf->download('audit_logs.pdf');
         } elseif ($type === 'excel') {
-            return Excel::download(new AuditLogsExport($logs), 'audit_logs.xlsx');
+            return Excel::download(new AuditLogsExport($logs, $metrics), 'audit_logs.xlsx');
         } elseif ($type === 'csv') {
-            return Excel::download(new AuditLogsExport($logs), 'audit_logs.csv', \Maatwebsite\Excel\Excel::CSV);
+            return Excel::download(new AuditLogsExport($logs, $metrics), 'audit_logs.csv', \Maatwebsite\Excel\Excel::CSV);
         }
 
         abort(404);
+    }
+
+    private function calculateAuditMetrics($query)
+    {
+        $metricsQuery = clone $query;
+        $total = $metricsQuery->count();
+        
+        $byAction = (clone $metricsQuery)->selectRaw('action, count(*) as total')
+                    ->groupBy('action')
+                    ->pluck('total', 'action')->toArray();
+                    
+        $byStatus = (clone $metricsQuery)->selectRaw('status, count(*) as total')
+                    ->groupBy('status')
+                    ->pluck('total', 'status')->toArray();
+                    
+        return [
+            'total_logs' => $total,
+            'by_action' => $byAction,
+            'by_status' => $byStatus,
+        ];
     }
 }

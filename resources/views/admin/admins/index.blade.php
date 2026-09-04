@@ -80,7 +80,7 @@
 
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-700">
-                    <thead class="text-xs text-gray-700 bg-gray-100 border-b border-gray-200">
+                    <thead class="text-xs text-white bg-blue-600 border-b border-blue-700">
                         <tr>
                             <th scope="col" class="px-6 py-3 font-bold">Name</th>
                             <th scope="col" class="px-6 py-3 font-bold">Username</th>
@@ -91,7 +91,7 @@
                     </thead>
                     <tbody>
                         @forelse($admins as $admin)
-                            <tr class="bg-white border-b hover:bg-gray-50 {{ $loop->even ? 'bg-gray-50' : '' }}">
+                            <tr class="bg-white border-b hover:bg-indigo-100 {{ $loop->even ? 'bg-indigo-50' : '' }} transition-colors">
                                 <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                                     {{ $admin->name }}
                                 </td>

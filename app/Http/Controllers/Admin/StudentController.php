@@ -55,7 +55,7 @@ class StudentController extends Controller
             'student_number' => 'required|string|max:255|unique:students,student_number',
             'sex'            => 'required|string|max:255',
             'course_id'      => 'required|exists:courses,id',
-            'email'          => 'required|email|max:255|unique:students,email',
+            'email'          => 'nullable|email|max:255|unique:students,email',
             'year'           => 'required|string|max:255',
             'status'         => 'required|in:active,inactive',
         ]);
@@ -112,7 +112,7 @@ class StudentController extends Controller
             'student_number'  => 'required|string|max:255|unique:students,student_number,' . $student->id,
             'sex'             => 'required|string|max:255',
             'course_id'       => 'required|exists:courses,id',
-            'email'           => 'required|email|max:255|unique:students,email,' . $student->id,
+            'email'           => 'nullable|email|max:255|unique:students,email,' . $student->id,
             'year'            => 'required|string|max:255',
             'status'          => 'required|in:active,inactive',
             'password_action' => 'nullable|in:none,reset',

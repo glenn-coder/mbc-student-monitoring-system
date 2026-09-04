@@ -57,7 +57,7 @@
                     </div>
                     @else
                     @foreach($daySchedules as $schedule)
-                    <div class="p-4 border-b border-gray-50 last:border-b-0 hover:bg-gray-50 transition-colors cursor-pointer"
+                    <div class="p-4 border-b border-gray-50 last:border-b-0 hover:bg-gray-50 transition-colors cursor-pointer {{ $schedule->status == 'inactive' ? 'opacity-50 grayscale' : '' }}"
                         x-data="" x-on:click="$dispatch('open-modal', 'edit-schedule-{{ $schedule->id }}')"
                         x-show="searchQuery === '' || 
                                          '{{ strtolower($schedule->instructorAssignment->subject->code) }}'.includes(searchQuery.toLowerCase()) || 
@@ -66,6 +66,15 @@
                         <div class="flex justify-between items-start mb-3">
                             <h4 class="font-bold text-sm text-gray-900 pr-2 leading-tight">{{ $schedule->instructorAssignment->subject->subject_name }}</h4>
                             <div class="flex items-center gap-2 flex-shrink-0">
+                                @if($schedule->status == 'active')
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-800 tracking-wider">
+                                        ACTIVE
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-gray-200 text-gray-800 tracking-wider">
+                                        INACTIVE
+                                    </span>
+                                @endif
                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 tracking-wider">
                                     {{ $schedule->instructorAssignment->course->code }}-{{ $schedule->instructorAssignment->year }}
                                 </span>
@@ -158,6 +167,14 @@
                                     </div>
                                 </div>
 
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                    <select name="status" required class="w-full border-gray-300 focus:border-[#2F2FE4] focus:ring-0 rounded-md shadow-sm sm:text-sm">
+                                        <option value="active" {{ $schedule->status == 'active' ? 'selected' : '' }}>Active</option>
+                                        <option value="inactive" {{ $schedule->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                    </select>
+                                </div>
+
                                 <div class="grid grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
@@ -246,6 +263,14 @@
                                     </label>
                                     @endforeach
                                 </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                <select name="status" required class="w-full border-gray-300 focus:border-[#2F2FE4] focus:ring-0 rounded-md shadow-sm sm:text-sm">
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
                             </div>
 
                             <div class="grid grid-cols-2 gap-4 mb-4">

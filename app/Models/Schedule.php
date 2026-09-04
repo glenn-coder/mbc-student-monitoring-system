@@ -12,6 +12,7 @@ class Schedule extends Model
         'start_time',
         'end_time',
         'room',
+        'status',
     ];
 
     public function instructorAssignment()

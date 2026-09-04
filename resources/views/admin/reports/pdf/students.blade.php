@@ -21,6 +21,11 @@
         table.data-table th, table.data-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         table.data-table th { background-color: #f4f4f4; }
         .footer { text-align: right; font-size: 10px; color: #777; margin-top: 30px; }
+        
+        /* Metrics Table Design */
+        table.metrics-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 10px; }
+        table.metrics-table th, table.metrics-table td { border: 1px solid #ddd; padding: 4px 8px; text-align: left; }
+        table.metrics-table th { background-color: #f4f4f4; }
     </style>
 </head>
 <body>
@@ -34,11 +39,51 @@
                 </td>
                 <td style="width: 50%;">
                     <div class="date-text">Generated on: {{ now()->format('Y-m-d H:i') }}</div>
-                    <div class="count-text">Total Active Students: {{ $students->count() }}</div>
                 </td>
             </tr>
         </table>
     </div>
+
+    @if(isset($metrics))
+    <table class="metrics-table">
+        <thead>
+            <tr>
+                <th colspan="2">Total Active Students</th>
+                <th colspan="2">Summary by Course</th>
+                <th colspan="2">Summary by Year</th>
+                <th colspan="2">Summary by Sex</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="2" style="vertical-align: middle; text-align: center; font-size: 18px; font-weight: bold;">
+                    {{ $students->count() }}
+                </td>
+                <td colspan="2" style="vertical-align: top;">
+                    <ul style="margin: 0; padding-left: 15px;">
+                        @foreach($metrics['by_course'] ?? [] as $course => $count)
+                            <li>{{ $course }}: {{ $count }}</li>
+                        @endforeach
+                    </ul>
+                </td>
+                <td colspan="2" style="vertical-align: top;">
+                    <ul style="margin: 0; padding-left: 15px;">
+                        @foreach($metrics['by_year'] ?? [] as $year => $count)
+                            <li>{{ $year }}: {{ $count }}</li>
+                        @endforeach
+                    </ul>
+                </td>
+                <td colspan="2" style="vertical-align: top;">
+                    <ul style="margin: 0; padding-left: 15px;">
+                        @foreach($metrics['by_sex'] ?? [] as $sex => $count)
+                            <li>{{ $sex }}: {{ $count }}</li>
+                        @endforeach
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    @endif
 
     <table class="data-table">
         <thead>
@@ -46,6 +91,8 @@
                 <th>Student Number</th>
                 <th>Last Name</th>
                 <th>First Name</th>
+                <th>Middle Name</th>
+                <th>Email</th>
                 <th>Sex</th>
                 <th>Course</th>
                 <th>Year</th>
@@ -57,6 +104,8 @@
                     <td>{{ $student->student_number }}</td>
                     <td>{{ $student->last_name }}</td>
                     <td>{{ $student->first_name }}</td>
+                    <td>{{ $student->middle_name ?? '' }}</td>
+                    <td>{{ $student->email ?? 'N/A' }}</td>
                     <td>{{ $student->sex }}</td>
                     <td>{{ $student->course->code ?? 'N/A' }}</td>
                     <td>{{ $student->year }}</td>

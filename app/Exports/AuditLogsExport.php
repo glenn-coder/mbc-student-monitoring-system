@@ -2,44 +2,26 @@
 
 namespace App\Exports;
 
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
-use Illuminate\Support\Collection;
+use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class AuditLogsExport implements FromCollection, WithHeadings, WithMapping
+class AuditLogsExport implements FromView, ShouldAutoSize
 {
-    protected Collection $logs;
+    protected $logs;
+    protected $metrics;
 
-    public function __construct(Collection $logs)
+    public function __construct($logs, $metrics = [])
     {
         $this->logs = $logs;
+        $this->metrics = $metrics;
     }
 
-    public function collection(): Collection
+    public function view(): View
     {
-        return $this->logs;
-    }
-
-    public function headings(): array
-    {
-        return [
-            'Date / Time',
-            'User',
-            'Action',
-            'Description',
-            'Status',
-        ];
-    }
-
-    public function map($log): array
-    {
-        return [
-            $log->created_at->format('M d, Y h:i A'),
-            $log->user ? $log->user->name : 'System',
-            ucfirst($log->action),
-            $log->description,
-            ucfirst($log->status),
-        ];
+        return view('exports.audit_logs', [
+            'logs' => $this->logs,
+            'metrics' => $this->metrics,
+        ]);
     }
 }
