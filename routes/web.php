@@ -74,8 +74,59 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::middleware(['role:instructor'])->group(function () {
+        Route::get('/instructor/classes', [\App\Http\Controllers\Instructor\ClassController::class, 'index'])->name('instructor.classes.index');
+        
         Route::get('/instructor/dashboard', function () {
-            return view('instructor.dashboard');
+            $studentCount = \App\Models\Student::count();
+            $instructorCount = \App\Models\Instructor::count();
+            $subjectCount = \App\Models\Subject::count();
+            $assignmentCount = \App\Models\InstructorAssignment::count();
+            
+            $instructor = \App\Models\Instructor::where('user_id', \Illuminate\Support\Facades\Auth::id())->first();
+            $schedules = collect();
+            
+            if ($instructor) {
+                $assignmentIds = $instructor->assignments()->pluck('id');
+                $schedules = \App\Models\Schedule::whereIn('instructor_assignment_id', $assignmentIds)
+                    ->with('instructorAssignment.subject', 'instructorAssignment.course')
+                    ->get();
+            }
+            
+            $now = \Carbon\Carbon::now();
+            $currentDayOfWeek = strtolower($now->format('l'));
+            $currentTime = $now->format('H:i:s');
+
+            $dayMap = [
+                'monday' => 1, 'tuesday' => 2, 'wednesday' => 3, 'thursday' => 4,
+                'friday' => 5, 'saturday' => 6, 'sunday' => 7
+            ];
+            
+            if (isset($dayMap[$currentDayOfWeek])) {
+                $currentDayIndex = $dayMap[$currentDayOfWeek];
+                
+                $schedules = $schedules->map(function ($schedule) use ($dayMap, $currentDayIndex, $currentTime) {
+                    $scheduleDayStr = strtolower($schedule->day_of_week);
+                    $scheduleDayIndex = $dayMap[$scheduleDayStr] ?? 1;
+                    
+                    $daysUntil = $scheduleDayIndex - $currentDayIndex;
+                    
+                    // If it's earlier in the week OR if it's today but the class has already ended/started, it's next week.
+                    if ($daysUntil < 0 || ($daysUntil === 0 && $schedule->end_time <= $currentTime)) {
+                        $daysUntil += 7;
+                    }
+                    
+                    $schedule->days_until = $daysUntil;
+                    return $schedule;
+                })->sortBy([
+                    ['days_until', 'asc'],
+                    ['start_time', 'asc'],
+                ])->values();
+            }
+
+            $nextSchedule = $schedules->first();
+            $upcomingSchedules = $schedules->skip(1)->take(3);
+
+            return view('instructor.dashboard', compact('studentCount', 'instructorCount', 'subjectCount', 'assignmentCount', 'nextSchedule', 'upcomingSchedules'));
         })->name('instructor.dashboard');
     });
 

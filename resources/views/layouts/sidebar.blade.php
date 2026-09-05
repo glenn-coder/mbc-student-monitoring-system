@@ -153,11 +153,23 @@
                 </div>
             </div>
             @elseif(auth()->check() && auth()->user()->role === 'instructor')
-            <a class="flex items-center py-3 transition-colors rounded-xl {{ request()->routeIs('instructor.dashboard') ? 'text-white bg-[#10b981]' : 'text-gray-400 hover:text-white hover:bg-white/10' }}" :class="sidebarExpanded ? 'px-4' : 'justify-center px-0'" href="{{ route('instructor.dashboard') }}">
+            {{-- MAIN --}}
+            <div x-show="sidebarExpanded" class="px-4 pt-1 pb-1">
+                <span class="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Main</span>
+            </div>
+
+            <a class="flex items-center py-3 transition-colors rounded-xl {{ request()->routeIs('instructor.dashboard') ? 'text-white bg-[#2F2FE4]' : 'text-slate-400 hover:text-white hover:bg-white/5' }}" :class="sidebarExpanded ? 'px-4' : 'justify-center px-0'" href="{{ route('instructor.dashboard') }}">
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                 </svg>
                 <span class="mx-4 font-medium whitespace-nowrap" x-show="sidebarExpanded">Dashboard</span>
+            </a>
+
+            <a class="flex items-center py-3 mt-1 transition-colors rounded-xl {{ request()->routeIs('instructor.classes.*') ? 'text-white bg-[#2F2FE4]' : 'text-slate-400 hover:text-white hover:bg-white/5' }}" :class="sidebarExpanded ? 'px-4' : 'justify-center px-0'" href="{{ route('instructor.classes.index') }}">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                <span class="mx-4 font-medium whitespace-nowrap" x-show="sidebarExpanded">My Classes</span>
             </a>
             @elseif(auth()->check() && auth()->user()->role === 'student')
             <a class="flex items-center py-3 transition-colors rounded-xl {{ request()->routeIs('student.dashboard') ? 'text-white bg-[#f59e0b]' : 'text-gray-400 hover:text-white hover:bg-white/10' }}" :class="sidebarExpanded ? 'px-4' : 'justify-center px-0'" href="{{ route('student.dashboard') }}">
