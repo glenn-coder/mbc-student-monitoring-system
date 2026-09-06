@@ -4,12 +4,77 @@ namespace App\Http\Controllers\Instructor;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Instructor;
+use App\Models\InstructorAssignment;
+use App\Models\Subject;
+use Illuminate\Support\Facades\Auth;
 
 class ClassController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Add logic to fetch instructor's classes here later
-        return view('instructor.classes.index');
+        $instructor = Instructor::where('user_id', Auth::id())->first();
+        $subjects = collect();
+        
+        if ($instructor) {
+            $perPage = $request->input('per_page', 10);
+            
+            $query = InstructorAssignment::where('instructor_id', $instructor->id)
+                ->with(['subject', 'course', 'students']);
+                
+            // Search filter
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->whereHas('subject', function($q) use ($search) {
+                        $q->where('subject_code', 'like', "%{$search}%")
+                          ->orWhere('subject_name', 'like', "%{$search}%");
+                    })->orWhereHas('course', function($q) use ($search) {
+                        $q->where('code', 'like', "%{$search}%")
+                          ->orWhere('name', 'like', "%{$search}%");
+                    })->orWhere('year', 'like', "%{$search}%")
+                      ->orWhere('semester', 'like', "%{$search}%");
+                });
+            }
+            
+            // Subject filter
+            if ($request->filled('subject_id')) {
+                $query->where('subject_id', $request->subject_id);
+            }
+            
+            // Year filter
+            if ($request->filled('year')) {
+                $query->where('year', $request->year);
+            }
+            
+            $assignments = $query->paginate($perPage);
+            
+            // Get unique subjects assigned to this instructor for the filter dropdown
+            $subjectIds = InstructorAssignment::where('instructor_id', $instructor->id)
+                ->pluck('subject_id')
+                ->unique();
+            $subjects = Subject::whereIn('id', $subjectIds)->get();
+            
+        } else {
+            // Fallback if no instructor profile found
+            $assignments = InstructorAssignment::where('id', -1)->paginate(10);
+        }
+        
+        return view('instructor.classes.index', compact('assignments', 'subjects'));
+    }
+
+    public function show(int $id)
+    {
+        $instructor = Instructor::where('user_id', Auth::id())->first();
+        if (!$instructor) {
+            abort(403);
+        }
+
+        $assignment = InstructorAssignment::where('id', $id)
+            ->where('instructor_id', $instructor->id)
+            ->with(['subject', 'course', 'students'])
+            ->firstOrFail();
+
+        return view('instructor.classes.show', compact('assignment'));
     }
 }

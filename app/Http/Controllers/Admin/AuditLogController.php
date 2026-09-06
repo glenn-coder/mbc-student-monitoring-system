@@ -8,6 +8,7 @@ use App\Models\AuditLog;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\AuditLogsExport;
+use Illuminate\Database\Eloquent\Builder;
 
 class AuditLogController extends Controller
 {
@@ -19,19 +20,19 @@ class AuditLogController extends Controller
         $perPage = (int) $request->input('per_page', 10);
 
         $logs = AuditLog::with('user')
-            ->when($search, function ($query, $search) {
-                return $query->where(function($q) use ($search) {
+            ->when($search, function (Builder $query, $search) {
+                return $query->where(function(Builder $q) use ($search) {
                     $q->where('action', 'like', "%{$search}%")
                       ->orWhere('description', 'like', "%{$search}%")
-                      ->orWhereHas('user', function($u) use ($search) {
+                      ->orWhereHas('user', function(Builder $u) use ($search) {
                           $u->where('name', 'like', "%{$search}%");
                       });
                 });
             })
-            ->when($actionFilter, function ($query, $action) {
+            ->when($actionFilter, function (Builder $query, $action) {
                 return $query->where('action', $action);
             })
-            ->when($statusFilter, function ($query, $status) {
+            ->when($statusFilter, function (Builder $query, $status) {
                 return $query->where('status', $status);
             })
             ->latest()
@@ -40,26 +41,26 @@ class AuditLogController extends Controller
         return view('admin.audit_logs.index', compact('logs'));
     }
 
-    public function export(Request $request, $type)
+    public function export(Request $request, string $type)
     {
         $search = $request->input('search');
         $actionFilter = $request->input('action');
         $statusFilter = $request->input('status');
 
         $query = AuditLog::with('user')
-            ->when($search, function ($query, $search) {
-                return $query->where(function($q) use ($search) {
+            ->when($search, function (Builder $query, $search) {
+                return $query->where(function(Builder $q) use ($search) {
                     $q->where('action', 'like', "%{$search}%")
                       ->orWhere('description', 'like', "%{$search}%")
-                      ->orWhereHas('user', function($u) use ($search) {
+                      ->orWhereHas('user', function(Builder $u) use ($search) {
                           $u->where('name', 'like', "%{$search}%");
                       });
                 });
             })
-            ->when($actionFilter, function ($query, $action) {
+            ->when($actionFilter, function (Builder $query, $action) {
                 return $query->where('action', $action);
             })
-            ->when($statusFilter, function ($query, $status) {
+            ->when($statusFilter, function (Builder $query, $status) {
                 return $query->where('status', $status);
             })
             ->latest();
@@ -79,7 +80,7 @@ class AuditLogController extends Controller
         abort(404);
     }
 
-    private function calculateAuditMetrics($query)
+    private function calculateAuditMetrics(Builder $query)
     {
         $metricsQuery = clone $query;
         $total = $metricsQuery->count();

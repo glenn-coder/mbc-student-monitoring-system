@@ -75,6 +75,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::middleware(['role:instructor'])->group(function () {
         Route::get('/instructor/classes', [\App\Http\Controllers\Instructor\ClassController::class, 'index'])->name('instructor.classes.index');
+        Route::get('/instructor/classes/{assignment}', [\App\Http\Controllers\Instructor\ClassController::class, 'show'])->name('instructor.classes.show');
         
         Route::get('/instructor/dashboard', function () {
             $studentCount = \App\Models\Student::count();
