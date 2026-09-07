@@ -195,7 +195,7 @@ class ReportController extends Controller
         abort(404);
     }
 
-    private function calculateStudentMetrics($query, $type)
+    private function calculateStudentMetrics(\Illuminate\Database\Eloquent\Builder $query, string $type)
     {
         $metricsQuery = clone $query;
         $total = $metricsQuery->count();
@@ -233,7 +233,7 @@ class ReportController extends Controller
         ];
     }
 
-    private function calculateInstructorMetrics($query)
+    private function calculateInstructorMetrics(\Illuminate\Database\Eloquent\Builder $query)
     {
         $metricsQuery = clone $query;
         $total = $metricsQuery->count();

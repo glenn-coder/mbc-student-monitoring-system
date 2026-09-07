@@ -116,11 +116,8 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-2">
-                                        <a href="{{ route('instructor.classes.show', $assignment) }}" title="View Class Students" class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-white bg-emerald-500 rounded hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
-                                            <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                            </svg>
-                                            View Students
+                                        <a href="{{ route('instructor.classes.show', $assignment) }}" title="View Class Students" class="inline-flex items-center justify-center px-4 py-2 text-xs font-medium text-white bg-[#2F2FE4] rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-[#2F2FE4] focus:ring-offset-2 transition-colors">
+                                            View Class
                                         </a>
                                     </div>
                                 </td>

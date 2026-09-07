@@ -72,7 +72,7 @@ class ClassController extends Controller
 
         $assignment = InstructorAssignment::where('id', $id)
             ->where('instructor_id', $instructor->id)
-            ->with(['subject', 'course', 'students'])
+            ->with(['subject', 'course', 'students', 'schedules'])
             ->firstOrFail();
 
         return view('instructor.classes.show', compact('assignment'));
