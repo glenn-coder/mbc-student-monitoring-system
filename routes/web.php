@@ -111,8 +111,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     
                     $daysUntil = $scheduleDayIndex - $currentDayIndex;
                     
-                    // If it's earlier in the week OR if it's today but the class has already ended/started, it's next week.
-                    if ($daysUntil < 0 || ($daysUntil === 0 && $schedule->end_time <= $currentTime)) {
+                    // If the schedule day is earlier in the week, it will be next week.
+                    if ($daysUntil < 0) {
                         $daysUntil += 7;
                     }
                     

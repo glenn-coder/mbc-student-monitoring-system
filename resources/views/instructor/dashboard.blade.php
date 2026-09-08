@@ -2,60 +2,74 @@
     <div class="p-8 mx-auto max-w-7xl">
 
         <!-- Metric Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
             <!-- Total Students -->
-            <div class="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-sm font-medium text-gray-500">Total Students</span>
-                    <div class="p-2 bg-blue-50 text-blue-600 rounded-full">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-medium text-gray-500">Total Students</span>
+                    <div class="p-1.5 bg-blue-50 text-blue-600 rounded-full">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                         </svg>
                     </div>
                 </div>
-                <h4 class="text-3xl font-bold text-gray-900 mb-2">{{ $studentCount }}</h4>
+                <h4 class="text-2xl font-bold text-gray-900 mb-1">{{ $studentCount }}</h4>
 
             </div>
 
-            <!-- Total Instructor -->
-            <div class="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-sm font-medium text-gray-500">Total Classes</span>
-                    <div class="p-2 bg-emerald-50 text-emerald-600 rounded-full">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <!-- Total Classes -->
+            <div class="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-medium text-gray-500">Total Classes</span>
+                    <div class="p-1.5 bg-emerald-50 text-emerald-600 rounded-full">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
                     </div>
                 </div>
-                <h4 class="text-3xl font-bold text-gray-900 mb-2">{{ $instructorCount }}</h4>
+                <h4 class="text-2xl font-bold text-gray-900 mb-1">{{ $instructorCount }}</h4>
 
             </div>
 
-            <!-- Total Subject -->
-            <div class="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-sm font-medium text-gray-500">Total Present</span>
-                    <div class="p-2 bg-green-50 text-green-600 rounded-full">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <!-- Total Present -->
+            <div class="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-medium text-gray-500">Total Present</span>
+                    <div class="p-1.5 bg-green-50 text-green-600 rounded-full">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                 </div>
-                <h4 class="text-3xl font-bold text-gray-900 mb-2">{{ $subjectCount }}</h4>
+                <h4 class="text-2xl font-bold text-gray-900 mb-1">{{ $subjectCount }}</h4>
 
             </div>
 
-            <!-- Total Faculty Assignments -->
-            <div class="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-sm font-medium text-gray-500">Total Absent</span>
-                    <div class="p-2 bg-red-50 text-red-600 rounded-full">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <!-- Total Late -->
+            <div class="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-medium text-gray-500">Total Late</span>
+                    <div class="p-1.5 bg-orange-50 text-orange-600 rounded-full">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                </div>
+                <h4 class="text-2xl font-bold text-gray-900 mb-1">{{ $lateCount ?? 0 }}</h4>
+
+            </div>
+
+            <!-- Total Absent -->
+            <div class="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-medium text-gray-500">Total Absent</span>
+                    <div class="p-1.5 bg-red-50 text-red-600 rounded-full">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                 </div>
-                <h4 class="text-3xl font-bold text-gray-900 mb-2">{{ $assignmentCount }}</h4>
+                <h4 class="text-2xl font-bold text-gray-900 mb-1">{{ $assignmentCount }}</h4>
 
             </div>
         </div>
