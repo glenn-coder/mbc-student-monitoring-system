@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Instructor;
 use App\Models\InstructorAssignment;
 use App\Models\Subject;
+use App\Models\AttendanceSession;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class ClassController extends Controller
 {
@@ -72,9 +74,21 @@ class ClassController extends Controller
 
         $assignment = InstructorAssignment::where('id', $id)
             ->where('instructor_id', $instructor->id)
-            ->with(['subject', 'course', 'students', 'schedules'])
+            ->with(['subject', 'course', 'students.course', 'schedules'])
             ->firstOrFail();
+
+        // Load today's open attendance session for each schedule
+        $today = Carbon::now('Asia/Manila')->toDateString();
+        foreach ($assignment->schedules as $schedule) {
+            $schedule->setRelation(
+                'todaySession',
+                AttendanceSession::where('schedule_id', $schedule->id)
+                    ->where('session_date', $today)
+                    ->first()
+            );
+        }
 
         return view('instructor.classes.show', compact('assignment'));
     }
 }
+

@@ -27,20 +27,22 @@ class TimetableController extends Controller
     {
         $request->validate([
             'instructor_assignment_id' => 'required|exists:instructor_assignments,id',
-            'days' => 'required|array',
-            'days.*' => 'in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
-            'start_time' => 'required',
-            'end_time' => 'required|after:start_time',
-            'status' => 'required|in:active,inactive',
+            'days'                     => 'required|array',
+            'days.*'                   => 'in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
+            'start_time'               => 'required',
+            'end_time'                 => 'required|after:start_time',
+            'grace_period_minutes'     => 'required|integer|min:0|max:120',
+            'status'                   => 'required|in:active,inactive',
         ]);
 
         foreach ($request->days as $day) {
             Schedule::create([
                 'instructor_assignment_id' => $request->instructor_assignment_id,
-                'day_of_week' => $day,
-                'start_time' => $request->start_time,
-                'end_time' => $request->end_time,
-                'status' => $request->status,
+                'day_of_week'              => $day,
+                'start_time'               => $request->start_time,
+                'end_time'                 => $request->end_time,
+                'grace_period_minutes'     => $request->grace_period_minutes,
+                'status'                   => $request->status,
             ]);
         }
 
@@ -51,30 +53,33 @@ class TimetableController extends Controller
     {
         $request->validate([
             'instructor_assignment_id' => 'required|exists:instructor_assignments,id',
-            'days' => 'required|array',
-            'days.*' => 'in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
-            'start_time' => 'required',
-            'end_time' => 'required|after:start_time',
-            'status' => 'required|in:active,inactive',
+            'days'                     => 'required|array',
+            'days.*'                   => 'in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
+            'start_time'               => 'required',
+            'end_time'                 => 'required|after:start_time',
+            'grace_period_minutes'     => 'required|integer|min:0|max:120',
+            'status'                   => 'required|in:active,inactive',
         ]);
 
         $days = $request->days;
 
         $timetable->update([
             'instructor_assignment_id' => $request->instructor_assignment_id,
-            'day_of_week' => array_shift($days),
-            'start_time' => $request->start_time,
-            'end_time' => $request->end_time,
-            'status' => $request->status,
+            'day_of_week'              => array_shift($days),
+            'start_time'               => $request->start_time,
+            'end_time'                 => $request->end_time,
+            'grace_period_minutes'     => $request->grace_period_minutes,
+            'status'                   => $request->status,
         ]);
 
         foreach ($days as $day) {
             Schedule::create([
                 'instructor_assignment_id' => $request->instructor_assignment_id,
-                'day_of_week' => $day,
-                'start_time' => $request->start_time,
-                'end_time' => $request->end_time,
-                'status' => $request->status,
+                'day_of_week'              => $day,
+                'start_time'               => $request->start_time,
+                'end_time'                 => $request->end_time,
+                'grace_period_minutes'     => $request->grace_period_minutes,
+                'status'                   => $request->status,
             ]);
         }
 

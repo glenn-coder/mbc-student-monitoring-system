@@ -67,13 +67,13 @@
                             <h4 class="font-bold text-sm text-gray-900 pr-2 leading-tight">{{ $schedule->instructorAssignment->subject->subject_name }}</h4>
                             <div class="flex items-center gap-2 flex-shrink-0">
                                 @if($schedule->status == 'active')
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-800 tracking-wider">
-                                        ACTIVE
-                                    </span>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-800 tracking-wider">
+                                    ACTIVE
+                                </span>
                                 @else
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-gray-200 text-gray-800 tracking-wider">
-                                        INACTIVE
-                                    </span>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-gray-200 text-gray-800 tracking-wider">
+                                    INACTIVE
+                                </span>
                                 @endif
                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 tracking-wider">
                                     {{ $schedule->instructorAssignment->course->code }}-{{ $schedule->instructorAssignment->year }}
@@ -106,7 +106,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Modals outside of clickable card -->
                     <x-modal name="confirm-delete-{{ $schedule->id }}" maxWidth="md" focusable>
                         <div class="p-6 relative text-left">
@@ -126,7 +126,7 @@
                             </div>
                         </div>
                     </x-modal>
-                    
+
                     <x-modal name="edit-schedule-{{ $schedule->id }}" maxWidth="lg" focusable>
                         <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 text-left">
                             <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-100">
@@ -185,16 +185,26 @@
                                         <input type="time" name="end_time" value="{{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }}" required class="w-full border-gray-300 focus:border-[#2F2FE4] focus:ring-0 rounded-md shadow-sm sm:text-sm text-gray-600">
                                     </div>
                                 </div>
+
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                        Grace Period
+                                        <span class="text-gray-400 font-normal">(minutes)</span>
+                                    </label>
+                                    <input type="number" name="grace_period_minutes" value="{{ $schedule->grace_period_minutes }}" min="0" max="120" required
+                                        class="w-full border-gray-300 focus:border-[#2F2FE4] focus:ring-0 rounded-md shadow-sm sm:text-sm text-gray-600">
+                                    <p class="mt-1 text-xs text-gray-400">Students scanned within this window after class start are marked <strong>Present</strong>. After the window, they are marked <strong>Late</strong>.</p>
+                                </div>
                             </form>
                         </div>
-                                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-gray-100">
-                                        <button type="submit" form="editScheduleForm-{{ $schedule->id }}" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-amber-600 text-base font-medium text-white hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 sm:ml-3 sm:w-auto sm:text-sm">
-                                            Update Schedule
-                                        </button>
-                                        <button type="button" x-on:click="$dispatch('close')" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                                            Cancel
-                                        </button>
-                                    </div>
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-gray-100">
+                            <button type="submit" form="editScheduleForm-{{ $schedule->id }}" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-amber-600 text-base font-medium text-white hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                Update Schedule
+                            </button>
+                            <button type="button" x-on:click="$dispatch('close')" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                Cancel
+                            </button>
+                        </div>
                     </x-modal>
                     @endforeach
                     @endif
@@ -284,6 +294,16 @@
                                 </div>
                             </div>
 
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Grace Period
+                                    <span class="text-gray-400 font-normal">(minutes)</span>
+                                </label>
+                                <input type="number" name="grace_period_minutes" value="15" min="0" max="120" required
+                                    class="w-full border-gray-300 focus:border-[#2F2FE4] focus:ring-0 rounded-md shadow-sm sm:text-sm text-gray-600"
+                                    placeholder="e.g. 15">
+                                <p class="mt-1 text-xs text-gray-400">Students who scan within the grace period after class starts are marked <strong>Present</strong>. Scans after the grace period but before the class ends are marked <strong>Late</strong>.</p>
+                            </div>
 
                         </form>
                     </div>
