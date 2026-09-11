@@ -30,13 +30,13 @@ class AttendanceController extends Controller
 
         $schedule = Schedule::with('instructorAssignment.instructor')->findOrFail($request->schedule_id);
 
-        // Ensure the instructor owns this schedule
         $this->authorizeSchedule($schedule);
 
         $session = $this->attendanceService->openSession($schedule);
 
         return response()->json([
             'session' => $this->formatSession($session),
+            'summary' => $this->getSessionSummary($session),
         ]);
     }
 
@@ -63,6 +63,28 @@ class AttendanceController extends Controller
     }
 
     /**
+     * Record manual attendance for a student selected by the instructor.
+     * POST /instructor/attendance/{session}/manual
+     */
+    public function manualRecord(Request $request, AttendanceSession $session)
+    {
+        $this->authorizeSession($session);
+
+        $request->validate([
+            'student_id' => 'required|integer|exists:students,id',
+        ]);
+
+        $result = $this->attendanceService->recordManual($session, (int) $request->student_id);
+
+        return response()->json([
+            'status'  => $result['status'],
+            'message' => $result['message'],
+            'record'  => $result['record'] ? $this->formatRecord($result['record']) : null,
+            'summary' => $this->getSessionSummary($session),
+        ]);
+    }
+
+    /**
      * Get the current session data (used for polling/refresh).
      * GET /instructor/attendance/{session}
      */
@@ -72,10 +94,20 @@ class AttendanceController extends Controller
 
         $session->load(['records.student.course', 'schedule.instructorAssignment.students.course']);
 
+        $enrolledStudents = $session->schedule->instructorAssignment?->students->map(function ($s) {
+            return [
+                'id'             => $s->id,
+                'student_number' => $s->student_number,
+                'full_name'      => trim("{$s->first_name} " . ($s->middle_name ? $s->middle_name[0] . '. ' : '') . $s->last_name),
+                'course'         => $s->course?->code ?? 'N/A',
+            ];
+        }) ?? collect();
+
         return response()->json([
-            'session' => $this->formatSession($session),
-            'records' => $session->records->map(fn ($r) => $this->formatRecord($r)),
-            'summary' => $this->getSessionSummary($session),
+            'session'           => $this->formatSession($session),
+            'records'           => $session->records->map(fn($r) => $this->formatRecord($r)),
+            'enrolled_students' => $enrolledStudents->values(),
+            'summary'           => $this->getSessionSummary($session),
         ]);
     }
 
@@ -87,7 +119,6 @@ class AttendanceController extends Controller
     {
         $this->authorizeSession($session);
 
-        // Only allow if session has ended
         if (!$session->hasEnded()) {
             return response()->json([
                 'status'  => 'error',
@@ -97,13 +128,12 @@ class AttendanceController extends Controller
 
         $count = $this->attendanceService->markAbsentForEndedSessions();
 
-        // Re-load the updated session
         $session->refresh()->load(['records.student.course']);
 
         return response()->json([
             'status'  => 'ok',
             'message' => "Marked {$count} student(s) as Absent.",
-            'records' => $session->records->map(fn ($r) => $this->formatRecord($r)),
+            'records' => $session->records->map(fn($r) => $this->formatRecord($r)),
             'summary' => $this->getSessionSummary($session),
         ]);
     }
@@ -131,7 +161,7 @@ class AttendanceController extends Controller
                     'start_time'   => \Carbon\Carbon::parse($schedule->start_time)->format('g:i A'),
                     'end_time'     => \Carbon\Carbon::parse($schedule->end_time)->format('g:i A'),
                     'status'       => $session->status,
-                    'records'      => $session->records->map(fn ($r) => $this->formatRecord($r)),
+                    'records'      => $session->records->map(fn($r) => $this->formatRecord($r)),
                 ];
             });
         })->sortByDesc('session_date')->values();
@@ -139,7 +169,7 @@ class AttendanceController extends Controller
         return response()->json(['sessions' => $sessions]);
     }
 
-    // ─── Private helpers ──────────────────────────────────────────────────────
+    // ─── Private helpers ───────────────────────────────────────────────────────
 
     private function authorizeSchedule(Schedule $schedule): void
     {
@@ -160,39 +190,47 @@ class AttendanceController extends Controller
     {
         $schedule = $session->schedule;
         return [
-            'id'                  => $session->id,
-            'session_date'        => $session->session_date->format('M d, Y'),
-            'status'              => $session->status,
-            'opened_at'           => $session->opened_at?->format('g:i A'),
-            'closed_at'           => $session->closed_at?->format('g:i A'),
-            'start_time'          => \Carbon\Carbon::parse($schedule->start_time)->format('g:i A'),
-            'end_time'            => \Carbon\Carbon::parse($schedule->end_time)->format('g:i A'),
-            'grace_period_minutes'=> $schedule->grace_period_minutes,
-            'is_open'             => $session->isOpen(),
-            'has_ended'           => $session->hasEnded(),
+            'id'                   => $session->id,
+            'session_date'         => $session->session_date->format('M d, Y'),
+            'status'               => $session->status,
+            'opened_at'            => $session->opened_at?->format('g:i A'),
+            'closed_at'            => $session->closed_at?->format('g:i A'),
+            'start_time'           => \Carbon\Carbon::parse($schedule->start_time)->format('g:i A'),
+            'end_time'             => \Carbon\Carbon::parse($schedule->end_time)->format('g:i A'),
+            'grace_period_minutes' => $schedule->grace_period_minutes,
+            'is_open'              => $session->isOpen(),
+            'has_ended'            => $session->hasEnded(),
         ];
     }
 
+    /**
+     * Format a single attendance record for API responses.
+     * Includes attendance_method for audit purposes.
+     */
     private function formatRecord(AttendanceRecord $record): array
     {
         $student = $record->student;
         return [
-            'id'             => $record->id,
-            'student_id'     => $student->id,
-            'student_number' => $student->student_number,
-            'full_name'      => trim("{$student->first_name} " . ($student->middle_name ? $student->middle_name[0].'. ' : '') . $student->last_name),
-            'course'         => $student->course?->code ?? 'N/A',
-            'status'         => $record->status,
-            'scanned_at'     => $record->scanned_at?->format('g:i A'),
+            'id'                => $record->id,
+            'student_id'        => $student->id,
+            'student_number'    => $student->student_number,
+            'full_name'         => trim("{$student->first_name} " . ($student->middle_name ? $student->middle_name[0] . '. ' : '') . $student->last_name),
+            'course'            => $student->course?->code ?? 'N/A',
+            'status'            => $record->status,
+            'scanned_at'        => $record->scanned_at?->format('g:i A'),
+            'attendance_method' => $record->attendance_method ?? AttendanceRecord::METHOD_SCAN,
         ];
     }
 
     private function getSessionSummary(AttendanceSession $session): array
     {
+        $session->loadMissing('schedule.instructorAssignment.students');
         $records = AttendanceRecord::where('attendance_session_id', $session->id)->get();
 
+        $enrolledCount = $session->schedule->instructorAssignment?->students->count() ?? $records->count();
+
         return [
-            'total'   => $records->count(),
+            'total'   => $enrolledCount,
             'present' => $records->where('status', 'present')->count(),
             'late'    => $records->where('status', 'late')->count(),
             'absent'  => $records->where('status', 'absent')->count(),

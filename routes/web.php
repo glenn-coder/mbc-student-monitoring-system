@@ -82,6 +82,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/instructor/attendance/open', [\App\Http\Controllers\Instructor\AttendanceController::class, 'openSession'])->name('instructor.attendance.open');
         Route::get('/instructor/attendance/{session}', [\App\Http\Controllers\Instructor\AttendanceController::class, 'session'])->name('instructor.attendance.session');
         Route::post('/instructor/attendance/{session}/scan', [\App\Http\Controllers\Instructor\AttendanceController::class, 'scan'])->name('instructor.attendance.scan');
+        Route::post('/instructor/attendance/{session}/manual', [\App\Http\Controllers\Instructor\AttendanceController::class, 'manualRecord'])->name('instructor.attendance.manual');
         Route::post('/instructor/attendance/{session}/mark-absent', [\App\Http\Controllers\Instructor\AttendanceController::class, 'markAbsent'])->name('instructor.attendance.mark-absent');
         Route::get('/instructor/dashboard', function () {
             $studentCount = \App\Models\Student::count();
