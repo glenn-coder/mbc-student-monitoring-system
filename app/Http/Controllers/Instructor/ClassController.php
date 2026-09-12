@@ -19,7 +19,7 @@ class ClassController extends Controller
         $subjects = collect();
         
         if ($instructor) {
-            $perPage = $request->input('per_page', 10);
+            $perPage = $request->input('per_page', 5);
             
             $query = InstructorAssignment::where('instructor_id', $instructor->id)
                 ->with(['subject', 'course', 'students']);
@@ -59,7 +59,7 @@ class ClassController extends Controller
             
         } else {
             // Fallback if no instructor profile found
-            $assignments = InstructorAssignment::where('id', -1)->paginate(10);
+            $assignments = InstructorAssignment::where('id', -1)->paginate(5);
         }
         
         return view('instructor.classes.index', compact('assignments', 'subjects'));

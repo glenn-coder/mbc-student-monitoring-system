@@ -18,8 +18,8 @@
                 <form action="{{ route('admin.students.index') }}" method="GET" class="flex items-center gap-2" id="perPageForm">
                     <span class="text-sm font-medium text-slate-600">Showing</span>
                     <select name="per_page" onchange="document.getElementById('perPageForm').submit()" class="border-transparent bg-white rounded-md text-sm font-medium text-slate-700 shadow-sm focus:ring-2 focus:ring-mbc-navy/20 focus:border-mbc-navy py-1.5 pl-3 pr-8 transition-colors">
-                        <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
-                        <option value="10" {{ request('per_page', 5) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5</option>
+                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
                         <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
                         <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
                     </select>

@@ -4,73 +4,68 @@
         <!-- Metric Cards -->
         <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
             <!-- Total Students -->
-            <div class="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-3">
-                    <span class="text-xs font-medium text-gray-500">Total Students</span>
-                    <div class="p-1.5 bg-blue-50 text-blue-600 rounded-full">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3 gap-2">
+                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Students</span>
+                    <div class="p-2 bg-blue-50 text-blue-600 rounded-full shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                         </svg>
                     </div>
                 </div>
-                <h4 class="text-2xl font-bold text-gray-900 mb-1">{{ $studentCount }}</h4>
-
+                <h4 class="text-2xl font-bold text-gray-900">{{ $studentCount }}</h4>
             </div>
 
             <!-- Total Classes -->
-            <div class="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-3">
-                    <span class="text-xs font-medium text-gray-500">Total Classes</span>
-                    <div class="p-1.5 bg-emerald-50 text-emerald-600 rounded-full">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3 gap-2">
+                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Classes</span>
+                    <div class="p-2 bg-emerald-50 text-emerald-600 rounded-full shrink-0">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
                     </div>
                 </div>
-                <h4 class="text-2xl font-bold text-gray-900 mb-1">{{ $instructorCount }}</h4>
-
+                <h4 class="text-2xl font-bold text-gray-900">{{ $classCount }}</h4>
             </div>
 
             <!-- Total Present -->
-            <div class="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-3">
-                    <span class="text-xs font-medium text-gray-500">Total Present</span>
-                    <div class="p-1.5 bg-green-50 text-green-600 rounded-full">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3 gap-2">
+                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Present</span>
+                    <div class="p-2 bg-green-50 text-green-600 rounded-full shrink-0">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                 </div>
-                <h4 class="text-2xl font-bold text-gray-900 mb-1">{{ $subjectCount }}</h4>
-
+                <h4 class="text-2xl font-bold text-gray-900">{{ $todayPresent }}</h4>
             </div>
 
             <!-- Total Late -->
-            <div class="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-3">
-                    <span class="text-xs font-medium text-gray-500">Total Late</span>
-                    <div class="p-1.5 bg-orange-50 text-orange-600 rounded-full">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3 gap-2">
+                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Late</span>
+                    <div class="p-2 bg-orange-50 text-orange-600 rounded-full shrink-0">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                 </div>
-                <h4 class="text-2xl font-bold text-gray-900 mb-1">{{ $lateCount ?? 0 }}</h4>
-
+                <h4 class="text-2xl font-bold text-gray-900">{{ $todayLate }}</h4>
             </div>
 
             <!-- Total Absent -->
-            <div class="p-4 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-3">
-                    <span class="text-xs font-medium text-gray-500">Total Absent</span>
-                    <div class="p-1.5 bg-red-50 text-red-600 rounded-full">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3 gap-2">
+                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Absent</span>
+                    <div class="p-2 bg-red-50 text-red-600 rounded-full shrink-0">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                 </div>
-                <h4 class="text-2xl font-bold text-gray-900 mb-1">{{ $assignmentCount }}</h4>
-
+                <h4 class="text-2xl font-bold text-gray-900">{{ $todayAbsent }}</h4>
             </div>
         </div>
 
@@ -83,81 +78,195 @@
                         <h3 class="text-lg font-bold text-gray-900">Student Attendance Overview</h3>
                         <p class="text-sm text-gray-500">Daily present, late, and absent across all students</p>
                     </div>
-                    <div class="flex bg-gray-100 rounded-full p-1">
-                        <button class="px-3 py-1 text-xs font-medium text-white bg-blue-500 rounded-full shadow-sm">Week</button>
-                        <button class="px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">Month</button>
-                        <button class="px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">Term</button>
-                    </div>
-                </div>
-
-                <!-- Chart Placeholder -->
-                <div class="relative h-72 w-full flex flex-col mt-4">
-                    <div class="flex-1 relative">
-                        <!-- Fake Y-axis -->
-                        <div class="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-xs text-gray-400 w-10 text-right pr-2">
-                            <span>200</span>
-                            <span>150</span>
-                            <span>100</span>
-                            <span>50</span>
-                            <span>0</span>
+                    <div class="flex items-center gap-3">
+                        <div class="flex bg-gray-100 rounded-full p-1">
+                            <button class="px-3 py-1 text-xs font-medium text-white bg-blue-500 rounded-full shadow-sm">Week</button>
+                            <button class="px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">Month</button>
+                            <button class="px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">Term</button>
                         </div>
-
-                        <!-- Fake Chart Area -->
-                        <div class="ml-10 h-full border-l border-b border-gray-200 relative">
-                            <!-- Grid lines -->
-                            <div class="absolute w-full border-t border-gray-100 top-[25%] z-0"></div>
-                            <div class="absolute w-full border-t border-gray-100 top-[50%] z-0"></div>
-                            <div class="absolute w-full border-t border-gray-100 top-[75%] z-0"></div>
-
-                            <!-- Bar Groups -->
-                            <div class="absolute inset-0 z-10 flex justify-around items-end px-2 pt-4">
-                                @php
-                                $fakeData = [
-                                ['day' => 'Mon', 'present' => 85, 'late' => 15, 'absent' => 10],
-                                ['day' => 'Tue', 'present' => 90, 'late' => 5, 'absent' => 5],
-                                ['day' => 'Wed', 'present' => 75, 'late' => 20, 'absent' => 25],
-                                ['day' => 'Thu', 'present' => 80, 'late' => 10, 'absent' => 15],
-                                ['day' => 'Fri', 'present' => 95, 'late' => 8, 'absent' => 2],
-                                ];
-                                @endphp
-
-                                @foreach($fakeData as $data)
-                                <div class="flex flex-col items-center h-full justify-end w-full">
-                                    <div class="flex items-end space-x-1 h-full w-full justify-center pb-px">
-                                        <div class="w-3 sm:w-4 lg:w-6 bg-green-500 rounded-t-sm hover:opacity-80 transition-opacity cursor-pointer" @style(["height: {$data['present']}%"]) title="Present: {{ $data['present'] }}"></div>
-                                        <div class="w-3 sm:w-4 lg:w-6 bg-blue-500 rounded-t-sm hover:opacity-80 transition-opacity cursor-pointer" @style(["height: {$data['late']}%"]) title="Late: {{ $data['late'] }}"></div>
-                                        <div class="w-3 sm:w-4 lg:w-6 bg-red-500 rounded-t-sm hover:opacity-80 transition-opacity cursor-pointer" @style(["height: {$data['absent']}%"]) title="Absent: {{ $data['absent'] }}"></div>
-                                    </div>
-                                </div>
-                                @endforeach
+                        
+                        <!-- Dropdown Menu -->
+                        <div x-data="{ open: false }" class="relative">
+                            <!-- Hidden date input kept outside the dropdown panel so it doesn't get destroyed when dropdown closes -->
+                            <input type="date" x-ref="datePicker" class="absolute w-0 h-0 opacity-0 pointer-events-none" style="top: 0; left: 0;" @change="open = false" />
+                            
+                            <button @click="open = !open" @click.away="open = false" class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 focus:outline-none">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+                                </svg>
+                            </button>
+                            
+                            <!-- Dropdown Panel -->
+                            <div x-show="open" 
+                                 x-transition:enter="transition ease-out duration-100"
+                                 x-transition:enter-start="transform opacity-0 scale-95"
+                                 x-transition:enter-end="transform opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave-start="transform opacity-100 scale-100"
+                                 x-transition:leave-end="transform opacity-0 scale-95"
+                                 class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50"
+                                 style="display: none;">
+                                
+                                <a href="#" @click.prevent="open = false" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                    Export Data
+                                </a>
+                                
+                                <a href="#" @click.prevent="$refs.datePicker.showPicker()" class="relative flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                    <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    Change Date
+                                </a>
+                                
+                                <a href="#" @click.prevent="open = false" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                                    Filter Platforms
+                                </a>
+                                
+                                <a href="#" @click.prevent="open = false" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                    Refresh
+                                </a>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Fake X-axis labels -->
-                    <div class="ml-10 flex justify-around text-xs text-gray-500 font-medium mt-2">
-                        @foreach($fakeData as $data)
-                        <div class="w-full text-center">{{ $data['day'] }}</div>
-                        @endforeach
-                    </div>
-
-                    <!-- Legend -->
-                    <div class="ml-10 flex justify-center space-x-6 mt-4">
-                        <div class="flex items-center">
-                            <div class="w-3 h-3 bg-green-500 rounded mr-2 shadow-sm"></div>
-                            <span class="text-xs text-gray-600 font-medium">Present</span>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="w-3 h-3 bg-blue-500 rounded mr-2 shadow-sm"></div>
-                            <span class="text-xs text-gray-600 font-medium">Late</span>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="w-3 h-3 bg-red-500 rounded mr-2 shadow-sm"></div>
-                            <span class="text-xs text-gray-600 font-medium">Absent</span>
-                        </div>
-                    </div>
+                <div class="relative h-72 w-full mt-4">
+                    <canvas id="attendanceChart"></canvas>
                 </div>
             </div>
+
+            <!-- Include Chart.js -->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script type="application/json" id="chartDataJson">
+                {!! json_encode([
+                    'present' => $chartData['present'] ?? [0,0,0,0,0],
+                    'late'    => $chartData['late']    ?? [0,0,0,0,0],
+                    'absent'  => $chartData['absent']  ?? [0,0,0,0,0],
+                ]) !!}
+            </script>
+            <script>
+                var chartData = JSON.parse(document.getElementById('chartDataJson').textContent);
+            </script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const ctx = document.getElementById('attendanceChart').getContext('2d');
+                    
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                            datasets: [
+                                {
+                                    label: 'Present',
+                                    data: chartData.present,
+                                    borderColor: '#22c55e', // Green
+                                    backgroundColor: 'transparent',
+                                    tension: 0.4,
+                                    borderWidth: 2,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointBackgroundColor: '#22c55e'
+                                },
+                                {
+                                    label: 'Late',
+                                    data: chartData.late,
+                                    borderColor: '#3b82f6', // Blue
+                                    backgroundColor: 'transparent',
+                                    tension: 0.4,
+                                    borderWidth: 2,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointBackgroundColor: '#3b82f6'
+                                },
+                                {
+                                    label: 'Absent',
+                                    data: chartData.absent,
+                                    borderColor: '#ef4444', // Red
+                                    backgroundColor: 'transparent',
+                                    tension: 0.4,
+                                    borderWidth: 2,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointBackgroundColor: '#ef4444'
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                mode: 'index',
+                                intersect: false,
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        color: '#4b5563', // text-gray-600
+                                        usePointStyle: true,
+                                        boxWidth: 6,
+                                        boxHeight: 6,
+                                        pointStyleWidth: 8,
+                                        padding: 20,
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: '#ffffff',
+                                    titleColor: '#111827',
+                                    bodyColor: '#4b5563',
+                                    borderColor: '#e5e7eb',
+                                    borderWidth: 1,
+                                    padding: 12,
+                                    usePointStyle: true,
+                                    boxPadding: 6,
+                                    titleFont: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    },
+                                    bodyFont: {
+                                        size: 13
+                                    },
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.dataset.label + ': ' + context.parsed.y;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    grid: {
+                                        color: '#f3f4f6', // gray-100
+                                        drawBorder: false,
+                                        tickLength: 0
+                                    },
+                                    ticks: {
+                                        color: '#6b7280', // gray-500
+                                        padding: 10
+                                    }
+                                },
+                                y: {
+                                    grid: {
+                                        color: '#f3f4f6', // gray-100
+                                        drawBorder: false,
+                                        tickLength: 0
+                                    },
+                                    ticks: {
+                                        color: '#6b7280', // gray-500
+                                        stepSize: 1,
+                                        padding: 10
+                                    },
+                                    min: 0
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
 
             <!-- Next Class Schedule & Upcoming Class Schedules -->
             <div class="flex flex-col space-y-6">

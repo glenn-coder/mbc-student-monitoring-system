@@ -1,4 +1,4 @@
-<header class="flex items-center justify-between px-8 py-4 bg-white border-b border-slate-200">
+<header class="relative z-50 flex items-center justify-between px-8 py-4 bg-white border-b border-slate-200">
     <!-- Left side / Date -->
     <div class="flex flex-col">
         @php
@@ -54,7 +54,7 @@
                 x-transition:leave="transition ease-in duration-75"
                 x-transition:leave-start="transform opacity-100 scale-100"
                 x-transition:leave-end="transform opacity-0 scale-95"
-                class="absolute right-0 w-48 mt-2 origin-top-right bg-white border border-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" style="display: none;">
+                class="absolute right-0 w-48 mt-2 origin-top-right bg-white border border-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50" style="display: none;">
                 <div class="py-1">
                     <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
 

@@ -17,7 +17,7 @@ class AuditLogController extends Controller
         $search = $request->input('search');
         $actionFilter = $request->input('action');
         $statusFilter = $request->input('status');
-        $perPage = (int) $request->input('per_page', 10);
+        $perPage = (int) $request->input('per_page', 5);
 
         $logs = AuditLog::with('user')
             ->when($search, function (Builder $query, $search) {

@@ -104,8 +104,8 @@
                 <form action="{{ route('admin.assignments.index') }}" method="GET" class="flex items-center gap-2" id="perPageForm">
                     <span class="text-sm text-gray-700">Showing</span>
                     <select name="per_page" onchange="document.getElementById('perPageForm').submit()" class="border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 py-1 pl-2 pr-6">
-                        <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
-                        <option value="10" {{ request('per_page', 5) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5</option>
+                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
                         <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
                         <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
                     </select>

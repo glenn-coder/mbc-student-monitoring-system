@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="p-8 mx-auto max-w-7xl">
+    <div class="p-8 mx-auto max-w-7xl" x-data="{ showInfoModal: null }">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-900">My Classes</h2>
         </div>
@@ -13,8 +13,8 @@
                 <form action="{{ route('instructor.classes.index') }}" method="GET" class="flex items-center gap-2" id="perPageForm">
                     <span class="text-sm text-gray-700">Showing</span>
                     <select name="per_page" onchange="document.getElementById('perPageForm').submit()" class="border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 py-1 pl-2 pr-6">
-                        <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
-                        <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="5" {{ request('per_page', 5) == 5 ? 'selected' : '' }}>5</option>
+                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
                         <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
                         <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
                     </select>
@@ -101,8 +101,8 @@
                     <tbody>
                         @forelse($assignments as $assignment)
                             <tr class="bg-white border-b hover:bg-indigo-100 {{ $loop->even ? 'bg-indigo-50' : '' }} transition-colors">
-                                <td class="px-6 py-4">
-                                    <div class="font-medium text-gray-900">{{ $assignment->subject->subject_code }}</div>
+                                <td class="px-6 py-4 cursor-pointer" @click="showInfoModal = {{ $assignment->id }}">
+                                    <div class="font-medium text-blue-600 hover:underline">{{ $assignment->subject->subject_code }}</div>
                                     <div class="text-xs text-gray-500">{{ $assignment->subject->subject_name }}</div>
                                 </td>
                                 <td class="px-6 py-4">
@@ -139,5 +139,88 @@
                 </div>
             @endif
         </div>
+
+        <!-- Modals for each class -->
+        @foreach($assignments as $assignment)
+        <div @keydown.escape.window="showInfoModal = null"
+             x-show="showInfoModal === {{ $assignment->id }}"
+             class="fixed inset-0 z-50 overflow-y-auto"
+             aria-labelledby="modal-title-{{ $assignment->id }}"
+             role="dialog"
+             aria-modal="true"
+             style="display: none;">
+             
+            <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <!-- Background overlay -->
+                <div x-show="showInfoModal === {{ $assignment->id }}"
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="ease-in duration-200"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
+                     @click="showInfoModal = null"
+                     aria-hidden="true"></div>
+
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <!-- Modal panel -->
+                <div x-show="showInfoModal === {{ $assignment->id }}"
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-md w-full">
+                     
+                    <div class="bg-blue-600 px-4 py-3 flex justify-between items-center">
+                        <h3 class="text-white font-bold" id="modal-title-{{ $assignment->id }}">Class Information</h3>
+                        <button @click="showInfoModal = null" class="text-blue-100 hover:text-white transition-colors focus:outline-none">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="p-0">
+                        <table class="w-full text-sm text-left">
+                            <tr class="border-b border-gray-100">
+                                <th class="py-3 px-4 font-semibold text-gray-700 bg-white">Section</th>
+                                <td class="py-3 px-4 text-blue-600 text-right bg-white">{{ $assignment->course->code ?? 'N/A' }}</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <th class="py-3 px-4 font-semibold text-gray-700 bg-white">Subject</th>
+                                <td class="py-3 px-4 text-blue-600 text-right bg-white">{{ $assignment->subject->subject_name }}</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <th class="py-3 px-4 font-semibold text-gray-700 bg-white">Code</th>
+                                <td class="py-3 px-4 text-blue-600 text-right bg-white">{{ $assignment->subject->subject_code }}</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <th class="py-3 px-4 font-semibold text-gray-700 bg-white">School Year</th>
+                                <td class="py-3 px-4 text-blue-600 text-right bg-white">{{ now()->format('Y') }}-{{ now()->addYear()->format('Y') }}</td>
+                            </tr>
+                            <tr class="border-b border-gray-100">
+                                <th class="py-3 px-4 font-semibold text-gray-700 bg-white">Semester</th>
+                                <td class="py-3 px-4 text-blue-600 text-right bg-white">{{ $assignment->semester }}</td>
+                            </tr>
+                            <tr>
+                                <th class="py-3 px-4 font-semibold text-gray-700 bg-white">Students</th>
+                                <td class="py-3 px-4 text-blue-600 text-right bg-white">{{ $assignment->students->count() }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg">
+                        <button type="button" @click="showInfoModal = null" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endforeach
     </div>
 </x-app-layout>
