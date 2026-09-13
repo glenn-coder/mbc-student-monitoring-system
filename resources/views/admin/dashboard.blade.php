@@ -1,6 +1,44 @@
 <x-app-layout>
     <div class="p-8 mx-auto max-w-7xl">
         
+        <!-- Header -->
+        <div class="flex justify-between items-center w-full mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Dashboard</h2>
+            
+            <div class="flex items-center gap-3">
+                <!-- Date Range + Dropdown Group -->
+                <div class="flex items-center bg-white border border-gray-200 rounded-lg shadow-sm">
+                    <button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-r border-gray-200 rounded-l-lg transition-colors">
+                        <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Oct 18 - Nov 18
+                    </button>
+                    <button class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-r-lg transition-colors">
+                        Monthly
+                        <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Filter Button -->
+                <button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg shadow-sm hover:text-gray-900 hover:bg-gray-50 transition-colors">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                    Filter
+                </button>
+
+                <!-- Export Button -->
+                <button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg shadow-sm hover:text-gray-900 hover:bg-gray-50 transition-colors">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Export
+                </button>
+            </div>
+        </div>
         <!-- Top Section: Hero & Glance -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             <!-- Hero Banner -->
@@ -55,50 +93,50 @@
         <!-- Metric Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <!-- Total Students -->
-            <div class="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-sm font-medium text-gray-500">Total Students</span>
-                    <div class="p-2 bg-blue-50 text-blue-600 rounded-full">
+            <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3 gap-2">
+                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Students</span>
+                    <div class="p-2 bg-blue-50 text-blue-600 rounded-full shrink-0">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     </div>
                 </div>
-                <h4 class="text-3xl font-bold text-gray-900 mb-2">{{ $studentCount }}</h4>
+                <h4 class="text-2xl font-bold text-gray-900">{{ $studentCount }}</h4>
 
             </div>
 
             <!-- Total Instructor -->
-            <div class="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-sm font-medium text-gray-500">Total Instructor</span>
-                    <div class="p-2 bg-emerald-50 text-emerald-600 rounded-full">
+            <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3 gap-2">
+                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Instructor</span>
+                    <div class="p-2 bg-emerald-50 text-emerald-600 rounded-full shrink-0">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                     </div>
                 </div>
-                <h4 class="text-3xl font-bold text-gray-900 mb-2">{{ $instructorCount }}</h4>
+                <h4 class="text-2xl font-bold text-gray-900">{{ $instructorCount }}</h4>
 
             </div>
 
             <!-- Total Subject -->
-            <div class="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-sm font-medium text-gray-500">Total Subject</span>
-                    <div class="p-2 bg-amber-50 text-amber-600 rounded-full">
+            <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3 gap-2">
+                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Subject</span>
+                    <div class="p-2 bg-amber-50 text-amber-600 rounded-full shrink-0">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
                     </div>
                 </div>
-                <h4 class="text-3xl font-bold text-gray-900 mb-2">{{ $subjectCount }}</h4>
+                <h4 class="text-2xl font-bold text-gray-900">{{ $subjectCount }}</h4>
 
             </div>
 
             <!-- Total Faculty Assignments -->
-            <div class="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-4">
-                    <span class="text-sm font-medium text-gray-500">Total Faculty Assignments</span>
-                    <div class="p-2 bg-purple-50 text-purple-600 rounded-full">
+            <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden">
+                <div class="flex justify-between items-start mb-3 gap-2">
+                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Assignments</span>
+                    <div class="p-2 bg-purple-50 text-purple-600 rounded-full shrink-0">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
                     </div>
                 </div>
-                <h4 class="text-3xl font-bold text-gray-900 mb-2">{{ $assignmentCount }}</h4>
+                <h4 class="text-2xl font-bold text-gray-900">{{ $assignmentCount }}</h4>
 
             </div>
         </div>
@@ -111,11 +149,6 @@
                     <div>
                         <h3 class="text-lg font-bold text-gray-900">Student Attendance Overview</h3>
                         <p class="text-sm text-gray-500">Daily present vs absent across all students</p>
-                    </div>
-                    <div class="flex bg-gray-100 rounded-full p-1">
-                        <button class="px-3 py-1 text-xs font-medium text-white bg-blue-500 rounded-full shadow-sm">Week</button>
-                        <button class="px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">Month</button>
-                        <button class="px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">Term</button>
                     </div>
                 </div>
                 

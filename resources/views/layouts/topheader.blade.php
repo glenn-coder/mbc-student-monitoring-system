@@ -13,8 +13,8 @@
             $greeting='Good evening' ;
             }
             @endphp
-            <span class="text-xs font-semibold tracking-wider text-slate-500 uppercase">{{ $dateString }}</span>
             <h1 class="text-2xl font-bold text-slate-900">{{ $greeting }}, {{ Auth::user()->name }}</h1>
+            <span class="text-xs font-semibold tracking-wider text-slate-500 uppercase">{{ $dateString }}</span>
     </div>
 
     <!-- Right side -->

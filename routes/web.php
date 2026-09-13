@@ -84,6 +84,45 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/instructor/attendance/{session}/scan', [\App\Http\Controllers\Instructor\AttendanceController::class, 'scan'])->name('instructor.attendance.scan');
         Route::post('/instructor/attendance/{session}/manual', [\App\Http\Controllers\Instructor\AttendanceController::class, 'manualRecord'])->name('instructor.attendance.manual');
         Route::post('/instructor/attendance/{session}/mark-absent', [\App\Http\Controllers\Instructor\AttendanceController::class, 'markAbsent'])->name('instructor.attendance.mark-absent');
+        // Live stats API for dashboard card polling (supports date_from / date_to query params)
+        Route::get('/instructor/dashboard/stats', function (\Illuminate\Http\Request $request) {
+            $instructor = \App\Models\Instructor::where('user_id', \Illuminate\Support\Facades\Auth::id())->first();
+
+            $todayPresent = 0;
+            $todayLate    = 0;
+            $todayAbsent  = 0;
+
+            if ($instructor) {
+                $fallback    = \Carbon\Carbon::today('Asia/Manila')->toDateString();
+                $dateFrom    = $request->query('date_from', $fallback);
+                $dateTo      = $request->query('date_to',   $fallback);
+
+                // Sanitise: ensure date_to is never before date_from
+                if ($dateTo < $dateFrom) {
+                    $dateTo = $dateFrom;
+                }
+
+                $assignmentIds  = $instructor->assignments()->pluck('id');
+                $scheduleIds    = \App\Models\Schedule::whereIn('instructor_assignment_id', $assignmentIds)->pluck('id');
+
+                $sessionIds = \App\Models\AttendanceSession::whereIn('schedule_id', $scheduleIds)
+                    ->whereBetween('session_date', [$dateFrom, $dateTo])
+                    ->pluck('id');
+
+                $records = \App\Models\AttendanceRecord::whereIn('attendance_session_id', $sessionIds)->get();
+
+                $todayPresent = $records->where('status', 'present')->count();
+                $todayLate    = $records->where('status', 'late')->count();
+                $todayAbsent  = $records->where('status', 'absent')->count();
+            }
+
+            return response()->json([
+                'todayPresent' => $todayPresent,
+                'todayLate'    => $todayLate,
+                'todayAbsent'  => $todayAbsent,
+            ]);
+        })->name('instructor.dashboard.stats');
+
         Route::get('/instructor/dashboard', function () {
             $instructor = \App\Models\Instructor::where('user_id', \Illuminate\Support\Facades\Auth::id())->first();
             
@@ -111,10 +150,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 $scheduleIds = \App\Models\Schedule::whereIn('instructor_assignment_id', $assignmentIds)->pluck('id');
                 $sessionIds = \App\Models\AttendanceSession::whereIn('schedule_id', $scheduleIds)->pluck('id');
                 
-                $today = \Carbon\Carbon::today();
-                $todayRecords = \App\Models\AttendanceRecord::whereIn('attendance_session_id', $sessionIds)
-                    ->whereDate('created_at', $today)
-                    ->get();
+                $today = \Carbon\Carbon::today('Asia/Manila')->toDateString();
+                $todaySessionIds = \App\Models\AttendanceSession::whereIn('schedule_id', $scheduleIds)
+                    ->whereDate('session_date', $today)
+                    ->pluck('id');
+                $todayRecords = \App\Models\AttendanceRecord::whereIn('attendance_session_id', $todaySessionIds)->get();
                     
                 $todayPresent = $todayRecords->where('status', 'present')->count();
                 $todayLate = $todayRecords->where('status', 'late')->count();

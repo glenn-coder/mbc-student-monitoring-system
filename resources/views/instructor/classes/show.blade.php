@@ -1108,6 +1108,8 @@
                             };
                             this.records = [rec, ...this.records.filter(r => r.student_id !== rec.student_id)];
                             this.summary = data.summary;
+                            // Notify any open dashboard tab to refresh its live stats
+                            window.dispatchEvent(new CustomEvent('attendance-recorded'));
 
                         } else if (data.status === 'duplicate') {
                             const rec = data.record;
@@ -1193,6 +1195,8 @@
                             };
                             this.records = [rec, ...this.records.filter(r => r.student_id !== rec.student_id)];
                             this.summary = data.summary;
+                            // Notify any open dashboard tab to refresh its live stats
+                            window.dispatchEvent(new CustomEvent('attendance-recorded'));
                             // Close the panel and reset
                             this.showManual      = false;
                             this.manualSearch    = '';

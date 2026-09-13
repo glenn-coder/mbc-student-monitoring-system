@@ -1,74 +1,112 @@
 <x-app-layout>
     <div class="p-8 mx-auto max-w-7xl">
 
-        <!-- Metric Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-            <!-- Total Students -->
-            <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-3 gap-2">
-                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Students</span>
-                    <div class="p-2 bg-blue-50 text-blue-600 rounded-full shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        <!-- Header -->
+        <div class="flex justify-between items-center w-full mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Dashboard</h2>
+            
+            <div class="flex items-center gap-3">
+                <!-- Date Range + Dropdown Group -->
+                <div class="flex items-center bg-white border border-gray-200 rounded-lg shadow-sm">
+                    <button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-r border-gray-200 rounded-l-lg transition-colors">
+                        <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                    </div>
+                        Oct 18 - Nov 18
+                    </button>
+                    <button class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-r-lg transition-colors">
+                        Monthly
+                        <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
                 </div>
-                <h4 class="text-2xl font-bold text-gray-900">{{ $studentCount }}</h4>
-            </div>
 
-            <!-- Total Classes -->
-            <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-3 gap-2">
-                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Classes</span>
-                    <div class="p-2 bg-emerald-50 text-emerald-600 rounded-full shrink-0">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                </div>
-                <h4 class="text-2xl font-bold text-gray-900">{{ $classCount }}</h4>
-            </div>
+                <!-- Filter Button -->
+                <button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg shadow-sm hover:text-gray-900 hover:bg-gray-50 transition-colors">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                    Filter
+                </button>
 
-            <!-- Total Present -->
-            <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-3 gap-2">
-                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Present</span>
-                    <div class="p-2 bg-green-50 text-green-600 rounded-full shrink-0">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                </div>
-                <h4 class="text-2xl font-bold text-gray-900">{{ $todayPresent }}</h4>
-            </div>
-
-            <!-- Total Late -->
-            <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-3 gap-2">
-                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Late</span>
-                    <div class="p-2 bg-orange-50 text-orange-600 rounded-full shrink-0">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                </div>
-                <h4 class="text-2xl font-bold text-gray-900">{{ $todayLate }}</h4>
-            </div>
-
-            <!-- Total Absent -->
-            <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden">
-                <div class="flex justify-between items-start mb-3 gap-2">
-                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Absent</span>
-                    <div class="p-2 bg-red-50 text-red-600 rounded-full shrink-0">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                </div>
-                <h4 class="text-2xl font-bold text-gray-900">{{ $todayAbsent }}</h4>
+                <!-- Export Button -->
+                <button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg shadow-sm hover:text-gray-900 hover:bg-gray-50 transition-colors">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Export
+                </button>
             </div>
         </div>
 
+            <!-- Metric Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                <!-- Total Students -->
+                <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-3 gap-2">
+                        <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Students</span>
+                        <div class="p-2 bg-blue-50 text-blue-600 rounded-full shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h4 class="text-2xl font-bold text-gray-900">{{ $studentCount }}</h4>
+                </div>
+
+                <!-- Total Classes -->
+                <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-3 gap-2">
+                        <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Classes</span>
+                        <div class="p-2 bg-emerald-50 text-emerald-600 rounded-full shrink-0">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h4 class="text-2xl font-bold text-gray-900">{{ $classCount }}</h4>
+                </div>
+
+                <!-- Total Present -->
+                <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                    <div class="flex justify-between items-start mb-3 gap-2">
+                        <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Present</span>
+                        <div class="p-2 bg-green-50 text-green-600 rounded-full shrink-0">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h4 class="text-2xl font-bold text-gray-900">{{ $todayPresent }}</h4>
+                </div>
+
+                <!-- Total Late -->
+                <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                    <div class="flex justify-between items-start mb-3 gap-2">
+                        <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Late</span>
+                        <div class="p-2 bg-orange-50 text-orange-600 rounded-full shrink-0">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h4 class="text-2xl font-bold text-gray-900">{{ $todayLate }}</h4>
+                </div>
+
+                <!-- Total Absent -->
+                <div class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                    <div class="flex justify-between items-start mb-3 gap-2">
+                        <span class="text-xs font-bold text-gray-600 uppercase tracking-wider">Total Absent</span>
+                        <div class="p-2 bg-red-50 text-red-600 rounded-full shrink-0">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h4 class="text-2xl font-bold text-gray-900">{{ $todayAbsent }}</h4>
+                </div>
+            </div>
         <!-- Charts Section -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <!-- Student Attendance Overview -->
@@ -78,57 +116,7 @@
                         <h3 class="text-lg font-bold text-gray-900">Student Attendance Overview</h3>
                         <p class="text-sm text-gray-500">Daily present, late, and absent across all students</p>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <div class="flex bg-gray-100 rounded-full p-1">
-                            <button class="px-3 py-1 text-xs font-medium text-white bg-blue-500 rounded-full shadow-sm">Week</button>
-                            <button class="px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">Month</button>
-                            <button class="px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors">Term</button>
-                        </div>
-                        
-                        <!-- Dropdown Menu -->
-                        <div x-data="{ open: false }" class="relative">
-                            <!-- Hidden date input kept outside the dropdown panel so it doesn't get destroyed when dropdown closes -->
-                            <input type="date" x-ref="datePicker" class="absolute w-0 h-0 opacity-0 pointer-events-none" style="top: 0; left: 0;" @change="open = false" />
-                            
-                            <button @click="open = !open" @click.away="open = false" class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 focus:outline-none">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
-                                </svg>
-                            </button>
-                            
-                            <!-- Dropdown Panel -->
-                            <div x-show="open" 
-                                 x-transition:enter="transition ease-out duration-100"
-                                 x-transition:enter-start="transform opacity-0 scale-95"
-                                 x-transition:enter-end="transform opacity-100 scale-100"
-                                 x-transition:leave="transition ease-in duration-75"
-                                 x-transition:leave-start="transform opacity-100 scale-100"
-                                 x-transition:leave-end="transform opacity-0 scale-95"
-                                 class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50"
-                                 style="display: none;">
-                                
-                                <a href="#" @click.prevent="open = false" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                    Export Data
-                                </a>
-                                
-                                <a href="#" @click.prevent="$refs.datePicker.showPicker()" class="relative flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                    <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                    Change Date
-                                </a>
-                                
-                                <a href="#" @click.prevent="open = false" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                                    Filter Platforms
-                                </a>
-                                
-                                <a href="#" @click.prevent="open = false" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                                    Refresh
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
 
                 <div class="relative h-72 w-full mt-4">
@@ -350,4 +338,6 @@
         </div>
 
     </div>
+
+
 </x-app-layout>
