@@ -109,18 +109,73 @@
             </div>
         <!-- Charts Section -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <!-- Student Attendance Overview -->
-            <div class="lg:col-span-2 p-6 bg-white border border-gray-100 rounded-2xl shadow-sm self-start">
-                <div class="flex justify-between items-start mb-6">
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-900">Student Attendance Overview</h3>
-                        <p class="text-sm text-gray-500">Daily present, late, and absent across all students</p>
+            <!-- Left Column (Overview & Distribution) -->
+            <div class="lg:col-span-2 flex flex-col space-y-6">
+                <!-- Student Attendance Overview -->
+                <div class="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900">Student Attendance Overview</h3>
+                            <p class="text-sm text-gray-500">Daily present, late, and absent across all students</p>
+                        </div>
                     </div>
 
+                    <div class="relative h-72 w-full mt-4">
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
                 </div>
 
-                <div class="relative h-72 w-full mt-4">
-                    <canvas id="attendanceChart"></canvas>
+                <!-- Attendance Distribution -->
+                <div class="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="flex items-center gap-2">
+                            <div class="p-1.5 bg-gray-50 border border-gray-200 rounded-md">
+                                <svg class="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-md font-bold text-gray-900">Class Attendance Status</h3>
+                        </div>
+                        <button class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                            Today
+                            <svg class="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="grid grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-1 h-3 bg-green-500 rounded-full"></div>
+                                <span class="text-sm text-gray-500">Present</span>
+                            </div>
+                            <div class="text-xl font-bold text-gray-900">{{ $todayPresent }}</div>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-1 h-3 bg-blue-500 rounded-full"></div>
+                                <span class="text-sm text-gray-500">Late</span>
+                            </div>
+                            <div class="text-xl font-bold text-gray-900">{{ $todayLate }}</div>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-1 h-3 bg-red-500 rounded-full"></div>
+                                <span class="text-sm text-gray-500">Absent</span>
+                            </div>
+                            <div class="text-xl font-bold text-gray-900">{{ $todayAbsent }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Chart -->
+                    <div class="relative w-full flex justify-center mt-2 mb-2">
+                        <div class="w-full max-w-[280px]">
+                            <canvas id="attendanceDistributionChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -140,6 +195,10 @@
                 document.addEventListener('DOMContentLoaded', function() {
                     const ctx = document.getElementById('attendanceChart').getContext('2d');
                     
+                    const present = parseInt('{{ $todayPresent }}', 10) || 0;
+                    const late = parseInt('{{ $todayLate }}', 10) || 0;
+                    const absent = parseInt('{{ $todayAbsent }}', 10) || 0;
+
                     new Chart(ctx, {
                         type: 'line',
                         data: {
@@ -253,11 +312,65 @@
                             }
                         }
                     });
+
+                    // Attendance Distribution Gauge Chart
+                    const distCtx = document.getElementById('attendanceDistributionChart').getContext('2d');
+                    
+                    // If there is no data at all, provide a default so chart renders empty track
+                    let distData = [present, late, absent];
+                    let bgColors = ['#22c55e', '#3b82f6', '#ef4444'];
+                    
+                    if (present === 0 && late === 0 && absent === 0) {
+                        distData = [1];
+                        bgColors = ['#f3f4f6']; // gray-100 empty state
+                    }
+
+                    new Chart(distCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: present === 0 && late === 0 && absent === 0 ? ['No Data'] : ['Present', 'Late', 'Absent'],
+                            datasets: [{
+                                data: distData,
+                                backgroundColor: bgColors,
+                                borderWidth: 4,
+                                borderColor: '#ffffff',
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            aspectRatio: 2,
+                            rotation: -90,
+                            circumference: 180,
+                            cutout: '75%',
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    enabled: !(present === 0 && late === 0 && absent === 0),
+                                    backgroundColor: '#ffffff',
+                                    titleColor: '#111827',
+                                    bodyColor: '#4b5563',
+                                    borderColor: '#e5e7eb',
+                                    borderWidth: 1,
+                                    padding: 12,
+                                    boxPadding: 6,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.label + ': ' + context.parsed;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
                 });
             </script>
 
             <!-- Next Class Schedule & Upcoming Class Schedules -->
-            <div class="flex flex-col space-y-6">
+            <div class="flex flex-col justify-between h-full">
                 <!-- Next Class Schedule -->
                 <div>
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Class Schedule</h3>
