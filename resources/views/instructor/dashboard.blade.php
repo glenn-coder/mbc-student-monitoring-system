@@ -6,29 +6,53 @@
             <h2 class="text-2xl font-bold text-gray-900">Dashboard</h2>
             
             <div class="flex items-center gap-3">
-                <!-- Date Range + Dropdown Group -->
-                <div class="flex items-center bg-white border border-gray-200 rounded-lg shadow-sm">
-                    <button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-r border-gray-200 rounded-l-lg transition-colors">
-                        <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        Oct 18 - Nov 18
-                    </button>
-                    <button class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-r-lg transition-colors">
-                        Monthly
-                        <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                </div>
 
-                <!-- Filter Button -->
-                <button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg shadow-sm hover:text-gray-900 hover:bg-gray-50 transition-colors">
-                    <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                    </svg>
-                    Filter
-                </button>
+
+                <!-- Filter Dropdown -->
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg shadow-sm hover:text-gray-900 hover:bg-gray-50 transition-colors">
+                        <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        </svg>
+                        Filter
+                    </button>
+
+                    <!-- Dropdown Panel -->
+                    <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 z-50 w-72 mt-2 origin-top-right bg-white border border-gray-200 rounded-lg shadow-lg" style="display: none;">
+                        <form action="{{ route('instructor.dashboard') }}" method="GET" class="p-4 space-y-4">
+                            <!-- Date From -->
+                            <div>
+                                <label for="date_from" class="block text-xs font-semibold text-gray-500 mb-1">Date From</label>
+                                <input type="date" id="date_from" name="date_from" value="{{ request('date_from') }}" class="w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500 py-1.5">
+                            </div>
+                            
+                            <!-- Date To -->
+                            <div>
+                                <label for="date_to" class="block text-xs font-semibold text-gray-500 mb-1">Date To</label>
+                                <input type="date" id="date_to" name="date_to" value="{{ request('date_to') }}" class="w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500 py-1.5">
+                            </div>
+
+                            <!-- Class Subject -->
+                            <div>
+                                <label for="subject_id" class="block text-xs font-semibold text-gray-500 mb-1">Class Subject</label>
+                                <select id="subject_id" name="subject_id" class="w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500 py-1.5">
+                                    <option value="">All Subjects</option>
+                                    @foreach($uniqueSubjects ?? [] as $subject)
+                                        <option value="{{ $subject->id }}" {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
+                                            {{ $subject->subject_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="flex gap-2 pt-2 border-t border-gray-100">
+                                <a href="{{ route('instructor.dashboard') }}" class="flex-1 px-3 py-1.5 text-center text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition-colors">Reset</a>
+                                <button type="submit" class="flex-1 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 transition-colors">Apply</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
                 <!-- Export Button -->
                 <button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg shadow-sm hover:text-gray-900 hover:bg-gray-50 transition-colors">
@@ -450,7 +474,85 @@
             </div>
         </div>
 
-    </div>
+        <!-- Recent Attendance History -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">Recent Attendance History</h3>
+                    <p class="text-sm text-gray-500">Latest attendance records across all your classes</p>
+                </div>
+            </div>
 
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-700">
+                        <thead class="text-xs text-white bg-[#2F2FE4] border-b border-[#2F2FE4]">
+                            <tr>
+                                <th scope="col" class="px-6 py-4 font-semibold">Student Name</th>
+                                <th scope="col" class="px-6 py-4 font-semibold">Class</th>
+                                <th scope="col" class="px-6 py-4 font-semibold">Date & Time</th>
+                                <th scope="col" class="px-6 py-4 font-semibold text-center">Status</th>
+                                <th scope="col" class="px-6 py-4 font-semibold text-center">Method</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($recentRecords as $record)
+                                <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 font-medium text-gray-900">
+                                        {{ $record->student->first_name ?? '' }} {{ $record->student->last_name ?? '' }}
+                                        <div class="text-xs text-gray-500 font-normal">{{ $record->student->student_number ?? '' }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600">
+                                        {{ $record->session->schedule->instructorAssignment->subject->subject_name ?? 'N/A' }}
+                                        <div class="text-xs text-gray-500">{{ $record->session->schedule->instructorAssignment->course->code ?? 'N/A' }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600">
+                                        {{ \Carbon\Carbon::parse($record->scanned_at ?? $record->created_at)->format('M d, Y h:i A') }}
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        @if($record->status === 'present')
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded border border-green-200 text-xs font-medium bg-green-50 text-green-700">
+                                                <span class="w-1.5 h-1.5 mr-1.5 rounded-full bg-green-500"></span> Present
+                                            </span>
+                                        @elseif($record->status === 'late')
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded border border-yellow-200 text-xs font-medium bg-yellow-50 text-yellow-700">
+                                                <span class="w-1.5 h-1.5 mr-1.5 rounded-full bg-yellow-500"></span> Late
+                                            </span>
+                                        @elseif($record->status === 'absent')
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded border border-red-200 text-xs font-medium bg-red-50 text-red-600">
+                                                <span class="w-1.5 h-1.5 mr-1.5 rounded-full bg-red-500"></span> Absent
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded border border-gray-200 text-xs font-medium bg-gray-50 text-gray-500">
+                                                <span class="w-1.5 h-1.5 mr-1.5 rounded-full bg-gray-400"></span> {{ ucfirst($record->status) }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        @if($record->attendance_method === 'scan')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-600">Scan</span>
+                                        @elseif($record->attendance_method === 'manual')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700">Manual</span>
+                                        @elseif($record->attendance_method === 'system')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-500">System</span>
+                                        @else
+                                            <span class="text-gray-300">—</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-8 text-center text-gray-500 text-sm">
+                                        No recent attendance records found.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
 </x-app-layout>

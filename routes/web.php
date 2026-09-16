@@ -137,9 +137,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'absent' => [0,0,0,0,0]
             ];
             $schedules = collect();
+            $recentRecords = collect();
+            $uniqueSubjects = collect();
             
             if ($instructor) {
-                $assignmentIds = $instructor->assignments()->pluck('id');
+                $subjectIds = $instructor->assignments()->pluck('subject_id')->unique();
+                $uniqueSubjects = \App\Models\Subject::whereIn('id', $subjectIds)->get();
+
+                $assignmentsQuery = $instructor->assignments();
+                if (request()->filled('subject_id')) {
+                    $assignmentsQuery->where('subject_id', request('subject_id'));
+                }
+                
+                $assignmentIds = $assignmentsQuery->pluck('id');
                 $classCount = $assignmentIds->count();
                 
                 $studentCount = \Illuminate\Support\Facades\DB::table('assignment_student')
@@ -184,6 +194,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 $schedules = \App\Models\Schedule::whereIn('instructor_assignment_id', $assignmentIds)
                     ->with('instructorAssignment.subject', 'instructorAssignment.course')
                     ->get();
+                    
+                $recordsQuery = \App\Models\AttendanceRecord::whereIn('attendance_session_id', $sessionIds)
+                    ->with(['student', 'session.schedule.instructorAssignment.subject', 'session.schedule.instructorAssignment.course']);
+                    
+                if (request()->filled('date_from')) {
+                    $recordsQuery->whereHas('session', function($q) {
+                        $q->whereDate('session_date', '>=', request('date_from'));
+                    });
+                }
+                
+                if (request()->filled('date_to')) {
+                    $recordsQuery->whereHas('session', function($q) {
+                        $q->whereDate('session_date', '<=', request('date_to'));
+                    });
+                }
+                    
+                $recentRecords = $recordsQuery->orderBy('created_at', 'desc')
+                    ->take(10)
+                    ->get();
             }
             
             $now = \Carbon\Carbon::now();
@@ -221,7 +250,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             return view('instructor.dashboard', compact(
                 'studentCount', 'classCount', 'todayPresent', 'todayLate', 'todayAbsent',
-                'chartData', 'nextSchedule', 'upcomingSchedules'
+                'chartData', 'nextSchedule', 'upcomingSchedules', 'recentRecords', 'uniqueSubjects'
             ));
         })->name('instructor.dashboard');
     });
