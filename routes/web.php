@@ -74,6 +74,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::middleware(['role:instructor'])->group(function () {
+        Route::get('/instructor/reports', [\App\Http\Controllers\Instructor\ReportController::class, 'index'])->name('instructor.reports.index');
+        Route::get('/instructor/reports/export/{type}', [\App\Http\Controllers\Instructor\ReportController::class, 'export'])->name('instructor.reports.export')->where('type', 'pdf|excel|csv');
+
         Route::get('/instructor/classes', [\App\Http\Controllers\Instructor\ClassController::class, 'index'])->name('instructor.classes.index');
         Route::get('/instructor/classes/{assignment}', [\App\Http\Controllers\Instructor\ClassController::class, 'show'])->name('instructor.classes.show');
         Route::get('/instructor/classes/{assignment}/attendance-records', [\App\Http\Controllers\Instructor\AttendanceController::class, 'records'])->name('instructor.attendance.records');

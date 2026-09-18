@@ -171,6 +171,35 @@
                 </svg>
                 <span class="mx-4 font-medium whitespace-nowrap" x-show="sidebarExpanded">My Classes</span>
             </a>
+
+            {{-- ANALYTICS --}}
+            <div x-show="sidebarExpanded" class="px-4 pt-4 pb-1">
+                <span class="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Analytics</span>
+            </div>
+            <div x-show="!sidebarExpanded" class="border-t border-white/10 my-2"></div>
+
+            <div x-data="{ reportsOpen: {{ request()->routeIs('instructor.reports.*') ? 'true' : 'false' }} }" class="space-y-1">
+                <button @click="reportsOpen = !reportsOpen"
+                    class="w-full flex items-center py-3 mt-1 transition-colors rounded-xl {{ request()->routeIs('instructor.reports.*') ? 'text-white bg-[#2F2FE4]' : 'text-slate-400 hover:text-white hover:bg-white/5' }}"
+                    :class="sidebarExpanded ? 'justify-between px-4' : 'justify-center px-0'">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span class="mx-4 font-medium whitespace-nowrap" x-show="sidebarExpanded">Reports</span>
+                    </div>
+                    <svg x-show="sidebarExpanded" class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': reportsOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <div x-show="reportsOpen && sidebarExpanded" class="pl-11 pr-4 space-y-1" style="display: none;">
+                    <a href="{{ route('instructor.reports.index') }}"
+                        class="block py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('instructor.reports.index') ? 'text-white font-medium' : 'text-gray-400 hover:text-white' }}">
+                        Class Attendance Summary
+                    </a>
+                </div>
+            </div>
             @elseif(auth()->check() && auth()->user()->role === 'student')
             <a class="flex items-center py-3 transition-colors rounded-xl {{ request()->routeIs('student.dashboard') ? 'text-white bg-[#f59e0b]' : 'text-gray-400 hover:text-white hover:bg-white/10' }}" :class="sidebarExpanded ? 'px-4' : 'justify-center px-0'" href="{{ route('student.dashboard') }}">
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
