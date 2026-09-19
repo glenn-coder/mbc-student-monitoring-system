@@ -77,8 +77,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/instructor/reports', [\App\Http\Controllers\Instructor\ReportController::class, 'index'])->name('instructor.reports.index');
         Route::get('/instructor/reports/export/{type}', [\App\Http\Controllers\Instructor\ReportController::class, 'export'])->name('instructor.reports.export')->where('type', 'pdf|excel|csv');
 
+        // Student Attendance Report
+        Route::get('/instructor/reports/student-attendance', [\App\Http\Controllers\Instructor\ReportController::class, 'studentAttendance'])->name('instructor.reports.student-attendance');
+        Route::get('/instructor/reports/student-attendance/export/{type}', [\App\Http\Controllers\Instructor\ReportController::class, 'studentAttendanceExport'])->name('instructor.reports.student-attendance.export')->where('type', 'pdf|excel|csv');
+
         Route::get('/instructor/classes', [\App\Http\Controllers\Instructor\ClassController::class, 'index'])->name('instructor.classes.index');
         Route::get('/instructor/classes/{assignment}', [\App\Http\Controllers\Instructor\ClassController::class, 'show'])->name('instructor.classes.show');
+        Route::post('/instructor/classes/{assignment}/students', [\App\Http\Controllers\Instructor\ClassController::class, 'addStudent'])->name('instructor.classes.students.add');
         Route::get('/instructor/classes/{assignment}/attendance-records', [\App\Http\Controllers\Instructor\AttendanceController::class, 'records'])->name('instructor.attendance.records');
 
         // Attendance session routes
@@ -87,6 +92,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/instructor/attendance/{session}/scan', [\App\Http\Controllers\Instructor\AttendanceController::class, 'scan'])->name('instructor.attendance.scan');
         Route::post('/instructor/attendance/{session}/manual', [\App\Http\Controllers\Instructor\AttendanceController::class, 'manualRecord'])->name('instructor.attendance.manual');
         Route::post('/instructor/attendance/{session}/mark-absent', [\App\Http\Controllers\Instructor\AttendanceController::class, 'markAbsent'])->name('instructor.attendance.mark-absent');
+        Route::delete('/instructor/attendance/{session}', [\App\Http\Controllers\Instructor\AttendanceController::class, 'deleteSession'])->name('instructor.attendance.delete');
+        Route::delete('/instructor/attendance/record/{record}', [\App\Http\Controllers\Instructor\AttendanceController::class, 'deleteRecord'])->name('instructor.attendance.record.delete');
         // Live stats API for dashboard card polling (supports date_from / date_to query params)
         Route::get('/instructor/dashboard/stats', function (\Illuminate\Http\Request $request) {
             $instructor = \App\Models\Instructor::where('user_id', \Illuminate\Support\Facades\Auth::id())->first();
@@ -135,9 +142,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             $todayLate = 0;
             $todayAbsent = 0;
             $chartData = [
-                'present' => [0,0,0,0,0],
-                'late' => [0,0,0,0,0],
-                'absent' => [0,0,0,0,0]
+                'present' => [0,0,0,0,0,0],
+                'late' => [0,0,0,0,0,0],
+                'absent' => [0,0,0,0,0,0]
             ];
             $schedules = collect();
             $recentRecords = collect();
@@ -163,30 +170,37 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 $scheduleIds = \App\Models\Schedule::whereIn('instructor_assignment_id', $assignmentIds)->pluck('id');
                 $sessionIds = \App\Models\AttendanceSession::whereIn('schedule_id', $scheduleIds)->pluck('id');
                 
-                $today = \Carbon\Carbon::today('Asia/Manila')->toDateString();
-                $todaySessionIds = \App\Models\AttendanceSession::whereIn('schedule_id', $scheduleIds)
-                    ->whereDate('session_date', $today)
-                    ->pluck('id');
-                $todayRecords = \App\Models\AttendanceRecord::whereIn('attendance_session_id', $todaySessionIds)->get();
-                    
-                $todayPresent = $todayRecords->where('status', 'present')->count();
-                $todayLate = $todayRecords->where('status', 'late')->count();
-                $todayAbsent = $todayRecords->where('status', 'absent')->count();
+                // Top cards logic moved down
                 
-                $startOfWeek = \Carbon\Carbon::now()->startOfWeek();
-                $endOfWeek = \Carbon\Carbon::now()->endOfWeek();
+                $reqDateFrom = request('date_from');
+                $reqDateTo = request('date_to');
+                
+                // If only one date is provided, use it for both to create a single-day range
+                if (request()->filled('date_from') && !request()->filled('date_to')) {
+                    $reqDateTo = $reqDateFrom;
+                } elseif (!request()->filled('date_from') && request()->filled('date_to')) {
+                    $reqDateFrom = $reqDateTo;
+                }
+                
+                $startDate = $reqDateFrom 
+                    ? \Carbon\Carbon::parse($reqDateFrom)->startOfDay() 
+                    : \Carbon\Carbon::now()->startOfWeek();
+                    
+                $endDate = $reqDateTo 
+                    ? \Carbon\Carbon::parse($reqDateTo)->endOfDay() 
+                    : \Carbon\Carbon::now()->endOfWeek();
                 
                 $weekRecords = \Illuminate\Support\Facades\DB::table('attendance_records')
                     ->join('attendance_sessions', 'attendance_records.attendance_session_id', '=', 'attendance_sessions.id')
                     ->whereIn('attendance_sessions.schedule_id', $scheduleIds)
-                    ->whereBetween('attendance_sessions.session_date', [$startOfWeek, $endOfWeek])
+                    ->whereBetween('attendance_sessions.session_date', [$startDate, $endDate])
                     ->select('attendance_records.status', 'attendance_sessions.session_date')
                     ->get();
                     
                 foreach ($weekRecords as $r) {
                     $date = \Carbon\Carbon::parse($r->session_date);
-                    $day = $date->dayOfWeekIso; // 1 = Mon, 5 = Fri
-                    if ($day >= 1 && $day <= 5) {
+                    $day = $date->dayOfWeekIso; // 1 = Mon, 6 = Sat
+                    if ($day >= 1 && $day <= 6) {
                         $status = $r->status;
                         if (isset($chartData[$status])) {
                             $chartData[$status][$day - 1]++;
@@ -198,24 +212,49 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     ->with('instructorAssignment.subject', 'instructorAssignment.course')
                     ->get();
                     
-                $recordsQuery = \App\Models\AttendanceRecord::whereIn('attendance_session_id', $sessionIds)
-                    ->with(['student', 'session.schedule.instructorAssignment.subject', 'session.schedule.instructorAssignment.course']);
-                    
-                if (request()->filled('date_from')) {
-                    $recordsQuery->whereHas('session', function($q) {
-                        $q->whereDate('session_date', '>=', request('date_from'));
-                    });
+                $latestSessionQuery = \App\Models\AttendanceSession::whereIn('schedule_id', $scheduleIds);
+                
+                if (request()->filled('date_from') || request()->filled('date_to')) {
+                    $latestSessionQuery->whereBetween('session_date', [$startDate, $endDate]);
                 }
                 
-                if (request()->filled('date_to')) {
-                    $recordsQuery->whereHas('session', function($q) {
-                        $q->whereDate('session_date', '<=', request('date_to'));
+                $latestSession = $latestSessionQuery
+                    ->with('schedule')
+                    ->orderBy('session_date', 'desc')
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+                    
+                $latestSessionId = $latestSession ? $latestSession->id : null;
+                $latestSessionAssignmentId = $latestSession ? $latestSession->schedule->instructor_assignment_id : null;
+                
+                $todayRecords = \App\Models\AttendanceRecord::where('attendance_session_id', $latestSessionId)->get();
+                $todayPresent = $todayRecords->where('status', 'present')->count();
+                $todayLate = $todayRecords->where('status', 'late')->count();
+                $todayAbsent = $todayRecords->where('status', 'absent')->count();
+
+                $recordsQuery = \App\Models\AttendanceRecord::with(['student', 'session.schedule.instructorAssignment.subject', 'session.schedule.instructorAssignment.course']);
+                    
+                if (request()->filled('date_from') || request()->filled('date_to')) {
+                    $recordsQuery->whereHas('session', function($q) use ($scheduleIds, $startDate, $endDate) {
+                        $q->whereIn('schedule_id', $scheduleIds)
+                          ->whereBetween('session_date', [$startDate, $endDate]);
                     });
+                } else {
+                    $recordsQuery->where('attendance_session_id', $latestSessionId);
                 }
                     
-                $recentRecords = $recordsQuery->orderBy('created_at', 'desc')
-                    ->take(10)
-                    ->get();
+                $perPage = (int) request('per_page', 5);
+                $perPage = in_array($perPage, [5, 10, 25, 50, 100]) ? $perPage : 5;
+
+                $recentRecords = $recordsQuery
+                    ->join('students', 'attendance_records.student_id', '=', 'students.id')
+                    ->orderBy('students.last_name', 'asc')
+                    ->orderBy('students.first_name', 'asc')
+                    ->select('attendance_records.*') // ensure we don't accidentally select student columns
+                    ->paginate($perPage)
+                    ->withQueryString();
+            } else {
+                $perPage = 5;
             }
             
             $now = \Carbon\Carbon::now();
@@ -253,15 +292,99 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             return view('instructor.dashboard', compact(
                 'studentCount', 'classCount', 'todayPresent', 'todayLate', 'todayAbsent',
-                'chartData', 'nextSchedule', 'upcomingSchedules', 'recentRecords', 'uniqueSubjects'
+                'chartData', 'nextSchedule', 'upcomingSchedules', 'recentRecords', 'uniqueSubjects', 'perPage', 'latestSessionId', 'latestSessionAssignmentId'
             ));
         })->name('instructor.dashboard');
     });
 
     Route::middleware(['role:student'])->group(function () {
-        Route::get('/student/dashboard', function () {
-            return view('student.dashboard');
+        Route::get('/student/dashboard', function (\Illuminate\Http\Request $request) {
+            $user    = \Illuminate\Support\Facades\Auth::user();
+            $student = \App\Models\Student::where('user_id', $user->id)->first();
+
+            $present = 0;
+            $late    = 0;
+            $absent  = 0;
+            $recentRecords = collect();
+            $uniqueSubjects = collect();
+
+            if ($student) {
+                // Get unique subjects for the student for the filter dropdown
+                $assignmentIds = \Illuminate\Support\Facades\DB::table('assignment_student')
+                    ->where('student_id', $student->id)
+                    ->pluck('instructor_assignment_id');
+                
+                $subjectIds = \App\Models\InstructorAssignment::whereIn('id', $assignmentIds)->pluck('subject_id')->unique();
+                $uniqueSubjects = \App\Models\Subject::whereIn('id', $subjectIds)->get();
+
+                // Only count records belonging to CLOSED sessions
+                $recordsQuery = \App\Models\AttendanceRecord::where('student_id', $student->id)
+                    ->whereHas('session', function($q) use ($request) {
+                        $q->where('status', 'closed');
+                        
+                        if ($request->filled('date_from')) {
+                            $q->whereDate('session_date', '>=', $request->date_from);
+                        }
+                        if ($request->filled('date_to')) {
+                            $q->whereDate('session_date', '<=', $request->date_to);
+                        }
+                    })
+                    ->with([
+                        'session.schedule.instructorAssignment.subject',
+                        'session.schedule.instructorAssignment.instructor'
+                    ]);
+
+                if ($request->filled('subject_id')) {
+                    $recordsQuery->whereHas('session.schedule.instructorAssignment', function($q) use ($request) {
+                        $q->where('subject_id', $request->subject_id);
+                    });
+                }
+
+                $countsQuery = clone $recordsQuery;
+                $records = $countsQuery->get();
+
+                $present = $records->where('status', 'present')->count();
+                $late    = $records->where('status', 'late')->count();
+                $absent  = $records->where('status', 'absent')->count();
+                $total   = $records->count();
+
+                $attendanceRate = $total > 0
+                    ? round((($present + $late) / $total) * 100, 1)
+                    : 0;
+
+                $recentRecords = $recordsQuery
+                    ->orderByDesc('created_at')
+                    ->paginate(5)
+                    ->withQueryString();
+            } else {
+                $attendanceRate = 0;
+            }
+
+            return view('student.dashboard', compact(
+                'present', 'late', 'absent', 'attendanceRate', 'recentRecords', 'uniqueSubjects'
+            ));
         })->name('student.dashboard');
+
+        Route::get('/student/attendance', function () {
+            $user    = \Illuminate\Support\Facades\Auth::user();
+            $student = \App\Models\Student::where('user_id', $user->id)->first();
+
+            $records = collect();
+            if ($student) {
+                $perPage = request('per_page', 5);
+                $records = \App\Models\AttendanceRecord::where('student_id', $student->id)
+                    ->whereHas('session', fn($q) => $q->where('status', 'closed'))
+                    ->with([
+                        'session.schedule.instructorAssignment.subject',
+                        'session.schedule.instructorAssignment.instructor'
+                    ])
+                    ->orderByDesc('created_at')
+                    ->paginate($perPage)
+                    ->withQueryString();
+            }
+
+            return view('student.attendance', compact('records'));
+        })->name('student.attendance');
     });
 });
 

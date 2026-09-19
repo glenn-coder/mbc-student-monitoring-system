@@ -6,9 +6,7 @@
 
         <!-- Class Assigned Table -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div class="p-4 border-b border-gray-200 bg-slate-500 rounded-t-lg">
-                <h3 class="text-white font-bold">Class Assigned</h3>
-            </div>
+
             <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
                 <form action="{{ route('instructor.classes.index') }}" method="GET" class="flex items-center gap-2" id="perPageForm">
                     <span class="text-sm text-gray-700">Showing</span>
@@ -19,15 +17,15 @@
                         <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
                     </select>
                     <span class="text-sm text-gray-700">of {{ $assignments->total() }} results</span>
-                    
+
                     @if(request('search'))
-                        <input type="hidden" name="search" value="{{ request('search') }}">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
                     @endif
                     @if(request('subject_id'))
-                        <input type="hidden" name="subject_id" value="{{ request('subject_id') }}">
+                    <input type="hidden" name="subject_id" value="{{ request('subject_id') }}">
                     @endif
                     @if(request('year'))
-                        <input type="hidden" name="year" value="{{ request('year') }}">
+                    <input type="hidden" name="year" value="{{ request('year') }}">
                     @endif
                 </form>
 
@@ -50,7 +48,7 @@
                                     <select name="subject_id" id="filter_subject" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                                         <option value="">All Subjects</option>
                                         @foreach($subjects as $subject)
-                                            <option value="{{ $subject->id }}" {{ request('subject_id') == $subject->id ? 'selected' : '' }}>{{ $subject->subject_code }}</option>
+                                        <option value="{{ $subject->id }}" {{ request('subject_id') == $subject->id ? 'selected' : '' }}>{{ $subject->subject_code }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -83,7 +81,7 @@
                         </div>
                     </div>
                     @if(request('per_page'))
-                        <input type="hidden" name="per_page" value="{{ request('per_page') }}">
+                    <input type="hidden" name="per_page" value="{{ request('per_page') }}">
                     @endif
                 </form>
             </div>
@@ -100,81 +98,81 @@
                     </thead>
                     <tbody>
                         @forelse($assignments as $assignment)
-                            <tr class="bg-white border-b hover:bg-indigo-100 {{ $loop->even ? 'bg-indigo-50' : '' }} transition-colors">
-                                <td class="px-6 py-4 cursor-pointer" @click="showInfoModal = {{ $assignment->id }}">
-                                    <div class="font-medium text-blue-600 hover:underline">{{ $assignment->subject->subject_code }}</div>
-                                    <div class="text-xs text-gray-500">{{ $assignment->subject->subject_name }}</div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    {{ $assignment->course->code ?? 'N/A' }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    {{ $assignment->year }} / {{ $assignment->semester }}
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    {{ $assignment->students->count() }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-2">
-                                        <a href="{{ route('instructor.classes.show', $assignment) }}" title="View Class Students" class="inline-flex items-center justify-center px-4 py-2 text-xs font-medium text-white bg-[#2F2FE4] rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-[#2F2FE4] focus:ring-offset-2 transition-colors">
-                                            View Class
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
+                        <tr class="bg-white border-b hover:bg-indigo-100 {{ $loop->even ? 'bg-indigo-50' : '' }} transition-colors">
+                            <td class="px-6 py-4 cursor-pointer" @click="showInfoModal = {{ $assignment->id }}">
+                                <div class="font-medium text-blue-600 hover:underline">{{ $assignment->subject->subject_code }}</div>
+                                <div class="text-xs text-gray-500">{{ $assignment->subject->subject_name }}</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ $assignment->course->code ?? 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ $assignment->year }} / {{ $assignment->semester }}
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                {{ $assignment->students->count() }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ route('instructor.classes.show', $assignment) }}" title="View Class Students" class="inline-flex items-center justify-center px-4 py-2 text-xs font-medium text-white bg-[#2F2FE4] rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-[#2F2FE4] focus:ring-offset-2 transition-colors">
+                                        View Class
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
                         @empty
-                            <tr>
-                                <td colspan="5" class="px-6 py-8 text-center text-gray-500">
-                                    No classes assigned to you yet.
-                                </td>
-                            </tr>
+                        <tr>
+                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                No classes assigned to you yet.
+                            </td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            
+
             @if($assignments->hasPages())
-                <div class="p-4 border-t border-gray-200">
-                    {{ $assignments->appends(request()->query())->links() }}
-                </div>
+            <div class="p-4 border-t border-gray-200">
+                {{ $assignments->appends(request()->query())->links() }}
+            </div>
             @endif
         </div>
 
         <!-- Modals for each class -->
         @foreach($assignments as $assignment)
         <div @keydown.escape.window="showInfoModal = null"
-             x-show="showInfoModal === {{ $assignment->id }}"
-             class="fixed inset-0 z-50 overflow-y-auto"
-             aria-labelledby="modal-title-{{ $assignment->id }}"
-             role="dialog"
-             aria-modal="true"
-             style="display: none;">
-             
+            x-show="showInfoModal === {{ $assignment->id }}"
+            class="fixed inset-0 z-50 overflow-y-auto"
+            aria-labelledby="modal-title-{{ $assignment->id }}"
+            role="dialog"
+            aria-modal="true"
+            style="display: none;">
+
             <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                 <!-- Background overlay -->
                 <div x-show="showInfoModal === {{ $assignment->id }}"
-                     x-transition:enter="ease-out duration-300"
-                     x-transition:enter-start="opacity-0"
-                     x-transition:enter-end="opacity-100"
-                     x-transition:leave="ease-in duration-200"
-                     x-transition:leave-start="opacity-100"
-                     x-transition:leave-end="opacity-0"
-                     class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
-                     @click="showInfoModal = null"
-                     aria-hidden="true"></div>
+                    x-transition:enter="ease-out duration-300"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
+                    @click="showInfoModal = null"
+                    aria-hidden="true"></div>
 
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
                 <!-- Modal panel -->
                 <div x-show="showInfoModal === {{ $assignment->id }}"
-                     x-transition:enter="ease-out duration-300"
-                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                     x-transition:leave="ease-in duration-200"
-                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                     class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-md w-full">
-                     
+                    x-transition:enter="ease-out duration-300"
+                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-md w-full">
+
                     <div class="bg-blue-600 px-4 py-3 flex justify-between items-center">
                         <h3 class="text-white font-bold" id="modal-title-{{ $assignment->id }}">Class Information</h3>
                         <button @click="showInfoModal = null" class="text-blue-100 hover:text-white transition-colors focus:outline-none">
@@ -183,7 +181,7 @@
                             </svg>
                         </button>
                     </div>
-                    
+
                     <div class="p-0">
                         <table class="w-full text-sm text-left">
                             <tr class="border-b border-gray-100">
@@ -212,7 +210,7 @@
                             </tr>
                         </table>
                     </div>
-                    
+
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg">
                         <button type="button" @click="showInfoModal = null" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
                             Close

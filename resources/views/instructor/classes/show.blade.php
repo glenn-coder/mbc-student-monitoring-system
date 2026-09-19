@@ -9,7 +9,7 @@
             </a>
         </div>
 
-        <div class="flex flex-col gap-6" x-data="{ tab: 'timetable' }">
+        <div class="flex flex-col gap-6" x-data="{ tab: new URLSearchParams(window.location.search).get('tab') || 'timetable' }">
             
             <div class="flex justify-between items-center mb-2">
                 <div>
@@ -39,13 +39,15 @@
 
                     <!-- Tab Content -->
                     <div class="p-6">
-                        <!-- Students Tab -->
                         <div x-show="tab === 'students'" 
                              x-data="{
+                                isAddStudentModalOpen: false,
                                 search: '',
                                 currentPage: 1,
                                 itemsPerPage: 5,
-                                students: {{ Js::from($assignment->students->map(function($s) {
+                                students: {{ Js::from($assignment->students->sortBy(function($s) {
+                                    return strtolower($s->last_name . ' ' . $s->first_name);
+                                })->values()->map(function($s) {
                                     return [
                                         'student_number' => $s->student_number,
                                         'name' => $s->first_name . ' ' . $s->last_name,
@@ -89,13 +91,21 @@
                                         <span class="mx-1 font-semibold text-gray-900" x-text="filteredStudents.length"></span>
                                         <span>results</span>
                                     </div>
-                                    <div class="relative w-64">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                            </svg>
+                                    <div class="flex items-center gap-2">
+                                        <div class="relative w-64">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                                </svg>
+                                            </div>
+                                            <input type="text" x-model="search" @input="currentPage = 1" placeholder="Search..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm">
                                         </div>
-                                        <input type="text" x-model="search" @input="currentPage = 1" placeholder="Search..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm">
+                                        <button @click="isAddStudentModalOpen = true" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150 shadow-sm">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                            </svg>
+                                            Add Student
+                                        </button>
                                     </div>
                                 </div>
 
@@ -164,6 +174,73 @@
                                             </svg>
                                         </button>
                                     </nav>
+                                </div>
+                            </div>
+                            
+                            <!-- Add Student Modal -->
+                            <div x-show="isAddStudentModalOpen" 
+                                 class="fixed inset-0 z-50 overflow-y-auto" 
+                                 aria-labelledby="modal-title" 
+                                 role="dialog" 
+                                 aria-modal="true"
+                                 style="display: none;">
+                                <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                                    
+                                    <div x-show="isAddStudentModalOpen"
+                                         x-transition:enter="ease-out duration-300"
+                                         x-transition:enter-start="opacity-0"
+                                         x-transition:enter-end="opacity-100"
+                                         x-transition:leave="ease-in duration-200"
+                                         x-transition:leave-start="opacity-100"
+                                         x-transition:leave-end="opacity-0"
+                                         class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
+                                         aria-hidden="true"></div>
+
+                                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                                    <div x-show="isAddStudentModalOpen"
+                                         x-transition:enter="ease-out duration-300"
+                                         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                                         x-transition:leave="ease-in duration-200"
+                                         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                                         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                         @click.away="isAddStudentModalOpen = false"
+                                         class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
+                                        
+                                        <form action="{{ route('instructor.classes.students.add', $assignment->id) }}" method="POST">
+                                            @csrf
+                                            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                                <div class="sm:flex sm:items-start">
+                                                    <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                                                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                                                            Add Student to Class
+                                                        </h3>
+                                                        <div class="mt-2">
+                                                            <p class="text-sm text-gray-500 mb-4">
+                                                                Enter the student's number to assign them to this class. The student must already be registered in the system.
+                                                            </p>
+                                                            
+                                                            <div>
+                                                                <label for="student_number" class="block text-sm font-medium text-gray-700">Student Number</label>
+                                                                <div class="mt-1">
+                                                                    <input type="text" name="student_number" id="student_number" required placeholder="e.g. 23-12345" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                                                <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                                    Add Student
+                                                </button>
+                                                <button type="button" @click="isAddStudentModalOpen = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -634,12 +711,13 @@
                                                     <th class="px-6 py-4 font-semibold">Timestamp</th>
                                                     <th class="px-6 py-4 font-semibold text-center">Status</th>
                                                     <th class="px-6 py-4 font-semibold text-center">Method</th>
+                                                    <th class="px-6 py-4 font-semibold text-right">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <template x-if="filteredSessionRoster.length === 0">
                                                     <tr>
-                                                        <td colspan="6" class="px-6 py-8 text-center text-gray-500 text-sm">
+                                                        <td colspan="7" class="px-6 py-8 text-center text-gray-500 text-sm">
                                                             No students found matching your search.
                                                         </td>
                                                     </tr>
@@ -686,6 +764,17 @@
                                                                 System
                                                             </span>
                                                             <span x-show="!row.attendance_method" class="text-gray-300">—</span>
+                                                        </td>
+                                                        <td class="px-6 py-4 text-right">
+                                                            <button x-show="row.status !== 'pending' && row.id" 
+                                                                    @click="deleteRecord(row.id)" 
+                                                                    title="Delete Record"
+                                                                    class="text-gray-400 hover:text-red-600 transition-colors bg-transparent border-0 cursor-pointer">
+                                                                <svg class="w-4 h-4 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                </svg>
+                                                            </button>
+                                                            <span x-show="row.status === 'pending' || !row.id" class="text-gray-300">—</span>
                                                         </td>
                                                     </tr>
                                                 </template>
@@ -776,109 +865,185 @@
                                 No attendance sessions found for this class yet.
                             </div>
 
-                            <!-- Sessions list -->
-                            <template x-for="sess in filteredSessions" :key="sess.session_id">
-                                <div class="mb-6 border border-gray-200 rounded-lg shadow-sm" x-show="getFilteredRecords(sess).length > 0 || (!globalStatusFilter && !globalSearchQuery)">
-                                    <!-- Session header -->
-                                    <div class="bg-gray-50 border-b border-gray-200 px-4 py-3 flex flex-wrap gap-4 items-center justify-between rounded-t-lg">
-                                        <!-- Date & Time (LEFT) -->
+                            <!-- Sessions list (Unified Table) -->
+                            <div x-show="!loading && sessions.length > 0">
+                                <!-- Unified Filters & Search (Top Bar) -->
+                                <div class="bg-gray-50 border border-gray-200 px-4 py-3 flex flex-wrap gap-4 items-center justify-between rounded-t-lg mb-0 border-b-0">
+                                    <template x-if="filteredSessions.length > 0">
                                         <div class="flex items-center gap-3">
-                                            <span class="font-semibold text-gray-800 text-sm" x-text="sess.session_date"></span>
-                                            <span class="text-xs text-gray-500" x-text="sess.day_of_week + ' · ' + sess.start_time + ' – ' + sess.end_time"></span>
+                                            <span class="font-semibold text-gray-800 text-sm" x-text="filteredSessions[0].session_date"></span>
+                                            <span class="text-xs text-gray-500" x-text="filteredSessions[0].day_of_week + ' · ' + filteredSessions[0].start_time + ' – ' + filteredSessions[0].end_time"></span>
                                         </div>
-
-                                        <!-- Unified Filters & Search (RIGHT) -->
-                                        <div class="flex flex-wrap items-center gap-3">
-                                            <!-- Unified Filters Dropdown -->
-                                            <div class="relative" x-data="{ open: false }">
-                                                <button @click="open = !open" class="flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 focus:outline-none">
-                                                    <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                                                    </svg>
-                                                    Filters
-                                                    <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                                    </svg>
-                                                </button>
-                                                <!-- Dropdown panel -->
-                                                <div x-show="open" @click.away="open = false" style="display: none; min-width: 240px;" class="absolute right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-20 p-4">
-                                                    <!-- Date Filter -->
-                                                    <div class="mb-4">
-                                                        <label class="block text-xs font-semibold text-gray-600 mb-1.5">Date</label>
-                                                        <select x-model="globalDateFilter" class="w-full border border-gray-300 rounded-md text-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm">
-                                                            <option value="">All Dates</option>
-                                                            <template x-for="date in availableDates" :key="date">
-                                                                <option :value="date" x-text="date"></option>
-                                                            </template>
-                                                        </select>
-                                                    </div>
-                                                    <!-- Status Filter -->
-                                                    <div class="mb-4">
-                                                        <label class="block text-xs font-semibold text-gray-600 mb-1.5">Status</label>
-                                                        <select x-model="globalStatusFilter" class="w-full border border-gray-300 rounded-md text-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm">
-                                                            <option value="">All Statuses</option>
-                                                            <option value="present">Present</option>
-                                                            <option value="late">Late</option>
-                                                            <option value="absent">Absent</option>
-                                                        </select>
-                                                    </div>
-                                                    <!-- Reset Button -->
-                                                    <div class="border-t border-gray-100 pt-3 flex justify-end">
-                                                        <button @click="globalDateFilter = ''; globalStatusFilter = ''; open = false" class="text-sm text-blue-600 hover:text-blue-800 font-medium whitespace-nowrap">Reset Filters</button>
-                                                    </div>
+                                    </template>
+                                    <template x-if="filteredSessions.length === 0">
+                                        <div class="font-semibold text-gray-800 text-sm">No Records Found</div>
+                                    </template>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <!-- Unified Filters Dropdown -->
+                                        <div class="relative" x-data="{ open: false }">
+                                            <button @click="globalDateFilter = appliedDateFilter; globalStatusFilter = appliedStatusFilter; open = !open" class="flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 focus:outline-none">
+                                                <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                                                </svg>
+                                                Filters
+                                                <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                            </button>
+                                            <!-- Dropdown panel -->
+                                            <div x-show="open" @click.away="open = false" style="display: none; min-width: 240px;" class="absolute right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-20 p-4">
+                                                <!-- Date Filter -->
+                                                <div class="mb-4">
+                                                    <label class="block text-xs font-semibold text-gray-600 mb-1.5">Date</label>
+                                                    <input type="date" x-model="globalDateFilter" class="w-full border border-gray-300 rounded-md text-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm">
+                                                </div>
+                                                <!-- Status Filter -->
+                                                <div class="mb-4">
+                                                    <label class="block text-xs font-semibold text-gray-600 mb-1.5">Status</label>
+                                                    <select x-model="globalStatusFilter" class="w-full border border-gray-300 rounded-md text-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm">
+                                                        <option value="">All Statuses</option>
+                                                        <option value="present">Present</option>
+                                                        <option value="late">Late</option>
+                                                        <option value="absent">Absent</option>
+                                                    </select>
+                                                </div>
+                                                <!-- Action Buttons -->
+                                                <div class="border-t border-gray-100 pt-4 mt-2 flex justify-between items-center gap-3">
+                                                    <button @click="globalDateFilter = ''; globalStatusFilter = ''; appliedDateFilter = ''; appliedStatusFilter = ''; open = false" class="text-sm text-gray-500 hover:text-gray-700 font-medium whitespace-nowrap transition-colors">
+                                                        Reset
+                                                    </button>
+                                                    <button @click="appliedDateFilter = globalDateFilter; appliedStatusFilter = globalStatusFilter; open = false" class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-md font-medium whitespace-nowrap shadow-sm transition-colors">
+                                                        Apply Filters
+                                                    </button>
                                                 </div>
                                             </div>
-                                            <div class="h-5 w-px bg-gray-300 mx-1 hidden sm:block"></div>
-                                            <!-- Global Search Input -->
-                                            <div class="relative w-48">
-                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                                    </svg>
-                                                </div>
-                                                <input type="text" x-model="globalSearchQuery" placeholder="Search..." class="block w-full pl-10 pr-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white">
-                                            </div>
                                         </div>
-                                    </div>
-                                    <!-- Records table -->
-                                    <div class="overflow-x-auto rounded-b-lg">
-                                        <table class="w-full text-sm text-left">
-                                            <thead class="text-xs text-white bg-blue-500">
-                                                <tr>
-                                                    <th class="px-4 py-2 font-semibold">Student</th>
-                                                    <th class="px-4 py-2 font-semibold">Student ID</th>
-                                                    <th class="px-4 py-2 font-semibold">Course</th>
-                                                    <th class="px-4 py-2 font-semibold">Scan Time</th>
-                                                    <th class="px-4 py-2 font-semibold text-center">Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <template x-if="getFilteredRecords(sess).length === 0">
-                                                    <tr>
-                                                        <td colspan="5" class="px-4 py-6 text-center text-gray-400 text-xs">No records match the current filters.</td>
-                                                    </tr>
-                                                </template>
-                                                <template x-for="rec in getFilteredRecords(sess)" :key="rec.id">
-                                                    <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                                        <td class="px-4 py-2.5 font-medium text-gray-800" x-text="rec.full_name"></td>
-                                                        <td class="px-4 py-2.5 text-gray-600" x-text="rec.student_number"></td>
-                                                        <td class="px-4 py-2.5 text-gray-600" x-text="rec.course"></td>
-                                                        <td class="px-4 py-2.5 text-gray-600" x-text="rec.scanned_at ?? '—'"></td>
-                                                        <td class="px-4 py-2.5 text-center">
-                                                            <span x-show="rec.status === 'present'"
-                                                                  class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">Present</span>
-                                                            <span x-show="rec.status === 'late'"
-                                                                  class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700">Late</span>
-                                                            <span x-show="rec.status === 'absent'"
-                                                                  class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-600">Absent</span>
-                                                        </td>
-                                                    </tr>
-                                                </template>
-                                            </tbody>
-                                        </table>
+                                        <div class="h-5 w-px bg-gray-300 mx-1 hidden sm:block"></div>
+                                        <!-- Global Search Input -->
+                                        <div class="relative w-48">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                                </svg>
+                                            </div>
+                                            <input type="text" x-model="globalSearchQuery" placeholder="Search..." class="block w-full pl-10 pr-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white">
+                                        </div>
                                     </div>
                                 </div>
-                            </template>
+                                
+                                <!-- Active Filters Info Bar -->
+                                <div x-show="appliedStatusFilter || globalSearchQuery" style="display: none;" class="px-4 py-2 bg-blue-50 border border-blue-100 rounded-lg mb-6 flex flex-wrap items-center gap-2 text-xs text-blue-700">
+                                    <svg class="w-3.5 h-3.5 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span class="font-medium">Filtered by:</span>
+                                    
+                                    <template x-if="appliedStatusFilter">
+                                        <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full capitalize" x-text="appliedStatusFilter"></span>
+                                    </template>
+                                    <template x-if="globalSearchQuery">
+                                        <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full" x-text="'Search: &quot;' + globalSearchQuery + '&quot;'"></span>
+                                    </template>
+                                    
+                                    <button @click="appliedDateFilter = ''; appliedStatusFilter = ''; globalDateFilter = ''; globalStatusFilter = ''; globalSearchQuery = ''" class="ml-auto text-blue-600 hover:text-blue-800 font-medium underline underline-offset-2">
+                                        Clear all
+                                    </button>
+                                </div>
+
+                                <!-- Sessions list -->
+                                <template x-if="totalFilteredRecords === 0">
+                                    <div class="px-4 py-6 text-center text-gray-400 text-sm border border-gray-200 rounded-lg bg-white">
+                                        No records match the current filters.
+                                    </div>
+                                </template>
+
+                                <template x-for="sess in filteredSessions" :key="sess.session_id">
+                                    <div class="mb-6 border border-gray-200 rounded-lg shadow-sm" x-show="getFilteredRecords(sess).length > 0 || (!globalStatusFilter && !globalSearchQuery)">
+                                        <!-- Records table -->
+                                        <div class="overflow-x-auto rounded-t-lg">
+                                            <table class="w-full text-sm text-left">
+                                                <thead class="text-xs text-white bg-blue-500 border-b border-blue-500">
+                                                    <tr>
+                                                        <th class="px-4 py-3 font-semibold">Student</th>
+                                                        <th class="px-4 py-3 font-semibold">Student ID</th>
+                                                        <th class="px-4 py-3 font-semibold">Course</th>
+                                                        <th class="px-4 py-3 font-semibold">Scan Time</th>
+                                                        <th class="px-4 py-3 font-semibold text-center">Status</th>
+                                                        <th class="px-4 py-3 font-semibold text-right">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <template x-if="getFilteredRecords(sess).length === 0">
+                                                        <tr>
+                                                            <td colspan="6" class="px-4 py-6 text-center text-gray-400 text-xs bg-white">No records match the current filters.</td>
+                                                        </tr>
+                                                    </template>
+                                                    <template x-for="rec in getPaginatedRecords(sess)" :key="rec.id">
+                                                        <tr class="border-b border-gray-100 hover:bg-gray-50 bg-white">
+                                                            <td class="px-4 py-3 font-medium text-gray-800" x-text="rec.full_name"></td>
+                                                            <td class="px-4 py-3 text-gray-600" x-text="rec.student_number"></td>
+                                                            <td class="px-4 py-3 text-gray-600" x-text="rec.course"></td>
+                                                            <td class="px-4 py-3 text-gray-600" x-text="rec.scanned_at ?? '—'"></td>
+                                                            <td class="px-4 py-3 text-center">
+                                                                <span x-show="rec.status === 'present'"
+                                                                      class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700">Present</span>
+                                                                <span x-show="rec.status === 'late'"
+                                                                      class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-yellow-100 text-yellow-700">Late</span>
+                                                                <span x-show="rec.status === 'absent'"
+                                                                      class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-600">Absent</span>
+                                                            </td>
+                                                            <td class="px-4 py-3 text-right">
+                                                                <button x-show="rec.id" 
+                                                                        @click="deleteRecord(rec.id)" 
+                                                                        title="Delete Record"
+                                                                        class="text-gray-400 hover:text-red-600 transition-colors bg-transparent border-0 cursor-pointer">
+                                                                    <svg class="w-4 h-4 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                    </svg>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    </template>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        
+                                        <!-- Pagination Controls -->
+                                        <div class="px-4 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between rounded-b-lg" x-show="getFilteredRecords(sess).length > itemsPerPage">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-sm text-gray-700">Showing</span>
+                                                <select x-model.number="itemsPerPage" @change="currentPage = 1" class="border-gray-300 rounded-md text-sm py-1 pl-2 pr-6 focus:ring-blue-500 focus:border-blue-500">
+                                                    <option value="5">5</option>
+                                                    <option value="10">10</option>
+                                                    <option value="25">25</option>
+                                                    <option value="50">50</option>
+                                                </select>
+                                                <span class="text-sm text-gray-700">of <span x-text="getFilteredRecords(sess).length"></span> results</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <button @click="prevPage()" :disabled="currentPage === 1" :class="{'opacity-50 cursor-not-allowed': currentPage === 1}" class="w-8 h-8 flex items-center justify-center rounded-md bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                                    </svg>
+                                                </button>
+                                                
+                                                <template x-for="page in totalPages" :key="page">
+                                                    <button @click="currentPage = page" 
+                                                            :class="{'bg-blue-600 text-white shadow-sm': currentPage === page, 'bg-gray-50 text-gray-700 hover:bg-gray-100': currentPage !== page}" 
+                                                            class="w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-colors"
+                                                            x-text="page">
+                                                    </button>
+                                                </template>
+
+                                                <button @click="nextPage()" :disabled="currentPage >= totalPages" :class="{'opacity-50 cursor-not-allowed': currentPage >= totalPages}" class="w-8 h-8 flex items-center justify-center rounded-md bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
                         </div><!-- /records tab -->
 
                     </div><!-- /tab content -->
@@ -965,6 +1130,7 @@
                         const rec = recordMap[s.id];
                         if (rec) {
                             return {
+                                id:                rec.id,
                                 student_id:        s.id,
                                 full_name:         rec.full_name,
                                 student_number:    rec.student_number,
@@ -1256,6 +1422,55 @@
                         this.finalizing = false;
                     }
                 },
+
+                async deleteSession() {
+                    if (!confirm('Are you sure you want to delete this session? This action cannot be undone and will delete all attendance records for this session.')) return;
+                    try {
+                        const res = await fetch(`/instructor/attendance/${this.sessionId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                'Accept': 'application/json',
+                            }
+                        });
+                        
+                        if (res.ok) {
+                            alert('Session deleted successfully.');
+                            window.location.reload();
+                        } else {
+                            const data = await res.json();
+                            alert(data.message ?? 'Failed to delete session.');
+                        }
+                    } catch (e) {
+                        alert('Network error while deleting session.');
+                    }
+                },
+
+                async deleteRecord(recordId) {
+                    if (!confirm('Are you sure you want to delete this attendance record?')) return;
+                    try {
+                        const res = await fetch(`/instructor/attendance/record/${recordId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                'Accept': 'application/json',
+                            }
+                        });
+                        
+                        if (res.ok) {
+                            const data = await res.json();
+                            // If we're on the active session tab, refresh it.
+                            if (this.sessionId) {
+                                await this.refreshSession();
+                            }
+                        } else {
+                            const data = await res.json();
+                            alert(data.message ?? 'Failed to delete record.');
+                        }
+                    } catch (e) {
+                        alert('Network error while deleting record.');
+                    }
+                },
             };
         }
 
@@ -1281,6 +1496,11 @@
                 globalDateFilter: '',
                 globalStatusFilter: '',
                 globalSearchQuery: '',
+                appliedDateFilter: '',
+                appliedStatusFilter: '',
+                
+                itemsPerPage: 5,
+                currentPage: 1,
 
                 get summary() {
                     let total = 0, present = 0, late = 0, absent = 0;
@@ -1294,17 +1514,16 @@
                     return { total, present, late, absent };
                 },
 
-                get availableDates() {
-                    const dates = new Set();
-                    this.sessions.forEach(sess => {
-                        if (sess.session_date) dates.add(sess.session_date);
-                    });
-                    return Array.from(dates).sort((a, b) => new Date(b) - new Date(a));
+                get totalFilteredRecords() {
+                    return this.filteredSessions.reduce((sum, sess) => sum + this.getFilteredRecords(sess).length, 0);
                 },
 
                 get filteredSessions() {
-                    if (!this.globalDateFilter) return this.sessions;
-                    return this.sessions.filter(sess => sess.session_date === this.globalDateFilter);
+                    if (this.appliedDateFilter) {
+                        return this.sessions.filter(sess => sess.raw_date === this.appliedDateFilter);
+                    }
+                    // By default, just show the latest session
+                    return this.sessions.length > 0 ? [this.sessions[0]] : [];
                 },
 
                 getFilteredRecords(sess) {
@@ -1312,12 +1531,37 @@
                         const matchesSearch = !this.globalSearchQuery || 
                                             r.full_name.toLowerCase().includes(this.globalSearchQuery.toLowerCase()) || 
                                             r.student_number.toLowerCase().includes(this.globalSearchQuery.toLowerCase());
-                        const matchesFilter = !this.globalStatusFilter || r.status === this.globalStatusFilter;
+                        const matchesFilter = !this.appliedStatusFilter || r.status === this.appliedStatusFilter;
                         return matchesSearch && matchesFilter;
                     });
                 },
+                
+                getPaginatedRecords(sess) {
+                    const filtered = this.getFilteredRecords(sess);
+                    const start = (this.currentPage - 1) * this.itemsPerPage;
+                    const end = start + this.itemsPerPage;
+                    return filtered.slice(start, end);
+                },
+                
+                get totalPages() {
+                    if (this.filteredSessions.length === 0) return 0;
+                    const filtered = this.getFilteredRecords(this.filteredSessions[0]);
+                    return Math.ceil(filtered.length / this.itemsPerPage);
+                },
+                
+                nextPage() {
+                    if (this.currentPage < this.totalPages) this.currentPage++;
+                },
+                
+                prevPage() {
+                    if (this.currentPage > 1) this.currentPage--;
+                },
 
                 async init() {
+                    // Reset pagination when search/filter changes
+                    this.$watch('globalSearchQuery', () => { this.currentPage = 1; });
+                    this.$watch('appliedStatusFilter', () => { this.currentPage = 1; });
+                    this.$watch('appliedDateFilter', () => { this.currentPage = 1; });
                     await this.load();
                 },
 

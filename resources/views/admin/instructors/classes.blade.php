@@ -23,7 +23,7 @@
                                 <td class="px-6 py-4">{{ $assignment->subject->subject_code }}</td>
                                 <td class="px-6 py-4">{{ $assignment->year }}</td>
                                 <td class="px-6 py-4">{{ $assignment->semester }}</td>
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4 flex gap-2">
                                     <a href="{{ route('admin.assignments.students', $assignment) }}" class="px-3 py-1.5 text-sm text-gray-900 bg-[#fbbf24] rounded hover:bg-[#f59e0b]">View Students</a>
                                 </td>
                             </tr>

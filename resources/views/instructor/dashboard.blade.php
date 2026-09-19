@@ -196,8 +196,12 @@
 
                     <!-- Chart -->
                     <div class="relative w-full flex justify-center mt-2 mb-2">
-                        <div class="w-full max-w-[280px]">
+                        <div class="relative w-full max-w-[280px] flex justify-center">
                             <canvas id="attendanceDistributionChart"></canvas>
+                            <div class="absolute left-1/2 bottom-0 -translate-x-1/2 flex flex-col items-center justify-end pb-4 pointer-events-none text-center">
+                                <span class="text-3xl font-bold text-gray-800">{{ $studentCount }}</span>
+                                <span class="text-xs text-gray-500 font-medium uppercase tracking-wider mt-1 whitespace-nowrap">Total Students</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -207,9 +211,9 @@
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script type="application/json" id="chartDataJson">
                 {!! json_encode([
-                    'present' => $chartData['present'] ?? [0,0,0,0,0],
-                    'late'    => $chartData['late']    ?? [0,0,0,0,0],
-                    'absent'  => $chartData['absent']  ?? [0,0,0,0,0],
+                    'present' => $chartData['present'] ?? [0,0,0,0,0,0],
+                    'late'    => $chartData['late']    ?? [0,0,0,0,0,0],
+                    'absent'  => $chartData['absent']  ?? [0,0,0,0,0,0],
                 ]) !!}
             </script>
             <script>
@@ -226,7 +230,7 @@
                     new Chart(ctx, {
                         type: 'line',
                         data: {
-                            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
                             datasets: [
                                 {
                                     label: 'Present',
@@ -475,7 +479,7 @@
         </div>
 
         <!-- Recent Attendance History -->
-        <div class="mb-8">
+        <div id="recent-attendance" class="mb-8">
             <div class="flex justify-between items-center mb-4">
                 <div>
                     <h3 class="text-lg font-bold text-gray-900">Recent Attendance History</h3>
@@ -484,6 +488,40 @@
             </div>
 
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                {{-- Table Header --}}
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-white">
+                    <div class="flex items-center gap-2">
+                        <form action="{{ route('instructor.dashboard') }}#recent-attendance" method="GET"
+                              id="perPageForm" class="flex items-center gap-2">
+                            <span class="text-sm text-gray-700">Showing</span>
+                            <select name="per_page" onchange="document.getElementById('perPageForm').submit()"
+                                class="border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 py-1 pl-2 pr-6">
+                                <option value="5"   {{ $perPage == 5   ? 'selected' : '' }}>5</option>
+                                <option value="10"  {{ $perPage == 10  ? 'selected' : '' }}>10</option>
+                                <option value="25"  {{ $perPage == 25  ? 'selected' : '' }}>25</option>
+                                <option value="50"  {{ $perPage == 50  ? 'selected' : '' }}>50</option>
+                                <option value="100" {{ $perPage == 100 ? 'selected' : '' }}>100</option>
+                            </select>
+                            <span class="text-sm text-gray-700">of {{ $recentRecords->total() }} results</span>
+                            
+                            @if(request('date_from'))  <input type="hidden" name="date_from"  value="{{ request('date_from') }}">  @endif
+                            @if(request('date_to'))    <input type="hidden" name="date_to"    value="{{ request('date_to') }}">    @endif
+                            @if(request('subject_id')) <input type="hidden" name="subject_id" value="{{ request('subject_id') }}"> @endif
+                        </form>
+                    </div>
+                    
+                    @if($latestSessionAssignmentId)
+                    <a href="{{ route('instructor.classes.show', $latestSessionAssignmentId) }}?tab=records" 
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md shadow-sm transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        View
+                    </a>
+                    @endif
+                </div>
+                
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left text-gray-700">
                         <thead class="text-xs text-white bg-[#2F2FE4] border-b border-[#2F2FE4]">
@@ -550,6 +588,13 @@
                         </tbody>
                     </table>
                 </div>
+                
+                {{-- Pagination --}}
+                @if($recentRecords instanceof \Illuminate\Pagination\LengthAwarePaginator && $recentRecords->hasPages())
+                    <div class="px-6 py-4 border-t border-gray-200">
+                        {{ $recentRecords->appends(request()->query())->fragment('recent-attendance')->links() }}
+                    </div>
+                @endif
             </div>
         </div>
 

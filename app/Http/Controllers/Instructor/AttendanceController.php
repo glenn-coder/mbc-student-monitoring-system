@@ -138,6 +138,31 @@ class AttendanceController extends Controller
         ]);
     }
 
+    public function deleteSession(AttendanceSession $session)
+    {
+        $this->authorizeSession($session);
+
+        // This will cascade delete attendance records if configured in DB, or just delete them manually
+        $session->records()->delete();
+        $session->delete();
+
+        return response()->json(['message' => 'Session deleted successfully']);
+    }
+
+    public function deleteRecord(AttendanceRecord $record)
+    {
+        $session = $record->session;
+        $this->authorizeSession($session);
+
+        $record->delete();
+
+        $session->refresh();
+        return response()->json([
+            'message' => 'Record deleted successfully',
+            'summary' => $this->getSessionSummary($session)
+        ]);
+    }
+
     /**
      * Return all historical attendance records for an assignment (Attendance Record tab).
      * GET /instructor/classes/{assignment}/attendance-records
@@ -156,6 +181,7 @@ class AttendanceController extends Controller
             return $schedule->attendanceSessions->map(function ($session) use ($schedule) {
                 return [
                     'session_id'   => $session->id,
+                    'raw_date'     => $session->session_date->format('Y-m-d'),
                     'session_date' => $session->session_date->format('M d, Y'),
                     'day_of_week'  => $schedule->day_of_week,
                     'start_time'   => \Carbon\Carbon::parse($schedule->start_time)->format('g:i A'),

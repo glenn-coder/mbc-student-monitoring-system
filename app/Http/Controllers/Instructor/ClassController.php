@@ -90,5 +90,32 @@ class ClassController extends Controller
 
         return view('instructor.classes.show', compact('assignment'));
     }
+    public function addStudent(Request $request, int $id)
+    {
+        $instructor = Instructor::where('user_id', Auth::id())->first();
+        if (!$instructor) {
+            abort(403);
+        }
+
+        $assignment = InstructorAssignment::where('id', $id)
+            ->where('instructor_id', $instructor->id)
+            ->firstOrFail();
+
+        $request->validate([
+            'student_number' => 'required|string|exists:students,student_number'
+        ]);
+
+        $student = \App\Models\Student::where('student_number', $request->student_number)->first();
+        
+        if ($assignment->students()->where('student_id', $student->id)->exists()) {
+            return redirect()->route('instructor.classes.show', ['assignment' => $id, 'tab' => 'students'])
+                             ->with('error', 'Student is already assigned to this class.');
+        }
+
+        $assignment->students()->attach($student->id);
+
+        return redirect()->route('instructor.classes.show', ['assignment' => $id, 'tab' => 'students'])
+                         ->with('success', 'Student added successfully.');
+    }
 }
 
