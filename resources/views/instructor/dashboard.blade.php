@@ -1,9 +1,30 @@
 <x-app-layout>
+    <x-slot name="header">
+        <h2 class="text-xl md:text-2xl font-bold text-slate-900 leading-tight">
+            Dashboard
+        </h2>
+    </x-slot>
+
     <div class="p-8 mx-auto max-w-7xl">
 
         <!-- Header -->
         <div class="flex justify-between items-center w-full mb-6">
-            <h2 class="text-2xl font-bold text-gray-900">Dashboard</h2>
+            <div class="flex flex-col">
+                @php
+                $now = \Carbon\Carbon::now('Asia/Manila');
+                $dateString = $now->format('l · F j, Y');
+                $hour = $now->hour;
+                if ($hour < 12) {
+                    $greeting='Good morning';
+                } elseif ($hour < 18) {
+                    $greeting='Good afternoon';
+                } else {
+                    $greeting='Good evening';
+                }
+                @endphp
+                <h1 class="text-2xl font-bold text-gray-900">{{ $greeting }}, {{ Auth::user()->name }}</h1>
+                <span class="text-sm font-semibold tracking-wider text-slate-500 uppercase">{{ $dateString }}</span>
+            </div>
             
             <div class="flex items-center gap-3">
 

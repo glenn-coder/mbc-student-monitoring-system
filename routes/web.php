@@ -24,7 +24,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
             $instructorCount = \App\Models\Instructor::count();
             $subjectCount = \App\Models\Subject::count();
             $assignmentCount = \App\Models\InstructorAssignment::count();
-            return view('admin.dashboard', compact('studentCount', 'instructorCount', 'subjectCount', 'assignmentCount'));
+            
+            $recentStudents = \App\Models\Student::with('course')
+                ->latest()
+                ->paginate(5, ['*'], 'students_page')
+                ->fragment('recent-students-table');
+                
+            $recentAssignments = \App\Models\InstructorAssignment::with(['instructor', 'subject', 'course'])
+                ->withCount('students')
+                ->latest()
+                ->paginate(5, ['*'], 'assignments_page')
+                ->fragment('recent-assignments-table');
+                
+            return view('admin.dashboard', compact('studentCount', 'instructorCount', 'subjectCount', 'assignmentCount', 'recentStudents', 'recentAssignments'));
         })->name('admin.dashboard');
 
         Route::resource('/admin/admins', \App\Http\Controllers\Admin\AdminUserController::class)
@@ -365,26 +377,73 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ));
         })->name('student.dashboard');
 
-        Route::get('/student/attendance', function () {
+        Route::get('/student/attendance', function (\Illuminate\Http\Request $request) {
             $user    = \Illuminate\Support\Facades\Auth::user();
             $student = \App\Models\Student::where('user_id', $user->id)->first();
 
             $records = collect();
+            $uniqueSubjects = collect();
             if ($student) {
+                $assignmentIds = \Illuminate\Support\Facades\DB::table('assignment_student')
+                    ->where('student_id', $student->id)
+                    ->pluck('instructor_assignment_id');
+                
+                $subjectIds = \App\Models\InstructorAssignment::whereIn('id', $assignmentIds)->pluck('subject_id')->unique();
+                $uniqueSubjects = \App\Models\Subject::whereIn('id', $subjectIds)->get();
+
                 $perPage = request('per_page', 5);
-                $records = \App\Models\AttendanceRecord::where('student_id', $student->id)
-                    ->whereHas('session', fn($q) => $q->where('status', 'closed'))
+                $recordsQuery = \App\Models\AttendanceRecord::where('student_id', $student->id)
+                    ->whereHas('session', function($q) use ($request) {
+                        $q->where('status', 'closed');
+                        
+                        if ($request->filled('date_from')) {
+                            $q->whereDate('session_date', '>=', $request->date_from);
+                        }
+                        if ($request->filled('date_to')) {
+                            $q->whereDate('session_date', '<=', $request->date_to);
+                        }
+                    })
                     ->with([
                         'session.schedule.instructorAssignment.subject',
                         'session.schedule.instructorAssignment.instructor'
-                    ])
+                    ]);
+
+                if ($request->filled('subject_id')) {
+                    $recordsQuery->whereHas('session.schedule.instructorAssignment', function($q) use ($request) {
+                        $q->where('subject_id', $request->subject_id);
+                    });
+                }
+
+                $records = $recordsQuery
                     ->orderByDesc('created_at')
                     ->paginate($perPage)
                     ->withQueryString();
             }
 
-            return view('student.attendance', compact('records'));
+            return view('student.attendance', compact('records', 'uniqueSubjects'));
         })->name('student.attendance');
+
+        Route::get('/student/schedule', function () {
+            $user = \Illuminate\Support\Facades\Auth::user();
+            $student = \App\Models\Student::where('user_id', $user->id)->first();
+            
+            $schedules = collect();
+            if ($student) {
+                $assignmentIds = \Illuminate\Support\Facades\DB::table('assignment_student')
+                    ->where('student_id', $student->id)
+                    ->pluck('instructor_assignment_id');
+                    
+                $schedules = \App\Models\Schedule::whereIn('instructor_assignment_id', $assignmentIds)
+                    ->with(['instructorAssignment.subject', 'instructorAssignment.instructor', 'instructorAssignment.course'])
+                    ->get()
+                    ->sortBy(function ($schedule) {
+                        $days = ['Monday' => 1, 'Tuesday' => 2, 'Wednesday' => 3, 'Thursday' => 4, 'Friday' => 5, 'Saturday' => 6, 'Sunday' => 7];
+                        return $days[$schedule->day_of_week] ?? 8;
+                    });
+            }
+            
+            return view('student.schedule', compact('schedules'));
+        })->name('student.schedule');
     });
 });
 

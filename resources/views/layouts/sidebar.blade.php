@@ -1,7 +1,7 @@
 <!-- Mobile overlay backdrop -->
-<div x-show="sidebarExpanded" class="md:hidden fixed inset-0 z-40 bg-black/50 transition-opacity" @click="sidebarExpanded = false" style="display: none;"></div>
+<div x-show="sidebarExpanded" class="md:hidden fixed inset-0 z-50 bg-black/50 transition-opacity" @click="sidebarExpanded = false" style="display: none;"></div>
 
-<div :class="sidebarExpanded ? 'w-64 translate-x-0' : '-translate-x-full md:w-20 md:translate-x-0'" class="sidebar-scrollbar fixed md:static inset-y-0 left-0 z-50 flex flex-col h-screen px-4 py-8 overflow-y-auto bg-mbc-navy border-r border-white/10 transition-all duration-300 flex-shrink-0">
+<div :class="sidebarExpanded ? 'w-64 translate-x-0' : '-translate-x-full md:w-20 md:translate-x-0'" class="sidebar-scrollbar fixed md:static inset-y-0 left-0 z-[60] flex flex-col h-screen px-4 py-8 overflow-y-auto bg-mbc-navy border-r border-white/10 transition-all duration-300 flex-shrink-0">
     <!-- Logo & Toggle -->
     <div class="relative flex items-center pb-6 mb-6 border-b border-white/10 justify-center h-16">
         <!-- Expanded state: Logo and Text (Click to minimize) -->
@@ -219,6 +219,12 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                 </svg>
                 <span class="mx-4 font-medium whitespace-nowrap" x-show="sidebarExpanded">My Attendance</span>
+            </a>
+            <a class="flex items-center py-3 mt-1 transition-colors rounded-xl {{ request()->routeIs('student.schedule') ? 'text-white bg-[#2F2FE4]' : 'text-slate-400 hover:text-white hover:bg-white/5' }}" :class="sidebarExpanded ? 'px-4' : 'justify-center px-0'" href="{{ route('student.schedule') }}">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span class="mx-4 font-medium whitespace-nowrap" x-show="sidebarExpanded">Class Schedule</span>
             </a>
             @endif
         </nav>

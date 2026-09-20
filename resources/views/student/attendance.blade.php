@@ -22,10 +22,13 @@
         <div class="bg-white rounded-lg shadow-sm border border-slate-200">
             
             {{-- Toolbar --}}
-            <div class="p-4 border-b border-gray-200 flex flex-wrap justify-between items-center gap-3 bg-gray-50 rounded-t-lg">
-                <div class="flex items-center gap-2">
+            <div class="p-3 sm:p-4 border-b border-gray-200 flex justify-between items-center gap-2 sm:gap-3 bg-gray-50 rounded-t-lg">
+                <div class="flex items-center shrink-0">
                     <form action="{{ route('student.attendance') }}" method="GET" id="perPageForm" class="flex items-center gap-2">
-                        <span class="text-sm text-gray-700">Showing</span>
+                        @if(request('date_from')) <input type="hidden" name="date_from" value="{{ request('date_from') }}"> @endif
+                        @if(request('date_to')) <input type="hidden" name="date_to" value="{{ request('date_to') }}"> @endif
+                        @if(request('subject_id')) <input type="hidden" name="subject_id" value="{{ request('subject_id') }}"> @endif
+                        <span class="text-sm text-gray-700 whitespace-nowrap">Showing</span>
                         <select name="per_page" onchange="document.getElementById('perPageForm').submit()"
                             class="border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 py-1 pl-2 pr-6">
                             <option value="5"   {{ request('per_page', 5) == 5   ? 'selected' : '' }}>5</option>
@@ -34,8 +37,59 @@
                             <option value="50"  {{ request('per_page') == 50  ? 'selected' : '' }}>50</option>
                             <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                         </select>
-                        <span class="text-sm text-gray-700">of {{ $records->total() }} results</span>
+                        <span class="text-sm text-gray-700 whitespace-nowrap">of {{ $records->total() }} <span class="hidden sm:inline">results</span></span>
                     </form>
+                </div>
+
+                <div class="flex items-center gap-3 shrink-0 ml-auto">
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:text-gray-900 font-medium hover:bg-gray-50 shadow-sm transition-colors">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                            </svg>
+                            Filters
+                            <svg class="w-4 h-4 text-slate-500 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <!-- Dropdown Panel -->
+                        <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 z-50 w-[calc(100vw-2rem)] max-w-sm sm:w-72 mt-2 origin-top-right bg-white border border-gray-200 rounded-lg shadow-lg" style="display: none;">
+                            <form action="{{ route('student.attendance') }}" method="GET" class="p-4 space-y-4 text-left">
+                                @if(request('per_page')) <input type="hidden" name="per_page" value="{{ request('per_page') }}"> @endif
+                                
+                                <!-- Date From -->
+                                <div>
+                                    <label for="date_from" class="block text-xs font-semibold text-gray-500 mb-1">Date From</label>
+                                    <input type="date" id="date_from" name="date_from" value="{{ request('date_from') }}" class="w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500 py-1.5">
+                                </div>
+                                
+                                <!-- Date To -->
+                                <div>
+                                    <label for="date_to" class="block text-xs font-semibold text-gray-500 mb-1">Date To</label>
+                                    <input type="date" id="date_to" name="date_to" value="{{ request('date_to') }}" class="w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500 py-1.5">
+                                </div>
+
+                                <!-- Class Subject -->
+                                <div>
+                                    <label for="subject_id" class="block text-xs font-semibold text-gray-500 mb-1">Class Subject</label>
+                                    <select id="subject_id" name="subject_id" class="w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500 py-1.5">
+                                        <option value="">All Subjects</option>
+                                        @foreach($uniqueSubjects ?? [] as $subject)
+                                            <option value="{{ $subject->id }}" {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
+                                                {{ $subject->subject_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="flex gap-2 pt-2 border-t border-gray-100">
+                                    <a href="{{ route('student.attendance', ['per_page' => request('per_page')]) }}" class="flex-1 px-3 py-1.5 text-center text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition-colors">Reset</a>
+                                    <button type="submit" class="flex-1 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 transition-colors">Apply</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
 

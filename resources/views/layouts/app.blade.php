@@ -16,12 +16,15 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased text-slate-900 bg-slate-50">
-        <div x-data="{ sidebarExpanded: JSON.parse(localStorage.getItem('sidebarExpanded') ?? 'true') }" x-init="$watch('sidebarExpanded', value => localStorage.setItem('sidebarExpanded', JSON.stringify(value)))" class="flex h-screen overflow-hidden bg-slate-50">
+        <div x-data="{ sidebarExpanded: window.innerWidth >= 768 ? JSON.parse(localStorage.getItem('sidebarExpanded') ?? 'true') : false }" 
+             x-init="$watch('sidebarExpanded', value => { if (window.innerWidth >= 768) localStorage.setItem('sidebarExpanded', JSON.stringify(value)) })" 
+             @resize.window="if (window.innerWidth < 768) { sidebarExpanded = false; } else { sidebarExpanded = JSON.parse(localStorage.getItem('sidebarExpanded') ?? 'true'); }"
+             class="flex h-screen overflow-hidden bg-slate-50">
             @include('layouts.sidebar')
 
             <!-- Main Content -->
             <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-                @include('layouts.topheader')
+                @include('layouts.topheader', ['headerSlot' => $header ?? null])
 
                 <main class="w-full grow">
                     {{ $slot }}

@@ -88,7 +88,7 @@
 
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-700">
-                    <thead class="text-xs text-white bg-blue-600 border-b border-blue-700">
+                    <thead class="text-sm text-white bg-blue-600 border-b border-blue-700">
                         <tr>
                             <th scope="col" class="px-6 py-3 font-bold">Name</th>
                             <th scope="col" class="px-6 py-3 font-bold">Email</th>

@@ -1,4 +1,4 @@
-<header class="relative z-50 flex items-center justify-between px-8 py-4 bg-white border-b border-slate-200">
+<header class="relative z-50 flex items-center justify-between px-4 md:px-8 py-4 bg-white border-b border-slate-200">
     <!-- Left side / Mobile Menu & Date -->
     <div class="flex items-center gap-4">
         <!-- Mobile hamburger -->
@@ -9,29 +9,17 @@
         </button>
         
         <div class="flex flex-col">
-            @php
-            $now = \Carbon\Carbon::now('Asia/Manila');
-            $dateString = $now->format('l · F j, Y');
-            $hour = $now->hour;
-            if ($hour < 12) {
-                $greeting='Good morning';
-            } elseif ($hour < 18) {
-                $greeting='Good afternoon';
-            } else {
-                $greeting='Good evening';
-            }
-            @endphp
-            <h1 class="text-xl md:text-2xl font-bold text-slate-900">{{ $greeting }}, {{ Auth::user()->name }}</h1>
-            <span class="text-xs font-semibold tracking-wider text-slate-500 uppercase">{{ $dateString }}</span>
+            @if(isset($headerSlot) && !empty(trim(strip_tags($headerSlot))))
+                {{ $headerSlot }}
+            @endif
         </div>
     </div>
 
     <!-- Right side -->
-    <div class="flex items-center space-x-6">
-
+    <div class="flex items-center gap-3 md:gap-6 shrink-0">
 
         <!-- Icons -->
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center">
             <button class="relative p-2 text-slate-400 transition-colors bg-slate-50 border border-slate-200 rounded-full hover:text-slate-600 hover:bg-slate-100">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -42,11 +30,11 @@
 
         <!-- Profile Dropdown -->
         <div x-data="{ dropdownOpen: false }" class="relative">
-            <button @click="dropdownOpen = !dropdownOpen" @click.outside="dropdownOpen = false" class="flex items-center space-x-3 focus:outline-none rounded-full ring-offset-2 focus:ring-2 focus:ring-mbc-navy">
-                <div class="flex items-center justify-center w-10 h-10 text-white bg-mbc-navy rounded-full font-bold uppercase shadow-sm">
+            <button @click="dropdownOpen = !dropdownOpen" @click.outside="dropdownOpen = false" class="flex items-center gap-2 md:gap-3 focus:outline-none rounded-full ring-offset-2 focus:ring-2 focus:ring-mbc-navy">
+                <div class="flex items-center justify-center w-10 h-10 text-white bg-mbc-navy rounded-full font-bold uppercase shadow-sm shrink-0">
                     {{ substr(Auth::user()->name, 0, 1) }}
                 </div>
-                <div class="flex flex-col text-left">
+                <div class="hidden md:flex flex-col text-left">
                     <span class="text-sm font-semibold text-slate-900">{{ Auth::user()->name }}</span>
                     <span class="text-xs text-slate-500">{{ Auth::user()->role ?? 'Admin' }}</span>
                 </div>

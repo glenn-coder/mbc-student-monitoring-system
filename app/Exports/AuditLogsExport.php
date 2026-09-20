@@ -8,10 +8,13 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
 class AuditLogsExport implements FromView, ShouldAutoSize
 {
+    /** @var \Illuminate\Support\Collection|array */
     protected $logs;
+
+    /** @var array */
     protected $metrics;
 
-    public function __construct($logs, $metrics = [])
+    public function __construct(\Illuminate\Support\Collection|array $logs, array $metrics = [])
     {
         $this->logs = $logs;
         $this->metrics = $metrics;
