@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="p-8 mx-auto max-w-7xl">
+    <div class="p-8 w-full">
         <div class="mb-6">
             <a href="{{ route('instructor.classes.index') }}" class="text-blue-600 hover:underline flex items-center text-sm font-medium">
                 <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

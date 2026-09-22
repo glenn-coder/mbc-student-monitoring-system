@@ -1,12 +1,12 @@
 <!-- Mobile overlay backdrop -->
 <div x-show="sidebarExpanded" class="md:hidden fixed inset-0 z-50 bg-black/50 transition-opacity" @click="sidebarExpanded = false" style="display: none;"></div>
 
-<div :class="sidebarExpanded ? 'w-64 translate-x-0' : '-translate-x-full md:w-20 md:translate-x-0'" class="sidebar-scrollbar fixed md:static inset-y-0 left-0 z-[60] flex flex-col h-screen px-4 py-8 overflow-y-auto bg-mbc-navy border-r border-white/10 transition-all duration-300 flex-shrink-0">
+<div :class="sidebarExpanded ? 'w-64 translate-x-0 px-4' : '-translate-x-full md:w-20 md:translate-x-0 px-2'" class="sidebar-scrollbar fixed md:static inset-y-0 left-0 z-[60] flex flex-col h-screen py-4 overflow-y-auto bg-mbc-navy border-r border-white/10 transition-all duration-300 flex-shrink-0">
     <!-- Logo & Toggle -->
-    <div class="relative flex items-center pb-6 mb-6 border-b border-white/10 justify-center h-16">
+    <div class="relative h-20 mb-6 border-b border-white/10 shrink-0 block">
         <!-- Expanded state: Logo and Text (Click to minimize) -->
         <button @click="sidebarExpanded = false"
-            class="absolute flex items-center gap-4 w-full justify-center focus:outline-none"
+            class="absolute inset-0 flex items-center justify-center gap-3 w-full h-full focus:outline-none"
             x-show="sidebarExpanded"
             x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0 scale-90"
@@ -14,24 +14,24 @@
             x-transition:leave="transition ease-in duration-200"
             x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-90">
-            <img src="{{ asset('images/MBC-logo.png') }}" alt="MBC Logo" class="w-12 h-12 object-contain flex-shrink-0" width="48" height="48">
-            <div class="flex flex-col text-left">
-                <span class="text-2xl font-bold text-white tracking-wide leading-none mb-1">MBC</span>
+            <img src="{{ asset('images/MBC-logo.png') }}" alt="MBC Logo" class="w-12 h-12 object-contain shrink-0">
+            <div class="flex flex-col text-left justify-center mt-0.5">
+                <span class="text-2xl font-bold text-white tracking-wider leading-none mb-1">MBC</span>
                 @if(auth()->check())
-                @if(auth()->user()->role === 'admin')
-                <span class="text-xs font-semibold text-blue-400 uppercase tracking-widest leading-none">Admin</span>
-                @elseif(auth()->user()->role === 'instructor')
-                <span class="text-xs font-semibold text-blue-400 uppercase tracking-widest leading-none">Instructor</span>
-                @elseif(auth()->user()->role === 'student')
-                <span class="text-xs font-semibold text-blue-400 uppercase tracking-widest leading-none">Student</span>
-                @endif
+                    @if(auth()->user()->role === 'admin')
+                        <span class="text-[11px] font-bold text-blue-400 uppercase tracking-widest leading-none">Admin</span>
+                    @elseif(auth()->user()->role === 'instructor')
+                        <span class="text-[11px] font-bold text-blue-400 uppercase tracking-widest leading-none">Instructor</span>
+                    @elseif(auth()->user()->role === 'student')
+                        <span class="text-[11px] font-bold text-blue-400 uppercase tracking-widest leading-none">Student</span>
+                    @endif
                 @endif
             </div>
         </button>
 
         <!-- Collapsed state: Hamburger Icon (Click to maximize, only on desktop) -->
         <button @click="sidebarExpanded = true"
-            class="absolute p-1.5 text-gray-400 transition-colors rounded-lg hover:bg-white/10 hover:text-white focus:outline-none flex-shrink-0 hidden md:block"
+            class="absolute inset-0 hidden items-center justify-center w-full h-full text-gray-400 transition-colors hover:text-white focus:outline-none shrink-0 md:flex"
             x-show="!sidebarExpanded"
             x-transition:enter="transition ease-out duration-300 delay-100"
             x-transition:enter-start="opacity-0 scale-90 rotate-180"
@@ -39,20 +39,22 @@
             x-transition:leave="transition ease-in duration-200"
             x-transition:leave-start="opacity-100 scale-100 rotate-0"
             x-transition:leave-end="opacity-0 scale-90 -rotate-180">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
+            <div class="p-1.5 rounded-lg hover:bg-white/10">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </div>
         </button>
     </div>
 
     <!-- Navigation -->
     <div class="flex flex-col justify-between flex-1 mt-2">
-        <nav class="space-y-2 text-sm">
+        <nav class="space-y-2 text-[15px]">
             @if(auth()->check() && auth()->user()->role === 'admin')
 
             {{-- MAIN --}}
             <div x-show="sidebarExpanded" class="px-4 pt-1 pb-1">
-                <span class="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Main</span>
+                <span class="text-xs font-semibold uppercase tracking-widest text-slate-500">Main</span>
             </div>
 
             <a class="flex items-center py-3 transition-colors rounded-xl {{ request()->routeIs('admin.dashboard') ? 'text-white bg-[#2F2FE4]' : 'text-slate-400 hover:text-white hover:bg-white/5' }}" :class="sidebarExpanded ? 'px-4' : 'justify-center px-0'" href="{{ route('admin.dashboard') }}">
@@ -64,7 +66,7 @@
 
             {{-- MANAGEMENT --}}
             <div x-show="sidebarExpanded" class="px-4 pt-4 pb-1">
-                <span class="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Management</span>
+                <span class="text-xs font-semibold uppercase tracking-widest text-slate-500">Management</span>
             </div>
             <div x-show="!sidebarExpanded" class="border-t border-white/10 my-2"></div>
 
@@ -119,7 +121,7 @@
 
             {{-- ANALYTICS --}}
             <div x-show="sidebarExpanded" class="px-4 pt-4 pb-1">
-                <span class="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Analytics</span>
+                <span class="text-xs font-semibold uppercase tracking-widest text-slate-500">Analytics</span>
             </div>
             <div x-show="!sidebarExpanded" class="border-t border-white/10 my-2"></div>
 
@@ -144,13 +146,13 @@
                 </button>
 
                 <div x-show="reportsOpen && sidebarExpanded" class="pl-11 pr-4 space-y-1" style="display: none;">
-                    <a href="{{ route('admin.reports.students') }}" class="block py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('admin.reports.students') ? 'text-white font-medium' : 'text-gray-400 hover:text-white' }}">
+                    <a href="{{ route('admin.reports.students') }}" class="block py-2 text-[15px] transition-colors rounded-lg {{ request()->routeIs('admin.reports.students') ? 'text-white font-medium' : 'text-gray-400 hover:text-white' }}">
                         Student Reports
                     </a>
-                    <a href="{{ route('admin.reports.inactive-students') }}" class="block py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('admin.reports.inactive-students') ? 'text-white font-medium' : 'text-gray-400 hover:text-white' }}">
+                    <a href="{{ route('admin.reports.inactive-students') }}" class="block py-2 text-[15px] transition-colors rounded-lg {{ request()->routeIs('admin.reports.inactive-students') ? 'text-white font-medium' : 'text-gray-400 hover:text-white' }}">
                         Inactive Students
                     </a>
-                    <a href="{{ route('admin.reports.instructors') }}" class="block py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('admin.reports.instructors') ? 'text-white font-medium' : 'text-gray-400 hover:text-white' }}">
+                    <a href="{{ route('admin.reports.instructors') }}" class="block py-2 text-[15px] transition-colors rounded-lg {{ request()->routeIs('admin.reports.instructors') ? 'text-white font-medium' : 'text-gray-400 hover:text-white' }}">
                         Instructor Reports
                     </a>
                 </div>
@@ -158,7 +160,7 @@
             @elseif(auth()->check() && auth()->user()->role === 'instructor')
             {{-- MAIN --}}
             <div x-show="sidebarExpanded" class="px-4 pt-1 pb-1">
-                <span class="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Main</span>
+                <span class="text-xs font-semibold uppercase tracking-widest text-slate-500">Main</span>
             </div>
 
             <a class="flex items-center py-3 transition-colors rounded-xl {{ request()->routeIs('instructor.dashboard') ? 'text-white bg-[#2F2FE4]' : 'text-slate-400 hover:text-white hover:bg-white/5' }}" :class="sidebarExpanded ? 'px-4' : 'justify-center px-0'" href="{{ route('instructor.dashboard') }}">
@@ -177,7 +179,7 @@
 
             {{-- ANALYTICS --}}
             <div x-show="sidebarExpanded" class="px-4 pt-4 pb-1">
-                <span class="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Analytics</span>
+                <span class="text-xs font-semibold uppercase tracking-widest text-slate-500">Analytics</span>
             </div>
             <div x-show="!sidebarExpanded" class="border-t border-white/10 my-2"></div>
 
@@ -198,11 +200,11 @@
 
                 <div x-show="reportsOpen && sidebarExpanded" class="pl-11 pr-4 space-y-1" style="display: none;">
                     <a href="{{ route('instructor.reports.index') }}"
-                        class="block py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('instructor.reports.index') ? 'text-white font-medium' : 'text-gray-400 hover:text-white' }}">
+                        class="block py-2 text-[15px] transition-colors rounded-lg {{ request()->routeIs('instructor.reports.index') ? 'text-white font-medium' : 'text-gray-400 hover:text-white' }}">
                         Class Attendance Summary
                     </a>
                     <a href="{{ route('instructor.reports.student-attendance') }}"
-                        class="block py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('instructor.reports.student-attendance') ? 'text-white font-medium' : 'text-gray-400 hover:text-white' }}">
+                        class="block py-2 text-[15px] transition-colors rounded-lg {{ request()->routeIs('instructor.reports.student-attendance') ? 'text-white font-medium' : 'text-gray-400 hover:text-white' }}">
                         Student Attendance Report
                     </a>
                 </div>

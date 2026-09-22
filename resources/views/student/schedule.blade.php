@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-4 sm:py-8 px-4 sm:px-6 lg:px-10 max-w-7xl mx-auto space-y-4 sm:space-y-6">
+    <div class="py-4 sm:py-8 px-4 sm:px-6 lg:px-10 w-full space-y-4 sm:space-y-6">
 
         {{-- Back to Dashboard --}}
         <div>

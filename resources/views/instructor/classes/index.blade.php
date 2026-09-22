@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="p-8 mx-auto max-w-7xl" x-data="{ showInfoModal: null }">
+    <div class="p-8 w-full" x-data="{ showInfoModal: null }">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-900">My Classes</h2>
         </div>

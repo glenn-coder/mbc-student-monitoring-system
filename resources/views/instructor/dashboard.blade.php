@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="p-8 mx-auto max-w-7xl">
+    <div class="p-8 w-full">
 
         <!-- Header -->
         <div class="flex justify-between items-center w-full mb-6">

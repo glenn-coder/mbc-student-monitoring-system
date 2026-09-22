@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="p-8 mx-auto max-w-7xl">
+    <div class="p-8 w-full">
         <div class="mb-6">
             <h2 class="text-2xl font-bold text-gray-900">Faculty Assignments</h2>
             <p class="mt-1 text-sm text-gray-500">Manage faculty assignments</p>

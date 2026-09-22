@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-4 sm:py-8 px-4 sm:px-6 lg:px-10 max-w-7xl mx-auto">
+    <div class="py-4 sm:py-8 px-4 sm:px-6 lg:px-10 w-full">
 
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between w-full mb-6 gap-4">

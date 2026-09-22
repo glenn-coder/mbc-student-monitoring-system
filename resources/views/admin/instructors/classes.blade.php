@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="p-8 mx-auto max-w-7xl">
+    <div class="p-8 w-full">
         <h2 class="text-2xl font-bold text-gray-900 mb-6">Classes Assigned to {{ $instructor->full_name }}</h2>
 
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">

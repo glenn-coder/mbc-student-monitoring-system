@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="p-8 mx-auto max-w-7xl">
+    <div class="p-8 w-full">
 
         {{-- ── Page Header ── --}}
         <div class="flex justify-between items-center mb-6">
