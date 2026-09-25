@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="p-8 w-full">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Enrolled Students in Course: {{ $assignment->course->code ?? 'N/A' }}</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Enrolled Students in Subject: {{ $assignment->subject->subject_name ?? 'N/A' }}</h2>
 
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
             <div class="overflow-x-auto">
@@ -26,7 +26,7 @@
                         @empty
                             <tr>
                                 <td colspan="5" class="px-6 py-8 text-center text-gray-500">
-                                    No students enrolled in this course yet.
+                                    No students enrolled in this subject yet.
                                 </td>
                             </tr>
                         @endforelse
@@ -35,8 +35,10 @@
             </div>
         </div>
 
-        <a href="{{ route('admin.assignments.index') }}" class="px-4 py-2 text-sm font-medium text-white bg-slate-500 rounded-md hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-            Back to Assignments
-        </a>
+        <div class="flex justify-end">
+            <a href="{{ route('admin.instructors.classes', $assignment->instructor_id) }}" class="px-4 py-2 text-sm font-medium text-white bg-slate-500 rounded-md hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
+                Back to Class Assigned
+            </a>
+        </div>
     </div>
 </x-app-layout>

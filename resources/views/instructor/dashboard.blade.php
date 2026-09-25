@@ -419,7 +419,7 @@
             </script>
 
             <!-- Next Class Schedule & Upcoming Class Schedules -->
-            <div class="flex flex-col justify-between h-full">
+            <div class="flex flex-col gap-6 h-full">
                 <!-- Next Class Schedule -->
                 <div>
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Class Schedule</h3>
@@ -449,7 +449,7 @@
                         </div>
 
                         <div class="mt-4">
-                            <a href="#" class="block w-full px-4 py-2 text-sm font-semibold text-center text-white transition-colors bg-[#2F2FE4] rounded-lg hover:bg-[#2F2FE4]/90">
+                            <a href="{{ route('instructor.classes.show', $nextSchedule->instructorAssignment->id) }}" class="block w-full px-4 py-2 text-sm font-semibold text-center text-white transition-colors bg-[#2F2FE4] rounded-lg hover:bg-[#2F2FE4]/90">
                                 View Class
                             </a>
                         </div>

@@ -1,4 +1,9 @@
 <x-app-layout>
+    <x-slot name="header">
+        <h2 class="text-xl md:text-2xl font-bold text-slate-900 leading-tight">
+            {{ __('Dashboard') }}
+        </h2>
+    </x-slot>
 
 
     <div class="p-8 w-full">

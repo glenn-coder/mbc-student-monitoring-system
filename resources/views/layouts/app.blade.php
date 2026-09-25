@@ -48,6 +48,12 @@
                 @if (session('error'))
                     <x-toast type="destructive" :message="session('error')" class="shadow-2xl" />
                 @endif
+
+                @if ($errors->any())
+                    @foreach ($errors->all() as $error)
+                        <x-toast type="destructive" :message="$error" class="shadow-2xl" />
+                    @endforeach
+                @endif
             </div>
         </div>
     </body>

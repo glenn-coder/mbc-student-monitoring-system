@@ -20,12 +20,17 @@ class InstructorAssignmentController extends Controller
         $perPage = $request->input('per_page', 5);
 
         $assignments = InstructorAssignment::with(['instructor', 'subject', 'course'])
+            ->withCount(['students' => function ($query) {
+                $query->whereHas('user', function ($q) {
+                    $q->where('status', 'active');
+                });
+            }])
             ->when($search, function($query, $search) {
                 return $query->whereHas('instructor', function($q) use ($search) {
                     $q->where('full_name', 'like', "%{$search}%");
                 })->orWhereHas('subject', function($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('code', 'like', "%{$search}%");
+                    $q->where('subject_name', 'like', "%{$search}%")
+                      ->orWhere('subject_code', 'like', "%{$search}%");
                 });
             })
             ->when($instructorId, function($query, $instructorId) {
@@ -54,10 +59,16 @@ class InstructorAssignmentController extends Controller
     {
         $validated = $request->validate([
             'instructor_id' => 'required|exists:instructors,id',
-            'subject_id' => 'required|exists:subjects,id',
+            'subject_id' => [
+                'required',
+                'exists:subjects,id',
+                \Illuminate\Validation\Rule::unique('instructor_assignments'),
+            ],
             'course_id' => 'required|exists:courses,id',
             'year' => 'required|string|max:255',
             'semester' => 'required|string|max:255',
+        ], [
+            'subject_id.unique' => 'This subject is already assigned to an instructor.',
         ]);
 
         $assignment = InstructorAssignment::create($validated);
@@ -72,10 +83,16 @@ class InstructorAssignmentController extends Controller
     {
         $validated = $request->validate([
             'instructor_id' => 'required|exists:instructors,id',
-            'subject_id' => 'required|exists:subjects,id',
+            'subject_id' => [
+                'required',
+                'exists:subjects,id',
+                \Illuminate\Validation\Rule::unique('instructor_assignments')->ignore($assignment->id),
+            ],
             'course_id' => 'required|exists:courses,id',
             'year' => 'required|string|max:255',
             'semester' => 'required|string|max:255',
+        ], [
+            'subject_id.unique' => 'This subject is already assigned to an instructor.',
         ]);
 
         $assignment->update($validated);
@@ -105,7 +122,11 @@ class InstructorAssignmentController extends Controller
 
     public function classStudents(InstructorAssignment $assignment)
     {
-        $assignment->load(['instructor', 'subject', 'students']);
+        $assignment->load(['instructor', 'subject', 'students' => function ($query) {
+            $query->whereHas('user', function ($q) {
+                $q->where('status', 'active');
+            })->orderBy('last_name');
+        }]);
         
         return view('admin.assignments.students', compact('assignment'));
     }

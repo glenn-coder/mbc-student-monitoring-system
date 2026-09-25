@@ -83,7 +83,7 @@
                     </div>
                 </div>
                 
-                <div class="bg-white border border-gray-300 rounded-md shadow-sm h-96 overflow-y-auto p-4">
+                <div class="bg-white border border-gray-300 rounded-md shadow-sm max-h-96 overflow-y-auto p-4">
                     <div class="space-y-2">
                         @foreach($students as $student)
                             <div class="flex items-center" 

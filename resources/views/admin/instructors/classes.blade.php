@@ -39,8 +39,10 @@
             </div>
         </div>
 
-        <a href="{{ route('admin.assignments.index') }}" class="px-4 py-2 text-sm font-medium text-white bg-slate-500 rounded-md hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-            Back to Assignments
-        </a>
+        <div class="flex justify-end">
+            <a href="{{ route('admin.instructors.index') }}" class="px-4 py-2 text-sm font-medium text-white bg-slate-500 rounded-md hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
+                Back
+            </a>
+        </div>
     </div>
 </x-app-layout>
