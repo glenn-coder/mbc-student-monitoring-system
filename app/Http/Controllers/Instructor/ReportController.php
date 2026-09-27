@@ -119,6 +119,9 @@ class ReportController extends Controller
 
         // ── Build the paginated student query ─────────────────────────────────
         $studentQuery = \App\Models\Student::whereIn('id', $enrolledStudentIds)
+            ->whereHas('user', function ($q) {
+                $q->where('status', 'active');
+            })
             ->with('course');
 
         // Search filter
@@ -255,6 +258,9 @@ class ReportController extends Controller
             ->groupBy('student_id');
 
         $students = \App\Models\Student::whereIn('id', $enrolledStudentIds)
+            ->whereHas('user', function ($q) {
+                $q->where('status', 'active');
+            })
             ->with('course')
             ->orderBy('last_name')->orderBy('first_name')
             ->get()
@@ -453,8 +459,8 @@ class ReportController extends Controller
         $perPage = in_array($perPage, [5, 10, 25, 50, 100]) ? $perPage : 5;
 
         $records = AttendanceRecord::whereIn('attendance_session_id', $completedSessionIds)
-            ->when($searchStudentIds !== null,  fn ($q) => $q->whereIn('student_id', $searchStudentIds))
-            ->when(!empty($validStatuses),      fn ($q) => $q->whereIn('status', $validStatuses))
+            ->when($searchStudentIds !== null,  fn ($q) => $q->whereIn('attendance_records.student_id', $searchStudentIds))
+            ->when(!empty($validStatuses),      fn ($q) => $q->whereIn('attendance_records.status', $validStatuses))
             ->with([
                 'student.course',
                 'session.schedule.instructorAssignment.subject',
@@ -587,8 +593,8 @@ class ReportController extends Controller
 
         // ── All matching records — unpaginated ────────────────────────────────
         $records = AttendanceRecord::whereIn('attendance_session_id', $completedSessionIds)
-            ->when($searchStudentIds !== null, fn ($q) => $q->whereIn('student_id', $searchStudentIds))
-            ->when(!empty($validStatuses),     fn ($q) => $q->whereIn('status', $validStatuses))
+            ->when($searchStudentIds !== null, fn ($q) => $q->whereIn('attendance_records.student_id', $searchStudentIds))
+            ->when(!empty($validStatuses),     fn ($q) => $q->whereIn('attendance_records.status', $validStatuses))
             ->with([
                 'student.course',
                 'session.schedule.instructorAssignment.subject',

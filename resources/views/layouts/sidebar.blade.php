@@ -132,8 +132,8 @@
                 <span class="mx-4 font-medium whitespace-nowrap" x-show="sidebarExpanded">Audit Logs</span>
             </a>
 
-            <div x-data="{ reportsOpen: {{ request()->routeIs('admin.reports.*') ? 'true' : 'false' }} }" class="space-y-1">
-                <button @click="reportsOpen = !reportsOpen" class="w-full flex items-center py-3 transition-colors rounded-xl {{ request()->routeIs('admin.reports.*') ? 'text-white bg-[#2F2FE4]' : 'text-slate-400 hover:text-white hover:bg-white/5' }}" :class="sidebarExpanded ? 'justify-between px-4' : 'justify-center px-0'">
+            <div x-data="{ reportsOpen: {{ request()->routeIs('admin.reports.*') ? 'true' : 'false' }} }" x-init="if(reportsOpen) $nextTick(() => { $refs.adminReportsContainer.scrollIntoView({block: 'end'}) })" class="space-y-1" x-ref="adminReportsContainer">
+                <button @click="reportsOpen = !reportsOpen; if(reportsOpen) $nextTick(() => { $refs.adminReportsContainer.scrollIntoView({behavior: 'smooth', block: 'end'}) })" class="w-full flex items-center py-3 transition-colors rounded-xl {{ request()->routeIs('admin.reports.*') ? 'text-white bg-[#2F2FE4]' : 'text-slate-400 hover:text-white hover:bg-white/5' }}" :class="sidebarExpanded ? 'justify-between px-4' : 'justify-center px-0'">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -183,8 +183,8 @@
             </div>
             <div x-show="!sidebarExpanded" class="border-t border-white/10 my-2"></div>
 
-            <div x-data="{ reportsOpen: {{ request()->routeIs('instructor.reports.*') ? 'true' : 'false' }} }" class="space-y-1">
-                <button @click="reportsOpen = !reportsOpen"
+            <div x-data="{ reportsOpen: {{ request()->routeIs('instructor.reports.*') ? 'true' : 'false' }} }" x-init="if(reportsOpen) $nextTick(() => { $refs.instructorReportsContainer.scrollIntoView({block: 'end'}) })" class="space-y-1" x-ref="instructorReportsContainer">
+                <button @click="reportsOpen = !reportsOpen; if(reportsOpen) $nextTick(() => { $refs.instructorReportsContainer.scrollIntoView({behavior: 'smooth', block: 'end'}) })"
                     class="w-full flex items-center py-3 mt-1 transition-colors rounded-xl {{ request()->routeIs('instructor.reports.*') ? 'text-white bg-[#2F2FE4]' : 'text-slate-400 hover:text-white hover:bg-white/5' }}"
                     :class="sidebarExpanded ? 'justify-between px-4' : 'justify-center px-0'">
                     <div class="flex items-center">

@@ -34,7 +34,7 @@ class CourseController extends Controller
     {
         $request->validate([
             'code' => 'required|string|max:50|unique:courses',
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:courses,name',
             'status' => 'required|in:active,inactive',
         ]);
 
@@ -54,7 +54,7 @@ class CourseController extends Controller
     {
         $request->validate([
             'code' => 'required|string|max:50|unique:courses,code,' . $course->id,
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:courses,name,' . $course->id,
             'status' => 'required|in:active,inactive',
         ]);
 

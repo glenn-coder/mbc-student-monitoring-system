@@ -92,7 +92,15 @@ class AttendanceController extends Controller
     {
         $this->authorizeSession($session);
 
-        $session->load(['records.student.course', 'schedule.instructorAssignment.students.course']);
+        $session->load([
+            'records.student.course',
+            'schedule.instructorAssignment.students' => function ($query) {
+                $query->whereHas('user', function ($q) {
+                    $q->where('status', 'active');
+                });
+            },
+            'schedule.instructorAssignment.students.course'
+        ]);
 
         $enrolledStudents = $session->schedule->instructorAssignment?->students->map(function ($s) {
             return [
@@ -126,7 +134,7 @@ class AttendanceController extends Controller
             ], 422);
         }
 
-        $count = $this->attendanceService->markAbsentForEndedSessions();
+        $count = $this->attendanceService->finalizeSession($session);
 
         $session->refresh()->load(['records.student.course']);
 

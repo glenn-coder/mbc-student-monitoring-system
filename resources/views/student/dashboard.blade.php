@@ -25,16 +25,16 @@
                 <h1 class="text-2xl font-bold text-gray-900">{{ $greeting }}, {{ Auth::user()->name }}</h1>
                 <span class="text-sm font-semibold tracking-wider text-slate-500 uppercase">{{ $dateString }}</span>
             </div>
-            <div class="flex items-center gap-3 w-full sm:w-auto">
-                <div x-data="{ open: false }" class="relative flex-1 sm:flex-none">
-                    <button @click="open = !open" class="w-full sm:w-auto justify-center inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:text-gray-900 font-medium hover:bg-gray-50 shadow-sm transition-colors">
+            <div class="flex items-center justify-end gap-3 w-full sm:w-auto">
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" class="justify-center inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:text-gray-900 font-medium hover:bg-gray-50 shadow-sm transition-colors">
                         <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                         </svg>
                         Filter
                     </button>
                     <!-- Dropdown Panel -->
-                    <div x-show="open" @click.away="open = false" x-transition class="absolute left-0 sm:left-auto sm:right-0 z-50 w-[calc(100vw-2rem)] max-w-sm sm:w-72 mt-2 origin-top-left sm:origin-top-right bg-white border border-gray-200 rounded-lg shadow-lg" style="display: none;">
+                    <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 z-50 w-64 sm:w-72 mt-2 origin-top-right bg-white border border-gray-200 rounded-lg shadow-lg" style="display: none;">
                         <form action="{{ route('student.dashboard') }}" method="GET" class="p-4 space-y-4 text-left">
                             <!-- Date From -->
                             <div>
@@ -51,7 +51,7 @@
                             <!-- Class Subject -->
                             <div>
                                 <label for="subject_id" class="block text-xs font-semibold text-gray-500 mb-1">Class Subject</label>
-                                <select id="subject_id" name="subject_id" class="w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500 py-1.5">
+                                <select id="subject_id" name="subject_id" class="w-full border-gray-300 rounded-md shadow-sm text-xs focus:ring-blue-500 focus:border-blue-500 py-1.5">
                                     <option value="">All Subjects</option>
                                     @foreach($uniqueSubjects ?? [] as $subject)
                                         <option value="{{ $subject->id }}" {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
@@ -69,12 +69,7 @@
                         </form>
                     </div>
                 </div>
-                <button class="flex-1 sm:flex-none justify-center sm:w-auto inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:text-gray-900 font-medium hover:bg-gray-50 shadow-sm transition-colors">
-                    <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                    Export
-                </button>
+
             </div>
         </div>
 
@@ -165,6 +160,7 @@
                             <th scope="col" class="px-6 py-3 font-bold">Subject</th>
                             <th scope="col" class="px-6 py-3 font-bold">Instructor</th>
                             <th scope="col" class="px-6 py-3 font-bold">Class Time</th>
+                            <th scope="col" class="px-6 py-3 font-bold">Time Recorded</th>
                             <th scope="col" class="px-6 py-3 font-bold text-center">Status</th>
                         </tr>
                     </thead>
@@ -189,6 +185,9 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-800">{{ $subjectName }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-800">{{ $instructorName }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ $classTime }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-600">
+                                    {{ $record->scanned_at ? \Carbon\Carbon::parse($record->scanned_at)->format('g:i A') : '—' }}
+                                </td>
                                 <td class="px-6 py-4 text-center">
                                     @if($record->status === 'present')
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
@@ -207,7 +206,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-12 text-center text-gray-500 text-sm">
+                                <td colspan="6" class="px-6 py-12 text-center text-gray-500 text-sm">
                                     No attendance records yet.
                                 </td>
                             </tr>

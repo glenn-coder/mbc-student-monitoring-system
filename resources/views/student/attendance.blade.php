@@ -15,7 +15,7 @@
         {{-- Header --}}
         <div class="w-full mb-2">
             <h2 class="text-2xl font-bold text-gray-900">All Attendance Records</h2>
-            <p class="text-sm text-slate-500 mt-1">Showing completed sessions only, newest first.</p>
+            <p class="text-sm text-slate-500 mt-1">Showing all attendance records, newest first.</p>
         </div>
 
         {{-- Main Table Card --}}
@@ -53,7 +53,7 @@
                             </svg>
                         </button>
                         <!-- Dropdown Panel -->
-                        <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 z-50 w-[calc(100vw-2rem)] max-w-sm sm:w-72 mt-2 origin-top-right bg-white border border-gray-200 rounded-lg shadow-lg" style="display: none;">
+                        <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 z-50 w-64 sm:w-72 mt-2 origin-top-right bg-white border border-gray-200 rounded-lg shadow-lg" style="display: none;">
                             <form action="{{ route('student.attendance') }}" method="GET" class="p-4 space-y-4 text-left">
                                 @if(request('per_page')) <input type="hidden" name="per_page" value="{{ request('per_page') }}"> @endif
                                 
@@ -72,7 +72,7 @@
                                 <!-- Class Subject -->
                                 <div>
                                     <label for="subject_id" class="block text-xs font-semibold text-gray-500 mb-1">Class Subject</label>
-                                    <select id="subject_id" name="subject_id" class="w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500 py-1.5">
+                                    <select id="subject_id" name="subject_id" class="w-full border-gray-300 rounded-md shadow-sm text-xs focus:ring-blue-500 focus:border-blue-500 py-1.5">
                                         <option value="">All Subjects</option>
                                         @foreach($uniqueSubjects ?? [] as $subject)
                                             <option value="{{ $subject->id }}" {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
@@ -101,6 +101,7 @@
                             <th scope="col" class="px-6 py-4 font-semibold">Subject</th>
                             <th scope="col" class="px-6 py-4 font-semibold">Instructor</th>
                             <th scope="col" class="px-6 py-4 font-semibold">Class Time</th>
+                            <th scope="col" class="px-6 py-4 font-semibold">Time Recorded</th>
                             <th scope="col" class="px-6 py-4 font-semibold text-center">Status</th>
                         </tr>
                     </thead>
@@ -125,6 +126,9 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-800">{{ $subjectName }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-800">{{ $instructorName }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ $classTime }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-600">
+                                    {{ $record->scanned_at ? \Carbon\Carbon::parse($record->scanned_at)->format('g:i A') : '—' }}
+                                </td>
                                 <td class="px-6 py-4 text-center">
                                     @if($record->status === 'present')
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
@@ -146,7 +150,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-16 text-center">
+                                <td colspan="6" class="px-6 py-16 text-center">
                                     <div class="flex flex-col items-center justify-center">
                                         <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />

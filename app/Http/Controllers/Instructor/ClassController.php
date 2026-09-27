@@ -74,7 +74,11 @@ class ClassController extends Controller
 
         $assignment = InstructorAssignment::where('id', $id)
             ->where('instructor_id', $instructor->id)
-            ->with(['subject', 'course', 'students.course', 'schedules'])
+            ->with(['subject', 'course', 'students' => function ($query) {
+                $query->whereHas('user', function ($q) {
+                    $q->where('status', 'active');
+                });
+            }, 'students.course', 'schedules'])
             ->firstOrFail();
 
         // Load today's open attendance session for each schedule

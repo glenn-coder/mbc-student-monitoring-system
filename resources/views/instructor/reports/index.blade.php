@@ -187,7 +187,7 @@
                                 <input type="text" name="search" id="search"
                                     value="{{ request('search') }}"
                                     placeholder="Search..."
-                                    class="block w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm shadow-sm">
+                                    class="block w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm shadow-sm" oninput="if(this.value === '') { this.form.submit(); }">
                             </div>
                         </div>
                     </form>

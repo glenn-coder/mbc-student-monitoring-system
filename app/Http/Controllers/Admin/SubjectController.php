@@ -40,7 +40,7 @@ class SubjectController extends Controller
     {
         $validated = $request->validate([
             'subject_code' => 'required|string|max:255|unique:subjects,subject_code',
-            'subject_name' => 'required|string|max:255',
+            'subject_name' => 'required|string|max:255|unique:subjects,subject_name',
             'units' => 'required|integer|min:1',
             'description' => 'nullable|string',
             'status' => 'required|in:active,inactive',
@@ -67,7 +67,7 @@ class SubjectController extends Controller
     {
         $validated = $request->validate([
             'subject_code' => 'required|string|max:255|unique:subjects,subject_code,' . $subject->id,
-            'subject_name' => 'required|string|max:255',
+            'subject_name' => 'required|string|max:255|unique:subjects,subject_name,' . $subject->id,
             'units' => 'required|integer|min:1',
             'description' => 'nullable|string',
             'status' => 'required|in:active,inactive',

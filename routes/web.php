@@ -329,10 +329,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 $subjectIds = \App\Models\InstructorAssignment::whereIn('id', $assignmentIds)->pluck('subject_id')->unique();
                 $uniqueSubjects = \App\Models\Subject::whereIn('id', $subjectIds)->get();
 
-                // Only count records belonging to CLOSED sessions
+                // Count records belonging to open or closed sessions
                 $recordsQuery = \App\Models\AttendanceRecord::where('student_id', $student->id)
                     ->whereHas('session', function($q) use ($request) {
-                        $q->where('status', 'closed');
+                        $q->whereIn('status', ['open', 'closed']);
                         
                         if ($request->filled('date_from')) {
                             $q->whereDate('session_date', '>=', $request->date_from);
@@ -394,7 +394,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 $perPage = request('per_page', 5);
                 $recordsQuery = \App\Models\AttendanceRecord::where('student_id', $student->id)
                     ->whereHas('session', function($q) use ($request) {
-                        $q->where('status', 'closed');
+                        $q->whereIn('status', ['open', 'closed']);
                         
                         if ($request->filled('date_from')) {
                             $q->whereDate('session_date', '>=', $request->date_from);

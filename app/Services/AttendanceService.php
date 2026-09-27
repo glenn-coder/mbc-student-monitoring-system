@@ -25,22 +25,27 @@ class AttendanceService
      *
      * Returns 'present', 'late', or null when outside the attendance window.
      */
-    public function resolveStatus(Carbon $scanTime, Schedule $schedule, string $date): ?string
+    public function resolveStatus(Carbon $scanTime, AttendanceSession $session): ?string
     {
         $tz       = 'Asia/Manila';
-        $start    = Carbon::parse("{$date} {$schedule->start_time}", $tz);
-        $end      = Carbon::parse("{$date} {$schedule->end_time}", $tz);
-        $graceEnd = $start->copy()->addMinutes($schedule->grace_period_minutes);
+        $schedule = $session->schedule;
+        $date     = $session->session_date->format('Y-m-d');
+        
+        $scheduledStart = Carbon::parse("{$date} {$schedule->start_time}", $tz);
+        $scheduledEnd   = Carbon::parse("{$date} {$schedule->end_time}", $tz);
+        
+        // Effective start time is the later of the scheduled start time or the session open time
+        $effectiveStart = $session->opened_at && $session->opened_at->gt($scheduledStart) 
+            ? $session->opened_at->copy() 
+            : $scheduledStart->copy();
 
-        if ($scanTime->lt($start)) {
-            return null; // Too early
-        }
+        $graceEnd = $effectiveStart->copy()->addMinutes($schedule->grace_period_minutes);
 
-        if ($scanTime->gte($end)) {
+        if ($scanTime->gte($scheduledEnd)) {
             return null; // Session ended
         }
 
-        // Grace boundary is inclusive: scanTime <= graceEnd → present
+        // Grace boundary is inclusive
         if ($scanTime->lte($graceEnd)) {
             return AttendanceRecord::STATUS_PRESENT;
         }
@@ -96,16 +101,13 @@ class AttendanceService
         $now      = Carbon::now('Asia/Manila');
 
         // ── Time window ────────────────────────────────────────────────────────
-        $status = $this->resolveStatus($now, $schedule, $date);
+        $status = $this->resolveStatus($now, $session);
 
         if ($status === null) {
-            $start = Carbon::parse("{$date} {$schedule->start_time}", 'Asia/Manila');
             return [
                 'record'  => null,
                 'status'  => 'window_closed',
-                'message' => $now->lt($start)
-                    ? 'Attendance is not yet available. The class has not started.'
-                    : 'Attendance session has ended.',
+                'message' => 'Attendance session has ended.',
             ];
         }
 
@@ -176,16 +178,13 @@ class AttendanceService
         $now      = Carbon::now('Asia/Manila');
 
         // ── Time window ────────────────────────────────────────────────────────
-        $status = $this->resolveStatus($now, $schedule, $date);
+        $status = $this->resolveStatus($now, $session);
 
         if ($status === null) {
-            $start = Carbon::parse("{$date} {$schedule->start_time}", 'Asia/Manila');
             return [
                 'record'  => null,
                 'status'  => 'window_closed',
-                'message' => $now->lt($start)
-                    ? 'Attendance is not yet available. The class has not started.'
-                    : 'Attendance session has ended.',
+                'message' => 'Attendance session has ended.',
             ];
         }
 
@@ -286,6 +285,50 @@ class AttendanceService
                 'closed_at' => $now,
             ]);
         }
+
+        return $count;
+    }
+
+    /**
+     * Finalize a specific session manually by marking all remaining students as absent.
+     *
+     * @param AttendanceSession $session
+     * @return int Number of students marked absent
+     */
+    public function finalizeSession(AttendanceSession $session): int
+    {
+        $tz    = 'Asia/Manila';
+        $now   = Carbon::now($tz);
+        $count = 0;
+
+        $session->loadMissing('schedule.instructorAssignment.students');
+        $assignment = $session->schedule->instructorAssignment;
+
+        if (!$assignment) {
+            return 0;
+        }
+
+        $enrolledStudentIds = $assignment->students->pluck('id');
+        $recordedStudentIds = AttendanceRecord::where('attendance_session_id', $session->id)
+            ->pluck('student_id');
+
+        $absentStudentIds = $enrolledStudentIds->diff($recordedStudentIds);
+
+        foreach ($absentStudentIds as $studentId) {
+            AttendanceRecord::create([
+                'attendance_session_id' => $session->id,
+                'student_id'            => $studentId,
+                'status'                => AttendanceRecord::STATUS_ABSENT,
+                'scanned_at'            => null,
+                'attendance_method'     => AttendanceRecord::METHOD_SYSTEM,
+            ]);
+            $count++;
+        }
+
+        $session->update([
+            'status'    => 'closed',
+            'closed_at' => $now,
+        ]);
 
         return $count;
     }

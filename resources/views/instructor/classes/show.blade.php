@@ -50,10 +50,10 @@
                                 })->values()->map(function($s) {
                                     return [
                                         'student_number' => $s->student_number,
-                                        'name' => $s->first_name . ' ' . $s->last_name,
-                                        'gender' => $s->gender ?? 'N/A',
+                                        'name' => $s->last_name . ', ' . $s->first_name,
+                                        'sex' => $s->sex ?? 'N/A',
                                         'course' => $s->course->code ?? 'N/A',
-                                        'year_level' => $s->year_level ?? 'N/A'
+                                        'year' => $s->year ?? 'N/A'
                                     ];
                                 })) }},
                                 get filteredStudents() {
@@ -133,9 +133,9 @@
                                                 <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                                                     <td class="px-6 py-4 text-gray-600" x-text="student.student_number"></td>
                                                     <td class="px-6 py-4 font-medium text-gray-900" x-text="student.name"></td>
-                                                    <td class="px-6 py-4 text-gray-600" x-text="student.gender"></td>
+                                                    <td class="px-6 py-4 text-gray-600" x-text="student.sex"></td>
                                                     <td class="px-6 py-4 text-gray-600" x-text="student.course"></td>
-                                                    <td class="px-6 py-4 text-gray-600" x-text="student.year_level"></td>
+                                                    <td class="px-6 py-4 text-gray-600" x-text="student.year"></td>
                                                 </tr>
                                             </template>
                                         </tbody>
@@ -718,7 +718,8 @@
                                                 <template x-if="filteredSessionRoster.length === 0">
                                                     <tr>
                                                         <td colspan="7" class="px-6 py-8 text-center text-gray-500 text-sm">
-                                                            No students found matching your search.
+                                                            <span x-show="sessionSearch.trim() !== ''">No students found matching your search.</span>
+                                                            <span x-show="sessionSearch.trim() === ''">No students have been recorded for this session yet.</span>
                                                         </td>
                                                     </tr>
                                                 </template>
@@ -1157,7 +1158,7 @@
                  */
                 get filteredSessionRoster() {
                     const q = this.sessionSearch.trim().toLowerCase();
-                    let roster = this.mergedRoster;
+                    let roster = this.mergedRoster.filter(s => s.status !== 'pending');
                     if (q) {
                         roster = roster.filter(s => 
                             (s.full_name && s.full_name.toLowerCase().includes(q)) || 

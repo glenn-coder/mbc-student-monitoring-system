@@ -37,18 +37,11 @@ class AttendanceSession extends Model
      */
     public function isOpen(): bool
     {
-        if ($this->status === 'closed') {
+        if ($this->status !== 'open') {
             return false;
         }
 
-        $schedule = $this->schedule;
-        $now = Carbon::now('Asia/Manila');
-        $date = $this->session_date->format('Y-m-d');
-
-        $start = Carbon::parse("{$date} {$schedule->start_time}", 'Asia/Manila');
-        $end   = Carbon::parse("{$date} {$schedule->end_time}", 'Asia/Manila');
-
-        return $now->between($start, $end);
+        return !$this->hasEnded();
     }
 
     /**

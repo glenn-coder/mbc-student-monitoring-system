@@ -28,11 +28,17 @@ class TimetableController extends Controller
         $request->validate([
             'instructor_assignment_id' => 'required|exists:instructor_assignments,id',
             'days'                     => 'required|array',
-            'days.*'                   => 'in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
+            'days.*'                   => [
+                'in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
+                \Illuminate\Validation\Rule::unique('schedules', 'day_of_week')
+                    ->where('instructor_assignment_id', $request->instructor_assignment_id)
+            ],
             'start_time'               => 'required',
             'end_time'                 => 'required|after:start_time',
             'grace_period_minutes'     => 'required|integer|min:0|max:120',
             'status'                   => 'required|in:active,inactive',
+        ], [
+            'days.*.unique' => 'This class is already scheduled on :input. Please update the existing schedule instead.'
         ]);
 
         foreach ($request->days as $day) {
@@ -54,11 +60,18 @@ class TimetableController extends Controller
         $request->validate([
             'instructor_assignment_id' => 'required|exists:instructor_assignments,id',
             'days'                     => 'required|array',
-            'days.*'                   => 'in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
+            'days.*'                   => [
+                'in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
+                \Illuminate\Validation\Rule::unique('schedules', 'day_of_week')
+                    ->where('instructor_assignment_id', $request->instructor_assignment_id)
+                    ->ignore($timetable->id)
+            ],
             'start_time'               => 'required',
             'end_time'                 => 'required|after:start_time',
             'grace_period_minutes'     => 'required|integer|min:0|max:120',
             'status'                   => 'required|in:active,inactive',
+        ], [
+            'days.*.unique' => 'This class is already scheduled on :input. Please update the existing schedule instead.'
         ]);
 
         $days = $request->days;
