@@ -711,13 +711,12 @@
                                                     <th class="px-6 py-4 font-semibold">Timestamp</th>
                                                     <th class="px-6 py-4 font-semibold text-center">Status</th>
                                                     <th class="px-6 py-4 font-semibold text-center">Method</th>
-                                                    <th class="px-6 py-4 font-semibold text-right">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <template x-if="filteredSessionRoster.length === 0">
                                                     <tr>
-                                                        <td colspan="7" class="px-6 py-8 text-center text-gray-500 text-sm">
+                                                        <td colspan="6" class="px-6 py-8 text-center text-gray-500 text-sm">
                                                             <span x-show="sessionSearch.trim() !== ''">No students found matching your search.</span>
                                                             <span x-show="sessionSearch.trim() === ''">No students have been recorded for this session yet.</span>
                                                         </td>
@@ -765,17 +764,6 @@
                                                                 System
                                                             </span>
                                                             <span x-show="!row.attendance_method" class="text-gray-300">—</span>
-                                                        </td>
-                                                        <td class="px-6 py-4 text-right">
-                                                            <button x-show="row.status !== 'pending' && row.id" 
-                                                                    @click="deleteRecord(row.id)" 
-                                                                    title="Delete Record"
-                                                                    class="text-gray-400 hover:text-red-600 transition-colors bg-transparent border-0 cursor-pointer">
-                                                                <svg class="w-4 h-4 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                                </svg>
-                                                            </button>
-                                                            <span x-show="row.status === 'pending' || !row.id" class="text-gray-300">—</span>
                                                         </td>
                                                     </tr>
                                                 </template>
@@ -970,13 +958,12 @@
                                                         <th class="px-4 py-3 font-semibold">Course</th>
                                                         <th class="px-4 py-3 font-semibold">Scan Time</th>
                                                         <th class="px-4 py-3 font-semibold text-center">Status</th>
-                                                        <th class="px-4 py-3 font-semibold text-right">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <template x-if="getFilteredRecords(sess).length === 0">
                                                         <tr>
-                                                            <td colspan="6" class="px-4 py-6 text-center text-gray-400 text-xs bg-white">No records match the current filters.</td>
+                                                            <td colspan="5" class="px-4 py-6 text-center text-gray-400 text-xs bg-white">No records match the current filters.</td>
                                                         </tr>
                                                     </template>
                                                     <template x-for="rec in getPaginatedRecords(sess)" :key="rec.id">
@@ -992,16 +979,6 @@
                                                                       class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-yellow-100 text-yellow-700">Late</span>
                                                                 <span x-show="rec.status === 'absent'"
                                                                       class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-600">Absent</span>
-                                                            </td>
-                                                            <td class="px-4 py-3 text-right">
-                                                                <button x-show="rec.id" 
-                                                                        @click="deleteRecord(rec.id)" 
-                                                                        title="Delete Record"
-                                                                        class="text-gray-400 hover:text-red-600 transition-colors bg-transparent border-0 cursor-pointer">
-                                                                    <svg class="w-4 h-4 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                                    </svg>
-                                                                </button>
                                                             </td>
                                                         </tr>
                                                     </template>
