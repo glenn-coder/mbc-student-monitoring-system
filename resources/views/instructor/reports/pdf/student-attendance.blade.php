@@ -17,7 +17,7 @@
 
         /* ── Summary cards row ── */
         table.summary-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        table.summary-table td { border: 1px solid #ddd; padding: 8px 12px; text-align: center; width: 20%; }
+        table.summary-table td { border: 1px solid #ddd; padding: 8px 12px; text-align: center; width: 25%; }
         .summary-label { font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: .05em; color: #555; }
         .summary-value { font-size: 20px; font-weight: bold; color: #111; margin-top: 4px; }
 
@@ -77,12 +77,7 @@
                 <div class="summary-label">Absent</div>
                 <div class="summary-value">{{ number_format($summary['totalAbsent']) }}</div>
             </td>
-            <td>
-                <div class="summary-label">Attendance Rate</div>
-                <div class="summary-value">
-                    {{ $summary['attendanceRate'] !== null ? $summary['attendanceRate'] . '%' : '—' }}
-                </div>
-            </td>
+
         </tr>
     </table>
 
