@@ -137,6 +137,12 @@ class InstructorController extends Controller
 
     public function destroy(Instructor $instructor)
     {
+        // Check if the instructor has any active assignments/records
+        if ($instructor->assignments()->exists()) {
+            return redirect()->route('admin.instructors.index')
+                ->with('error', 'Cannot delete this instructor because they already have active assignments or historical attendance records.');
+        }
+
         if ($instructor->user) {
             $instructor->user->delete();
         }

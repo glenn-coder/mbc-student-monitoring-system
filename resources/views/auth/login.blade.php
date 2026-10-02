@@ -406,9 +406,7 @@
                 <input id="remember_me" type="checkbox" name="remember" class="remember-check">
                 <span class="remember-text">Remember me</span>
             </label>
-            @if (Route::has('password.request'))
-            <a href="{{ route('password.request') }}" class="forgot-link">Forgot password?</a>
-            @endif
+
         </div>
 
         {{-- Submit --}}
