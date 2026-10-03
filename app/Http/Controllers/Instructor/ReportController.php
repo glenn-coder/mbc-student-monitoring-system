@@ -81,8 +81,8 @@ class ReportController extends Controller
             ->distinct('student_id')
             ->count('student_id');
 
-        $recordTotals = AttendanceRecord::whereIn('attendance_session_id', $completedSessionIds)
-            ->selectRaw('status, count(*) as total')
+        $recordTotals = AttendanceRecord::whereIn('attendance_records.attendance_session_id', $completedSessionIds)
+            ->selectRaw('attendance_records.status, count(*) as total')
             ->groupBy('status')
             ->pluck('total', 'status');
 
@@ -110,9 +110,9 @@ class ReportController extends Controller
             ->unique();
 
         // Per-student record counts from the completed sessions
-        $studentRecordCounts = AttendanceRecord::whereIn('attendance_session_id', $completedSessionIds)
-            ->whereIn('student_id', $enrolledStudentIds)
-            ->selectRaw('student_id, status, count(*) as total')
+        $studentRecordCounts = AttendanceRecord::whereIn('attendance_records.attendance_session_id', $completedSessionIds)
+            ->whereIn('attendance_records.student_id', $enrolledStudentIds)
+            ->selectRaw('attendance_records.student_id, attendance_records.status, count(*) as total')
             ->groupBy('student_id', 'status')
             ->get()
             ->groupBy('student_id');
@@ -229,8 +229,8 @@ class ReportController extends Controller
             ->distinct('student_id')
             ->count('student_id');
 
-        $recordTotals = AttendanceRecord::whereIn('attendance_session_id', $completedSessionIds)
-            ->selectRaw('status, count(*) as total')
+        $recordTotals = AttendanceRecord::whereIn('attendance_records.attendance_session_id', $completedSessionIds)
+            ->selectRaw('attendance_records.status, count(*) as total')
             ->groupBy('status')
             ->pluck('total', 'status');
 
@@ -250,9 +250,9 @@ class ReportController extends Controller
             ->pluck('student_id')
             ->unique();
 
-        $studentRecordCounts = AttendanceRecord::whereIn('attendance_session_id', $completedSessionIds)
-            ->whereIn('student_id', $enrolledStudentIds)
-            ->selectRaw('student_id, status, count(*) as total')
+        $studentRecordCounts = AttendanceRecord::whereIn('attendance_records.attendance_session_id', $completedSessionIds)
+            ->whereIn('attendance_records.student_id', $enrolledStudentIds)
+            ->selectRaw('attendance_records.student_id, attendance_records.status, count(*) as total')
             ->groupBy('student_id', 'status')
             ->get()
             ->groupBy('student_id');
@@ -437,15 +437,15 @@ class ReportController extends Controller
             : null;
 
         // ── KPI counts — WITH status filter (mirrors what the table shows) ─────
-        $kpiQuery = AttendanceRecord::whereIn('attendance_session_id', $completedSessionIds);
+        $kpiQuery = AttendanceRecord::whereIn('attendance_records.attendance_session_id', $completedSessionIds);
         if ($searchStudentIds !== null) {
-            $kpiQuery->whereIn('student_id', $searchStudentIds);
+            $kpiQuery->whereIn('attendance_records.student_id', $searchStudentIds);
         }
         if (!empty($validStatuses)) {
-            $kpiQuery->whereIn('status', $validStatuses);
+            $kpiQuery->whereIn('attendance_records.status', $validStatuses);
         }
         $kpiStatusCounts = $kpiQuery
-            ->selectRaw('status, count(*) as total')
+            ->selectRaw('attendance_records.status, count(*) as total')
             ->groupBy('status')
             ->pluck('total', 'status');
 
@@ -458,7 +458,7 @@ class ReportController extends Controller
         $perPage = (int) $request->get('per_page', 5);
         $perPage = in_array($perPage, [5, 10, 25, 50, 100]) ? $perPage : 5;
 
-        $records = AttendanceRecord::whereIn('attendance_session_id', $completedSessionIds)
+        $records = AttendanceRecord::whereIn('attendance_records.attendance_session_id', $completedSessionIds)
             ->when($searchStudentIds !== null,  fn ($q) => $q->whereIn('attendance_records.student_id', $searchStudentIds))
             ->when(!empty($validStatuses),      fn ($q) => $q->whereIn('attendance_records.status', $validStatuses))
             ->with([
@@ -579,11 +579,11 @@ class ReportController extends Controller
         }
 
         // ── Attendance Rate (status-filter independent) ────────────────────────
-        $rateQuery = AttendanceRecord::whereIn('attendance_session_id', $completedSessionIds);
+        $rateQuery = AttendanceRecord::whereIn('attendance_records.attendance_session_id', $completedSessionIds);
         if ($searchStudentIds !== null) {
-            $rateQuery->whereIn('student_id', $searchStudentIds);
+            $rateQuery->whereIn('attendance_records.student_id', $searchStudentIds);
         }
-        $rateCounts = $rateQuery->selectRaw('status, count(*) as total')
+        $rateCounts = $rateQuery->selectRaw('attendance_records.status, count(*) as total')
             ->groupBy('status')->pluck('total', 'status');
         $ratePresent = $rateCounts->get('present', 0);
         $rateLate    = $rateCounts->get('late',    0);
@@ -592,7 +592,7 @@ class ReportController extends Controller
         $attendanceRate = $rateTotal > 0 ? round(($ratePresent + $rateLate) / $rateTotal * 100) : null;
 
         // ── All matching records — unpaginated ────────────────────────────────
-        $records = AttendanceRecord::whereIn('attendance_session_id', $completedSessionIds)
+        $records = AttendanceRecord::whereIn('attendance_records.attendance_session_id', $completedSessionIds)
             ->when($searchStudentIds !== null, fn ($q) => $q->whereIn('attendance_records.student_id', $searchStudentIds))
             ->when(!empty($validStatuses),     fn ($q) => $q->whereIn('attendance_records.status', $validStatuses))
             ->with([

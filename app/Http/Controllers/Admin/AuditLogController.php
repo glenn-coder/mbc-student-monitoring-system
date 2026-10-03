@@ -85,11 +85,11 @@ class AuditLogController extends Controller
         $metricsQuery = clone $query;
         $total = $metricsQuery->count();
         
-        $byAction = (clone $metricsQuery)->selectRaw('action, count(*) as total')
+        $byAction = (clone $metricsQuery)->reorder()->selectRaw('action, count(*) as total')
                     ->groupBy('action')
                     ->pluck('total', 'action')->toArray();
                     
-        $byStatus = (clone $metricsQuery)->selectRaw('status, count(*) as total')
+        $byStatus = (clone $metricsQuery)->reorder()->selectRaw('status, count(*) as total')
                     ->groupBy('status')
                     ->pluck('total', 'status')->toArray();
                     
